@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 /**
- * 협업 비로그인 유저용 컨트롤러 클래스
+ * 협업 비로그인 유저용 컨트롤러 클래스 커밋 테스트
  * @author 공통서비스개발팀 이삼섭
  * @since 2009.06.01
  * @version 1.0
