@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>z5.co.kr</groupId>
+    <artifactId>wecan_stop</artifactId>
+    <packaging>war</packaging>
+    <version>1.0.0</version>
+    <name>wecan_stop</name>
+    <url>http://maven.apache.org</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>    
+    <properties>
+        <spring.maven.artifact.version>4.3.22.RELEASE</spring.maven.artifact.version>
+        <egovframework.rte.version>3.9.0</egovframework.rte.version>
+        <project.encode>UTF-8</project.encode>
+        <project.libdir>C:\Fate\eGovFrameDev-3.9.0-64bit\workspace2\wecan_stop\src\main\webapp\WEB-INF\lib</project.libdir>
+	</properties>
+
+    <repositories>
+        <repository>
+            <id>mvn2</id>
+            <url>https://repo1.maven.org/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>egovframe</id>
+            <url>http://maven.egovframe.kr:8080/maven/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>codelds</id>
+            <url>https://code.lds.org/nexus/content/groups/main-repo</url>
+        </repository>
+        
+    </repositories>
+    <pluginRepositories>
+	    <pluginRepository>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <name>Central Repository</name>
+	        <url>https://repo.maven.apache.org/maven2</url>
+	    </pluginRepository>
+	</pluginRepositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>egovframework.rte</groupId>
+            <artifactId>egovframework.rte.fdl.idgnr</artifactId>
+            <version>${egovframework.rte.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>egovframework.rte</groupId>
+            <artifactId>egovframework.rte.ptl.mvc</artifactId>
+            <version>${egovframework.rte.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springmodules</groupId>
+                    <artifactId>spring-modules-validation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- 실행환경 라이브러리 -->
+        <!--
+        mybatis를 사용하는 데 jdk1.5로 컴파일 할 경우 아래와 같이 변경해 주시기 바랍니다.
+        (3.2.X 버전에서 부터 jdk1.6으로 컴파일 되어 발생하는 현상)
+          <dependency>
+           <groupId>egovframework.rte</groupId>
+           <artifactId>egovframework.rte.psl.dataaccess</artifactId>
+           <version>${egovframework.rte.version}</version>
+           <exclusions>
+            <exclusion>
+             <artifactId>mybatis</artifactId>
+             <groupId>org.mybatis</groupId>
+            </exclusion>
+           </exclusions>
+          </dependency>
+          <dependency>
+           <groupId>org.mybatis</groupId>
+           <artifactId>mybatis</artifactId>
+           <version>3.1.1</version>
+          </dependency>
+        -->
+        <dependency>
+            <groupId>egovframework.rte</groupId>
+            <artifactId>egovframework.rte.fdl.idgnr</artifactId>
+            <version>${egovframework.rte.version}</version>
+        </dependency>
+
+        <!--
+        JBoss의 경우는 <body-context>부분을 empty로 수정하여 적용하시면 되며,
+        pom.xml을 아래와 같이 적용하시면 수정된 jar를 참조하실 수 있습니다.
+        (기존 egovframework.rte.ptl.mvc dependency에 내부적으로 참조되고 있어,
+        해당 부분을 exclude 처리해야 함)
+        아래 주석을 해제하시면 됩니다.
+        -->
+        <dependency>
+            <groupId>egovframework.rte</groupId>
+            <artifactId>egovframework.rte.ptl.mvc</artifactId>
+            <version>${egovframework.rte.version}</version>
+            <!-- <exclusions>
+                <exclusion>
+                    <groupId>org.springmodules</groupId>
+                    <artifactId>spring-modules-validation</artifactId>
+                </exclusion>
+            <exclusions> -->
+        </dependency>
+        <!-- <dependency>
+          <groupId>egovframework.rte</groupId>
+          <artifactId>spring-modules-validation</artifactId>
+          <version>0.9</version>
+        </dependency> -->
+        <dependency>
+            <groupId>egovframework.rte</groupId>
+            <artifactId>egovframework.rte.fdl.property</artifactId>
+            <version>${egovframework.rte.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>egovframework.rte</groupId>
+            <artifactId>egovframework.rte.fdl.security</artifactId>
+            <version>${egovframework.rte.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>egovframework.rte</groupId>
+            <artifactId>egovframework.rte.fdl.excel</artifactId>
+            <version>${egovframework.rte.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>egovframework.rte</groupId>
+            <artifactId>egovframework.rte.bat.core</artifactId>
+            <version>${egovframework.rte.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>egovframework.rte</groupId>
+            <artifactId>egovframework.rte.fdl.crypto</artifactId>
+            <version>${egovframework.rte.version}</version>
+        </dependency>
+        <dependency>
+			<groupId>egovframework.rte</groupId>
+			<artifactId>egovframework.rte.fdl.access</artifactId>
+			<version>${egovframework.rte.version}</version>
+		</dependency>
+        <!-- 실행환경 라이브러리 끝 -->      
+        
+        <dependency>
+            <groupId>com.googlecode.log4jdbc</groupId>
+            <artifactId>log4jdbc</artifactId>
+            <version>1.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+               
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.6.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.6.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ibatis</groupId>
+            <artifactId>ibatis-sqlmap</artifactId>
+            <version>2.3.4.726</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+            <version>2.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <!-- junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+		<!-- Spring Test -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>4.3.22.RELEASE</version>
+		</dependency>        
+        <!-- Jackson-->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.12</version>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.9.12</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.8.0.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-digester</groupId>
+            <artifactId>commons-digester</artifactId>
+            <version>1.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-entitymanager -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>6.0.0.Alpha5</version>
+            <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>antlr</groupId>
+                    <artifactId>antlr</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-annotations -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.5.6-Final</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+		<dependency>
+		    <groupId>org.hibernate.validator</groupId>
+		    <artifactId>hibernate-validator</artifactId>
+		    <version>6.1.4.Final</version>
+		</dependency>
+<!-- 11g
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2.0.3</version>
+        </dependency>
+-->
+		<!-- 10g https://mvnrepository.com/artifact/com.oracle/ojdbc14 
+		<dependency>
+		    <groupId>com.oracle</groupId>
+		    <artifactId>ojdbc14</artifactId>
+		    <version>10.2.0.5.0</version>
+		</dependency>
+-->
+
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-vfs</groupId>
+            <artifactId>commons-vfs</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.21</version>
+        </dependency>
+
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.jxls</groupId>
+            <artifactId>jxls-core</artifactId>
+            <version>0.9.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.jxls</groupId>
+            <artifactId>jxls-reader</artifactId>
+            <version>0.9.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <version>2.6.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-terracotta</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>1.8.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-oracle</artifactId>
+            <version>1.8.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-weblogic</artifactId>
+            <version>1.8.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jboss</artifactId>
+            <version>1.8.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>oro</groupId>
+            <artifactId>oro</artifactId>
+            <version>2.0.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>4.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
+        
+		<dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>ldapsdk</groupId>
+            <artifactId>ldapsdk</artifactId>
+            <version>4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.artofsolving</groupId>
+            <artifactId>jodconverter</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>5.0.3</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.apache.logging.log4j</groupId>
+            		<artifactId>log4j-api</artifactId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-reflect</artifactId>
+            <version>3.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>5.1.0</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.apache.logging.log4j</groupId>
+            		<artifactId>log4j-api</artifactId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.1.0</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.apache.logging.log4j</groupId>
+            		<artifactId>log4j-api</artifactId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml-schemas</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
+            <version>2.1.3</version>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>net.sourceforge.ajaxtags</groupId>
+            <artifactId>ajaxtags-resources</artifactId>
+            <version>1.5.7</version>
+        </dependency>
+-->
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>batik-ext</artifactId>
+            <version>1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.24</version>
+        </dependency>
+
+        <!-- mssql -->
+        <dependency>
+            <groupId>net.sourceforge.jtds</groupId>
+            <artifactId>jtds</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+
+        <!-- A complete, Java-based solution for accessing, manipulating, and outputting XML data -->
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+		<dependency>
+		    <groupId>org.jsoup</groupId>
+		    <artifactId>jsoup</artifactId>
+		    <version>1.7.3</version>
+		</dependency>
+        <!-- com.oreilly.servlet -->
+        <dependency>
+            <groupId>servlets.com</groupId>
+            <artifactId>cos</artifactId>
+            <version>05Nov2002</version>
+        </dependency>
+
+        <!-- Image Resizing -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-cypher-compiler-2.1</artifactId>
+            <version>2.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.wimpi</groupId>
+            <artifactId>telnetd-x</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.owasp.antisamy</groupId>
+            <artifactId>antisamy</artifactId>
+            <version>1.4.5</version>
+        </dependency>
+
+        <!-- Country-Code -->
+        <dependency>
+            <groupId>com.neovisionaries</groupId>
+            <artifactId>nv-i18n</artifactId>
+            <version>1.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.7</version>
+        </dependency>
+        
+		<!-- https://mvnrepository.com/artifact/org.springframework.mobile/spring-mobile-device -->
+		<dependency>
+		    <groupId>org.springframework.mobile</groupId>
+		    <artifactId>spring-mobile-device</artifactId>
+		    <version>1.1.5.RELEASE</version>
+		</dependency>
+
+        <!-- Third-Party -->
+       
+        
+		<!-- jackson -->
+		<dependency>  
+			<groupId>com.fasterxml.jackson.core</groupId>  
+			<artifactId>jackson-core</artifactId>  
+			<version>2.12.3</version>  
+		</dependency> 
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-annotations</artifactId>
+		    <version>2.12.3</version>
+		</dependency>
+		<dependency>  
+		<groupId>com.fasterxml.jackson.core</groupId>  
+			<artifactId>jackson-databind</artifactId>  
+			<version>2.12.3</version>  
+		</dependency>
+        
+        <!-- Serialize
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.4</version>
+        </dependency>
+        -->    
+        
+       <dependency>
+		    <groupId>automailapi</groupId>
+		    <artifactId>automailapi</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>${project.libdir}\automail_api.jar</systemPath>
+		</dependency>
+
+       <dependency>
+		    <groupId>IPINClient</groupId>
+		    <artifactId>IPINClient</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>${project.libdir}\IPINClient.jar</systemPath>
+		</dependency>
+       <dependency>
+		    <groupId>CPClient</groupId>
+		    <artifactId>CPClient</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>${project.libdir}\CPClient.jar</systemPath>
+		</dependency>
+ 		<dependency>
+		    <groupId>NiceID</groupId>
+		    <artifactId>NiceID</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>${project.libdir}\NiceID.jar</systemPath>
+		</dependency> 
+       <dependency>
+		    <groupId>jazzlib</groupId>
+		    <artifactId>jazzlib</artifactId>
+		    <version>1.0</version>
+		    <scope>system</scope>
+		    <systemPath>${project.libdir}\jazzlib.jar</systemPath>
+		</dependency>
+		<dependency>
+    		<groupId>org.json</groupId>
+    		<artifactId>json</artifactId>
+    		<version>20210307</version>
+		</dependency>
+		<dependency>
+    		<groupId>javax.el</groupId>
+    		<artifactId>javax.el-api</artifactId>
+    		<version>3.0.0</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.glassfish</groupId>
+    		<artifactId>javax.el</artifactId>
+    		<version>3.0.0</version>
+		</dependency>
+    </dependencies>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <directory>${project.basedir}/out</directory>
+        <finalName>wecan_stop</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>hibernate3-maven-plugin</artifactId>
+                    <version>2.1</version>
+                    <configuration>
+                        <components>
+                            <component>
+                                <name>hbm2ddl</name>
+                                <implementation>annotationconfiguration</implementation>
+                            </component>
+                        </components>
+                    </configuration>
+                </plugin>
+                <!-- EMMA   -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>emma-maven-plugin</artifactId>
+                    <version>1.0-alpha-1</version>
+                </plugin>
+                <!-- PMD maven plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+
+                <!-- Third-Party Library -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-install-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [2.4,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>install-file</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <!-- EMMA -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>false</skipTests>
+                    <forkMode>once</forkMode>
+                    <reportFormat>xml</reportFormat>
+                    <excludes>
+                        <exclude>**/Abstract*.java</exclude>
+                        <exclude>**/*Suite.java</exclude>
+                    </excludes>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+                <version>2.16</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>emma-maven-plugin</artifactId>
+                <inherited>true</inherited>
+            </plugin>
+            <!--  JavaDoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
+        </plugins>
+    </build>
+    <reporting>
+        <outputDirectory>${project.basedir}/out/site</outputDirectory>
+        <plugins>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.9</version>
+                <reportSets>
+                    <reportSet>
+                        <id>sunlink</id>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                        <inherited>true</inherited>
+                        <configuration>
+                            <links>
+                                <link>http://docs.oracle.com/javase/7/docs/api/</link>
+                            </links>
+                        </configuration>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <!-- JUnit Test Results & EMMA Coverage Reporting -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>emma-maven-plugin</artifactId>
+                <inherited>true</inherited>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>surefire-report-maven-plugin</artifactId>
+                <inherited>true</inherited>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>report-only</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+
+            <!-- Generating JavaDoc Report -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <minmemory>512m</minmemory>
+                    <maxmemory>1024m</maxmemory>
+                    <encoding>${project.encode}</encoding>
+                    <docencoding>${project.encode}</docencoding>
+                    <charset>${project.encode}</charset>
+                </configuration>
+            </plugin>
+            <!-- Generating Java Source in HTML -->
+            <plugin>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <configuration>
+                    <inputEncoding>${project.encode}</inputEncoding>
+                    <outputEncoding>${project.encode}</outputEncoding>
+                    <linkJavadoc>true</linkJavadoc>
+                    <javadocDir>apidocs</javadocDir>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>

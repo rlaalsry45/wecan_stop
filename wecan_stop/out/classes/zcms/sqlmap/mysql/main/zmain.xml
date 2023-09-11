@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Zmain">
+
+	<typeAlias alias="zmainVo" type="com.z5.zcms.admsys.main.domain.ZmainVo"/>
+	<resultMap id="zmainVo" class="com.z5.zcms.admsys.main.domain.ZmainVo"/>
+
+	<insert id="zmainDAO.write">
+		<![CDATA[
+			INSERT INTO ZMAIN
+			( 	  mainno
+				, maintype
+				, userid
+				, maintitle
+				, mainstatus
+				, mainconts
+				, maindatereg
+				, maincontstype
+				, maintags
+			) VALUES(
+				  #mainno#
+				, #maintype#
+				, #userid#
+				, #maintitle#
+				, #mainstatus#
+				, #mainconts#
+				, date_format(now(),'%Y%m%d%H%i%s')
+				, #maincontstype#
+				, #maintags#
+			)
+		]]>
+	</insert>
+
+	<select id="zmainDAO.getMaxmainno" resultClass="java.lang.Integer">
+		SELECT
+			IFNULL(MAX(mainno),0)+1 AS mainno
+		FROM
+			ZMAIN
+	</select>
+
+	<select id="zmainDAO.listAll" parameterClass="zmainVo" resultClass="zmainVo">
+		<![CDATA[
+			SELECT *
+			FROM ZMAIN
+			ORDER BY mainno DESC
+		]]>
+	</select>
+
+	<select id="zmainDAO.listCfg" parameterClass="zmainVo" resultClass="zmainVo">
+		<![CDATA[
+			SELECT
+				mainno,
+				maintitle,
+				siteno
+			FROM
+				ZMAIN
+			WHERE
+				siteno=0 OR siteno=#siteno#
+			ORDER BY mainno DESC
+		]]>
+	</select>
+
+	<select id="zmainDAO.list" parameterClass="zmainVo" resultClass="zmainVo">
+		<![CDATA[
+			SELECT
+				mainno
+				, siteno
+				, mainuse
+				, maintitle
+				, mainstatus
+				, maindatereg
+				, maindatemod
+				, maintype
+			from
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        a.*
+				    	   from
+						        zmain a,   (SELECT @rownum := #m#) R
+						   where 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ to_date($cond1$,'%Y%m%d%H%i%s') BETWEEN to_date(#sdate#||'000000','%Y%m%d%H%i%s')  and  to_date(#edate#||'235959','%Y%m%d%H%i%s')       ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="mainstatus">
+								<![CDATA[ mainstatus like '%'||#mainstatus#||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							order by mainno desc
+					 	) row_
+					where
+						@rownum < (#n#+#m#)
+				) t
+
+			]]>
+	</select>
+
+
+	<select id="zmainDAO.listCount" parameterClass="zmainVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				zmain
+			where 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[ to_date($cond1$,'%Y%m%d%H%i%s') BETWEEN to_date(#sdate#||'000000','%Y%m%d%H%i%s')  and  to_date(#edate#||'235959','%Y%m%d%H%i%s')       ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					upper($cond2$) like '%'||upper(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="mainstatus">
+				<![CDATA[
+					mainstatus like '%'||#mainstatus#||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+
+
+
+	<delete id="zmainDAO.delete" parameterClass="java.util.List">
+		        DELETE
+		    		FROM ZMAIN
+		  			WHERE mainno in
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+
+	</delete>
+
+	<select id="zmainDAO.selectbypk"  parameterClass="zmainVo" resultClass="zmainVo">
+		<![CDATA[
+			SELECT
+				 a.*
+				,(SELECT sitedomain FROM ZSITE WHERE siteno=a.siteno) sitedomain
+			FROM ZMAIN a
+			WHERE mainno=#mainno#
+				]]>
+	</select>
+
+	<update id="zmainDAO.update">
+		<![CDATA[
+			UPDATE ZMAIN SET
+				  maintitle=#maintitle#
+				, maintype=#maintype#
+				, mainstatus=#mainstatus#
+				, userid=#userid#
+				, maindatemod=date_format(now(),'%Y%m%d%H%i%s')
+				, mainconts=#mainconts#
+				, maincontstype=#maincontstype#
+				, maintags=#maintags#
+				, mainhis=#mainhis#
+			WHERE mainno=#mainno#
+		]]>
+	</update>
+
+	<select id="zmainDAO.selectbyfk"  parameterClass="zmainVo" resultClass="zmainVo">
+		<![CDATA[
+			SELECT maintags
+			FROM ZMAIN
+			WHERE siteno=#siteno#
+		]]>
+	</select>
+
+	<update id="zmainDAO.updatesiteno">
+		<![CDATA[
+			UPDATE ZMAIN SET
+				siteno=0,
+				mainuse='',
+				userid=#userid#
+			WHERE siteno=#siteno#
+		]]>
+	</update>
+
+	<update id="zmainDAO.updatesitetitle">
+		<![CDATA[
+			UPDATE ZMAIN SET
+				siteno=#siteno#,
+				mainuse=(SELECT sitetitle FROM ZSITE WHERE siteno = #siteno#),
+				userid=#userid#
+			WHERE mainno=#mainno#
+		]]>
+	</update>
+
+</sqlMap>

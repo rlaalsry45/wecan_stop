@@ -1,0 +1,68 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ include file="/WEB-INF/jsp/zcms/admsys/common.jsp" %>
+<script type="text/javascript" src="/var/sha/core.min.js"></script>
+<script type="text/javascript" src="/var/sha/sha256.min.js"></script>
+
+<c:choose>
+    <c:when test="${adminip eq 'true'}">
+       <script type="text/javascript" src="/usr/js/common.js"></script>
+       <script type="text/javascript" src="/usr/js/admsys/site/adminip/login.js"></script>
+       <script type="text/javascript">
+          window.onload = function () {
+              if ("true" === "${param.fail}") {
+                  alert("※ 아이디 혹은 비밀번호가 틀립니다.");
+              }
+              if ("true" === "${param.pwfivefail}") {
+                  alert("※ 비밀번호 5회이상 틀렸습니다. 이메일 인증을 통해 재설정하시고, 재설정이 되지 않을 경우, 관리자에게 문의해주시기 바랍니다.");
+              }
+              if ("true" === "${param.pwfail}") {
+                  alert("※ 아이디 혹은 비밀번호가 틀립니다. ");
+              }
+              if ("true" === "${param.failadmin}") {
+                  alert("※ 'admin'계정의 로그인에 실패하였습니다.\n※ 비밀번호를 확인해주시기 바랍니다.");
+              }
+              if ("true" === "${param.usefail}") {
+                  alert("※ 사용할 수 없는(미사용 상태) 아이디입니다.");
+              }
+              if ("true" === "${sessionout}") {
+                  alert("세션시간이 끝났습니다. 다시 로그인해 주세요.");
+                  window.location.href = "/login.html";
+              }
+          };
+      </script>
+      <div class="content">
+	    <div class="cont_wrap">
+	        <div class="cont">
+	            <p class="p_t t_center">한국여성인권진흥원 ${projectName} 관리자 로그인</p>
+	            <form id="frm" name="frm" method="post" class="otp_login">
+	            	<input type="hidden" name="_to" value="aseanrok"/>
+	            	<dl>
+	                    <dt>아이디</dt>
+	                    <dd><input type="text" id="userid" name="username" value="" placeholder="아이디를 입력해주세요." maxlength="20" autofocus="autofocus"></dd>
+	                </dl>
+	                <dl>
+	                    <dt>비밀번호</dt>
+	                    <dd><input type="password" id="userpw" name="password" value="" placeholder="비밀번호를 입력해주세요." maxlength="20"></dd>
+	                </dl>
+	                <div class="btn_box">
+	                    <a href="javascript:login();" class="btn b_feac25">로그인</a>
+	                </div>
+	                <div class="login_lnb">
+	                    <ul>
+	                        <!--<li><a href="/?menuno=241">회원가입</a></li>-->
+	                        <li><a href="/frontsys/login/findId.html">아이디 찾기</a></li>
+	                        <li><a href="/frontsys/login/findPasswd.html">비밀번호 찾기</a></li>
+	                    </ul>
+	                </div>
+	            </form>
+	            <p class="t_right mr50">시스템 관련 문의 02-6363-8335~8336</p>
+	        </div>
+	    </div>
+	</div>
+	</c:when>
+    <c:otherwise>
+        허용되지 않은 IP 입니다. IP 추가는 관리자에게 문의하시기 바랍니다.
+    </c:otherwise>
+</c:choose>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZSurvey">
+	<typeAlias alias="zSurveyVo" type="com.z5.zcms.admsys.module.domain.ZSurveyVo"/>
+	<resultMap id="zSurveyVo" class="com.z5.zcms.admsys.module.domain.ZSurveyVo"/>
+	
+	<insert id="ZSurvey.surveyWrite">
+		<![CDATA[
+			INSERT INTO ZSURVEY
+			(
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				target,
+				contstype,
+				conts,
+				added,
+				memo,
+				datereg,
+				userid,
+				mainview,
+				total,
+				surveytype,
+				orgid,
+				consultingapplicationno
+			)
+			VALUES
+			(
+				
+				#title#,
+				#skin#,
+				#sdate#,
+				#edate#,
+				#target#,
+				#contstype#,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				#added#,
+				#memo#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#,
+				#mainview#,
+				#total#,
+				#surveytype#,
+				#orgid#,
+				#consultingapplicationno#
+			)
+		]]>
+	</insert>
+	
+	<select id="ZSurvey.list" resultClass="zSurveyVo">
+		<![CDATA[
+			SELECT
+				surveyno,
+				title,
+				 (CASE WHEN now()<sdate THEN '진행전' WHEN now()> DATE_ADD(edate, INTERVAL 1 DAY) THEN '완료' ELSE '진행중' END) useyn,
+				target,
+				sdate,
+				edate,
+				sitetitle,
+				DATE_FORMAT(datereg, '%Y-%m-%d %H:%i:%S')datereg,
+				DATE_FORMAT(datemod, '%Y-%m-%d %H:%i:%S')datemod,
+				skin,
+				surveytype,
+				orgid,
+				consultingapplicationno
+
+			FROM 
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								a.*
+								,(SELECT GROUP_CONCAT(SITETITLE) FROM ZSURVEYUSE where surveyno = a.surveyno) AS sitetitle
+								/*, get_sitetitle('ZSURVEYUSE','surveyno', a.surveyno) as sitetitle*/
+							FROM
+								ZSURVEY a,   (SELECT @rownum := #m#) R
+							WHERE 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+						   		<isNotEmpty property="sdate">
+					          	<isNotEmpty property="edate">
+								<![CDATA[
+									DATE_FORMAT($cond1$,'%Y%m%d') BETWEEN #sdate# AND #edate#
+								]]>
+								</isNotEmpty>
+								</isNotEmpty>
+							</isNotEmpty>
+				           	<isNotEmpty prepend="and" property="cond2">
+				           		<isNotEmpty property="keyword">
+								<![CDATA[ UPPER($cond2$) LIKE CONCAT('%',UPPER(#keyword#),'%') ]]>
+								</isNotEmpty>
+							</isNotEmpty>
+						
+			<![CDATA[
+							ORDER BY surveyno DESC
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+			
+			]]> 
+	</select>
+	
+	<select id="ZSurvey.getLatestSurvey" resultClass="zSurveyVo">
+		<![CDATA[
+			SELECT * 
+				FROM 
+					(SELECT * 
+						FROM ZSURVEY 
+						WHERE now() >= sdate 
+							AND now() <= edate
+						ORDER BY SURVEYNO DESC)
+				WHERE ROWNUM = 1
+			]]> 
+	</select>
+	
+	<select id="ZSurvey.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				ZSURVEY
+			WHERE 1 = 1
+		]]>
+	   	<isNotEmpty prepend="and" property="cond1">
+	   		<isNotEmpty property="sdate">
+          	<isNotEmpty property="edate">
+			<![CDATA[
+				DATE_FORMAT($cond1$,'%Y%m%d') BETWEEN #sdate# AND #edate#
+			]]>
+			</isNotEmpty>
+			</isNotEmpty>
+		</isNotEmpty>
+        <isNotEmpty prepend="and" property="cond2">
+          	<isNotEmpty property="keyword">
+			<![CDATA[ UPPER($cond2$) LIKE CONCAT('%',UPPER(#keyword#),'%') ]]>
+			</isNotEmpty>
+		</isNotEmpty>
+	</select>
+
+	<select id="ZSurvey.getDetailInfo" resultClass="zSurveyVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				ZSURVEY
+			WHERE
+				surveyno=#surveyno#
+		]]>
+	</select>
+	
+	<delete id="ZSurvey.surveyDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZSURVEY
+			WHERE
+				surveyno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<delete id="ZSurvey.surveyUseDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZSURVEYUSE
+			WHERE
+				surveyno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<update id="ZSurvey.update">
+		<![CDATA[
+		UPDATE
+			ZSURVEY
+		SET
+			sdate=#sdate#,
+			edate=#edate#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			surveytype=#surveytype#,
+			orgid=#orgid#,
+			consultingapplicationno=#consultingapplicationno#
+		WHERE
+			surveyno=#surveyno#
+		]]>
+	</update>
+	
+	<select id="ZSurvey.getSurveyIdSeq" resultClass="java.lang.String">
+        <![CDATA[
+            SELECT
+                CONCAT('S',DATE_FORMAT(NOW(),'%Y'),LPAD(IFNULL(MAX(CAST(SUBSTRING(surveyid,6,8) as unsigned)),0)+1,3,'0')) AS surveyIdSeq
+            FROM
+                ZSURVEY
+            WHERE surveyid LIKE CONCAT('S', DATE_FORMAT(NOW(),'%Y'), '%')
+        	]]>
+    </select>
+    
+    <select id="ZSurvey.getSurveyOfOrgid" resultClass="zSurveyVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				ZSURVEY
+			WHERE
+				SURVEYNO =(SELECT MAX(SURVEYNO) FROM ZSURVEY WHERE orgid = #orgid#)
+		]]>
+	</select>
+
+</sqlMap>

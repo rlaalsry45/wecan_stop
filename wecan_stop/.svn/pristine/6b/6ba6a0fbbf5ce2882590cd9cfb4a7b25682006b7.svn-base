@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="events">
+     
+	<typeAlias alias="eventsEntries" 	type="com.z5.zcms.admsys.events.domain.EventsEntries" />
+	<typeAlias alias="eventsPapers" 	type="com.z5.zcms.admsys.events.domain.EventsPapers" />
+
+	<!-- 참가자 추가 -->  
+    <insert id="insertEventsEntries" parameterClass="eventsEntries">
+    	<selectKey type="pre" resultClass="java.lang.String" keyProperty="enIdx">
+		<![CDATA[
+			SELECT EVENTS_ENTRIES_SEQ.nextval  FROM db_root
+		]]>
+		</selectKey>
+		<![CDATA[
+			INSERT INTO TBL_EVENTS_ENTRIES (
+				enIdx,
+				enEvIdx,
+				enSubmitNo,
+				enUserNo,
+				enUserName,
+				enUserPasswd,
+				enUserBirthDate,
+				enUserOrg,
+				enUserDept,
+				enUserJob,
+				enUserEmail,
+				enUserPhone,
+				enUserMobile,
+				enUserZipCode,
+				enUserAddr,
+				enUserAddrDetail,
+				enUserIsPanel,
+				enUserHaveLunch,
+				enUserHaveDinner,
+				enSubmitTime,
+				enFeeIdx
+			)
+			VALUES
+			(
+				#enIdx#,
+				#enEvIdx#,
+				#enSubmitNo#,
+				#enUserNo#,
+				#enUserName#,
+				#enUserPasswd#,
+				#enUserBirthDate#,
+				#enUserOrg#,
+				#enUserDept#,
+				#enUserJob#,
+				#enUserEmail#,
+				#enUserPhone#,
+				#enUserMobile#,
+				#enUserZipCode#,
+				#enUserAddr#,
+				#enUserAddrDetail#,
+				#enUserIsPanel#,
+				#enUserHaveLunch#,
+				#enUserHaveDinner#,
+				now(),
+				#enFeeIdx#
+			)
+		]]>
+    </insert>
+
+	<!-- 특정 이벤트 참가자수 카운트 -->
+	<select id="getEventsEntriesCountByIdx" parameterClass="eventsEntries" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT COUNT(*) 
+			FROM TBL_EVENTS_ENTRIES 
+			WHERE enEvIdx=#enEvIdx#
+		]]>
+			<isEqual property="enCondition" compareValue="1">
+			<![CDATA[	AND  enCondition <> '2'	]]>
+			</isEqual>
+			<isEqual property="enCondition" compareValue="2">
+			<![CDATA[	AND  enCondition = '2'	]]>
+			</isEqual>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+			</isNotEmpty>
+	</select>
+
+	<!-- 특정 이벤트 참가자 목록 -->  
+	<select id="selectEventsEntriesListByFk" parameterClass="eventsEntries" resultClass="eventsEntries">
+		<![CDATA[
+			SELECT
+				enIdx,
+				enEvIdx,
+				enSubmitNo,
+				enUserNo,
+				enUserName,
+				enUserBirthDate,
+				enUserOrg,
+				enUserDept,
+				enUserJob,
+				enUserEmail,
+				enUserPhone,
+				enUserMobile,
+				enUserZipCode,
+				enUserAddr,
+				enUserAddrDetail,
+				enUserIsPanel,
+				enUserHaveLunch,
+				enUserHaveDinner,
+				enUserNote,
+				enUserOrderNo,
+				enPaymentSum,
+				enPaymentMethod,
+				DATE_FORMAT(enPaymentDate, 'YYYY. MM. DD') AS enPaymentDate,
+				enCondition,
+				DATE_FORMAT(enSubmitTime, 'YYYY. MM. DD') AS enSubmitTime,
+				enFeeIdx
+			FROM 
+				(
+				SELECT
+					row_.*
+					, @rownum := @rownum + 1 AS rownum_
+				FROM
+					(
+					SELECT
+				        *
+					FROM
+				        TBL_EVENTS_ENTRIES,   (SELECT @rownum := #m#) R
+					WHERE 1=1
+					and  enEvIdx= #enEvIdx#
+		]]>			
+					<isEqual property="enCondition" compareValue="1">
+					<![CDATA[	AND  enCondition <> '2'	]]>
+					</isEqual>
+					<isEqual property="enCondition" compareValue="2">
+					<![CDATA[	AND  enCondition = '2'	]]>
+					</isEqual>
+					<isNotEmpty prepend="and" property="cond2">
+						<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+					</isNotEmpty>
+					<![CDATA[
+					
+					ORDER BY enIdx DESC
+				 	) row_
+				WHERE
+					rownum <= (#n# + #m#)
+				) rows_
+			
+		]]>	
+	</select>
+	
+	<!-- 특정 참가자 신청결과 카운트 -->
+	<select id="getEventsEntryCountOfUser" parameterClass="eventsEntries" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT 
+				COUNT(*) 
+			FROM TBL_EVENTS_ENTRIES 
+			WHERE enEvIdx=#enEvIdx#
+			AND encondition <> '2'
+		]]>
+		<isNotEqual prepend="AND" property="enUserNo" compareValue="0">
+		<![CDATA[	enUserNo = #enUserNo#	]]>
+		</isNotEqual>
+		<isNotEmpty property="enUserName">
+		<![CDATA[	AND  enUserName = #enUserName#	]]>
+		</isNotEmpty>
+		<isNotEmpty   property="enUserPasswd" >
+		<![CDATA[	AND  enUserPasswd = #enUserPasswd#	]]>						
+		</isNotEmpty>
+		<isNotEmpty   property="enUserBirthDate" >
+		<![CDATA[	AND  enUserBirthDate = #enUserBirthDate#	]]>						
+		</isNotEmpty>
+	</select>
+
+	<!-- 특정 참가자 신청결과  목록 -->
+	<select id="selectEventsEntryListOfUser" parameterClass="eventsEntries" resultClass="eventsEntries">
+		<![CDATA[
+			SELECT
+				enIdx,
+				enEvIdx,
+				enSubmitNo,
+				enUserNo,
+				enUserName,
+				enUserBirthDate,
+				enUserOrg,
+				enUserDept,
+				enUserJob,
+				enUserEmail,
+				enUserPhone,
+				enUserMobile,
+				enUserZipCode,
+				enUserAddr,
+				enUserAddrDetail,
+				enUserIsPanel,
+				enUserHaveLunch,
+				enUserHaveDinner,
+				enUserNote,		
+				enUserOrderNo,	
+				enPaymentSum,	
+				enPaymentMethod,	
+				enPaymentDate,	
+				enCondition,		
+				DATE_FORMAT(enSubmitTime, '%Y-%m-%d %H%i%s') AS enSubmitTime,
+				enFeeIdx
+			FROM TBL_EVENTS_ENTRIES
+			WHERE enEvIdx=#enEvIdx#
+		]]>
+		<isNotNull prepend="AND" property="enUserNo">
+		<![CDATA[	enUserNo = #enUserNo#	]]>
+		</isNotNull>
+		<isNotEmpty property="enUserName">
+		<![CDATA[	AND  enUserName = #enUserName#	]]>
+		</isNotEmpty>
+		<isNotEmpty   property="enUserPasswd" >
+		<![CDATA[	AND  enUserPasswd = #enUserPasswd#	]]>						
+		</isNotEmpty>
+		<isNotEmpty   property="enUserBirthDate" >
+		<![CDATA[	AND  enUserBirthDate = #enUserBirthDate#	]]>						
+		</isNotEmpty>
+		
+		<isEqual property="enCondition" compareValue="1">
+			<![CDATA[	AND  enCondition <> '2'	]]>
+		</isEqual>
+		<isEqual property="enCondition" compareValue="2">
+			<![CDATA[	AND  enCondition = '2'	]]>
+		</isEqual>
+		<isNotEmpty prepend="and" property="cond2">
+			<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+		</isNotEmpty>
+	</select>
+
+	<!-- 참가자  상세정보 -->  
+	<select id="getEventsEntriesInfoById" parameterClass="eventsEntries" resultClass="eventsEntries">
+		<![CDATA[
+			SELECT
+				enIdx,
+				enEvIdx,
+				enSubmitNo,
+				enUserNo,
+				enUserName,
+				enUserBirthDate,
+				enUserOrg,
+				enUserDept,
+				enUserJob,
+				enUserEmail,
+				enUserPhone,
+				enUserMobile,
+				enUserZipCode,
+				enUserAddr,
+				enUserAddrDetail,
+				enUserIsPanel,
+				enUserHaveLunch,
+				enUserHaveDinner,
+				enUserNote,
+				enUserOrderNo,
+				enPaymentSum,
+				enPaymentMethod,
+				DATE_FORMAT(enPaymentDate, '%Y-%m-%d %H%i%s') AS enPaymentDate,
+				enCondition,
+				DATE_FORMAT(enSubmitTime, '%Y-%m-%d %H%i%s') AS enSubmitTime,
+				enFeeIdx
+			FROM TBL_EVENTS_ENTRIES
+			WHERE 1=1
+		]]>
+		<isEmpty property="enSubmitFlag">
+			<![CDATA[ and enIdx= #enIdx# ]]>
+		</isEmpty>
+		<isNotEmpty property="enSubmitFlag">
+			<![CDATA[ 
+						and rownum < = 1
+						and enEvIdx=#enEvIdx#
+						ORDER BY ENIDX DESC
+			 ]]>
+		</isNotEmpty>
+	</select>
+
+	<!-- 참가자 결제 결과 반영 -->  
+	<update id="updateEventsEntryPaymentInfo" parameterClass="eventsEntries"  >
+		<![CDATA[
+			UPDATE TBL_EVENTS_ENTRIES SET 
+		]]>
+			<isNotEmpty property="enUserOrderNo">
+			<![CDATA[	enUserOrderNo=#enUserOrderNo#,		]]>
+			</isNotEmpty>
+			<isNotEmpty property="enPaymentSum">
+			<![CDATA[	enPaymentSum=#enPaymentSum#,	]]>
+			</isNotEmpty>
+			<isNotEmpty property="enPaymentMethod">
+			<![CDATA[	enPaymentMethod=#enPaymentMethod#,	]]>
+			</isNotEmpty>
+			<isNotEmpty property="enCondition">
+			<![CDATA[	enCondition=#enCondition#,	]]>
+			</isNotEmpty>	
+			<isNotEmpty property="enRefund">
+			<![CDATA[	enRefund=#enRefund#,	]]>
+			</isNotEmpty>	
+			<isNotEmpty property="enCommision">
+			<![CDATA[	enCommision=#enCommision#,	]]>
+			</isNotEmpty>	
+		<![CDATA[	
+				enPaymentDate=now()
+			WHERE 
+				enIdx=#enIdx#
+		]]>
+    </update>
+    
+	<!-- 참가자 첨부문서 추가 -->  
+    <insert id="insertEventsPapers" parameterClass="eventsPapers"  >
+		<![CDATA[
+			INSERT INTO TBL_EVENTS_PAPERS (
+				epIdx,
+				epEvIdx,
+				epEnIdx,
+				epAttFileName,
+				epAttRealName,
+				epApplDate
+			)
+			VALUES
+			(
+				EVENTS_PAPERS_SEQ.nextval,
+				#epEvIdx#,
+				#epEnIdx#,
+				#epAttFileName#,
+				#epAttRealName#,
+				now()
+			)
+		]]>
+    </insert>
+    
+    <!-- 참가자 첨부문서 수정 -->  
+	<update id="updateEventsPapers" parameterClass="eventsEntries"  >
+		<![CDATA[
+			UPDATE TBL_EVENTS_PAPERS SET 
+		]]>
+			<isNotEmpty property="epAttFileName">
+			<![CDATA[	
+				 epAttFileName=#epAttFileName#		
+				,epAttRealName = #epAttRealName#
+			]]>
+			</isNotEmpty>
+		<![CDATA[	
+			WHERE 
+				epIdx=#epIdx#
+		]]>
+    </update>
+
+	<!-- 특정 이벤트 참가자 제출문서 목록 -->  
+	<select id="selectPapersListByFk" parameterClass="eventsPapers" resultClass="eventsPapers">
+		<![CDATA[
+			SELECT
+				epIdx,
+				epEvIdx,
+				epEnIdx,
+				epAttFileName,
+				epAttRealName,
+				DATE_FORMAT(epApplDate, '%Y-%m-%d')
+			FROM TBL_EVENTS_PAPERS
+			WHERE epEnIdx= #epEnIdx#
+		]]>	
+		<isNotEmpty prepend="and" property="epIdx">
+			<![CDATA[ epIdx=#epIdx#]]>
+		</isNotEmpty>	
+		<![CDATA[	
+			ORDER BY epIdx
+		]]>
+	</select>
+</sqlMap>

@@ -1,0 +1,188 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<!doctype html>
+<html>
+<head>
+<title>사용 담당자 조회</title>
+<link rel="stylesheet" type="text/css" href="/cms/css/democratic.css" />
+<script type="text/javascript" src="/com/js/jquery-1.12.3.min.js"></script>
+<script type="text/javascript">
+	function goSearch() {
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "empList.html",
+			data: {hq_cd:$("[name=hq_cd]").val(),dept_cd:$("[name=dept_cd]").val(),emp_nm:$("[name=emp_nm]").val()},
+			beforeSend: function() {
+				$(".main_table1 tbody").empty();
+			},
+			success: function(data) {
+				//console.log(data);
+				if (data.length==0){
+					$(".main_table1 tbody").append('<tr><td colspan="5" class="fir" align="center">내용이 없습니다.</td></tr>');
+				}
+				else{
+					for (var idx = 0; idx < data.length; idx++) {
+						var cs = idx==0 ? "class='fir'" : "";
+						var hq_nm = data[idx]['hq_nm']==null ? "" : data[idx]['hq_nm'];
+						var dept_nm = data[idx]['dept_nm']==null ? "" : data[idx]['dept_nm'];
+						var emp_nm = data[idx]['emp_nm']==null ? "" : data[idx]['emp_nm'];
+						var tel_offc = data[idx]['tel_offc']==null ? "" : data[idx]['tel_offc'];
+						var emp_id = data[idx]['emp_id']==null ? "" : data[idx]['emp_id'];
+
+						$(".main_table1 tbody").append('<tr>\
+						<td><input type="checkbox" name="emp_no" value="'+data[idx]['emp_no']+'"></td>\
+						<td '+cs+'>'+emp_nm+'</td>\
+						<td '+cs+'>'+emp_id+'</td>\
+						</tr>');
+					}
+				}
+			},
+			error:function(xhr, ajaxOpts, thrownErr) {
+				alert(_errorMsg+" [" + xhr.status + " " + thrownErr + "]");
+			}
+		});
+	}
+
+	function getDeptList(obj) {
+
+		if(obj.v == "") {
+			$("[name=dept_cd]").empty();
+			$("[name=dept_cd]").append("<option v=''>선택</option>");
+			return;
+		}
+
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			url: "deptList.html?hq_cd=" + obj.v,
+			beforeSend: function() {
+				$("[name=dept_cd]").empty();
+				$("[name=dept_cd]").append("<option v=''>선택</option>");
+			},
+			success: function(data) {
+				var dept_cd = "", dept_nm = "";
+				for (var idx = 0; idx < data.length; idx++) {
+					dept_cd = data[idx]['dept_cd'];
+					dept_nm = data[idx]['dept_nm'];
+
+					$("[name=dept_cd]").append("<option value='" + dept_cd + "'>"+ dept_nm + "</option>");
+				}
+			},
+			error:function(xhr, ajaxOpts, thrownErr) {
+				alert(_errorMsg+" [" + xhr.status + " " + thrownErr + "]");
+			}
+		});
+	}
+
+	function selectEmp() {
+		if(window.opener) {
+			if ($(":checkbox[name=emp_no]:checked").length==0){
+				alert("사용담당자를 지정해 주십시오.");
+				return;
+			}
+			var auth_nos = $(":checkbox[name=emp_no]:checked").map(function(){return $(this).val();}).get();
+			var groupnos = "${groupnos}";
+			var req = groupnos!="" ? "selGAuth.html?groupnos=${groupnos}" : "../auth/selAuth.html?menunos=${menunos}&siteno=${siteno}&urlnos=${urlnos}";
+			req += "&auth_nos=" + auth_nos;
+
+			$.ajax({
+				type: "POST",
+				dataType: "json",
+				url: req,
+				success: function(item) {
+					if (groupnos!=""){
+						window.opener.location.reload();
+					}
+					else {
+						window.opener.location.href = window.opener.location.pathname + "?menunos=${menunos}&urlnos=${urlnos}&opens=${opens}&siteno=${siteno}";
+					}
+					self.close();
+				},
+				error:function(xhr, ajaxOpts, thrownErr) {
+					alert(_errorMsg+" [" + xhr.status + " " + thrownErr + "]");
+				}
+			});
+		}
+	}
+</script>
+</head>
+<body style="background:none;">
+
+<%--
+<div id="bbs_category_popup">
+	<div class="page_title"><h2>운영자정보조회</h2></div>
+	<div class="main_btn">
+		<ul>
+			<li>
+				<select name="hq_cd" onchange="getDeptList(this);" title="소속" class="pr10" style="width: 93px;">
+					<option value="">선택</option>
+					<c:forEach var="row" items="${hqList}" varStatus="i">
+						<option value="${row.hq_cd}" ><c:out value="${row.hq_nm}"/></option>
+					</c:forEach>
+				</select>
+			</li>
+			<li>
+				<select name="dept_cd"" title="부서" class="pr10" style="width: 93px;">
+					<option value="">선택</option>
+				</select>
+			</li>
+		</ul>
+		<ul style="float:right">
+			<li class="srch_right_left">
+				이름 :
+				<input type=text name="emp_nm" value="" />
+			</li>
+			<li class="srch_btn_go">
+				<input type="image" src="/cms/image/srch_btn_go.jpg" alt="검색" onclick="goSearch()"/>
+			</li>
+		</ul>
+	</div><!--/main_btn--> --%>
+
+
+<div id="content">
+	<ul class="homepagebbs">
+		<li class="bg"><h3 class="sub">사용자 그룹 정보</h3>
+		<div class="user_btn">
+		<!-- 이름 : <input type=text name="emp_nm" value="" /> -->
+		<input class="chost_btn_s4" type="button" value="사용자보기" onclick="goSearch()"/>
+		</div>
+		</li>
+		<li>
+		<div class="main_table">
+
+			<table class="main_table1" border="1" cellspacing="1" cellpadding="2" width="100%" summary="CSS리스트">
+
+			<caption>사용자정보리스트</caption>
+			<colgroup>
+				<col width="10%" />
+				<col width="20%" />
+				<col width="20%" />
+				<col />
+			</colgroup>
+			<thead>
+				<tr>
+					<th>선택</th>
+					<th>이름</th>
+					<th>아이디</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td colspan="5" class="fir" align="center">내용이 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
+		<!---/게시판 영역------------------------->
+	</div><!--/main_table-->
+
+		</div><!--/main_table-->
+		<div class="btn-c">
+	        <a class="btmore04" href="javascript:selectEmp();">확인</a>
+	        <a class="btmore09" href="javascript:self.close();">취소</a>
+	    </div>
+		</li>
+	</ul>
+</div>
+</body>
+</html>

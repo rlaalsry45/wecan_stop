@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZEval">
+	<typeAlias alias="zEvalVo" type="com.z5.zcms.admsys.module.domain.ZEvalVo"/>
+	<resultMap id="zEvalVo" class="com.z5.zcms.admsys.module.domain.ZEvalVo"/>
+	
+	<insert id="ZEval.evalWrite">
+		<![CDATA[
+			INSERT INTO ZEVAL
+			(
+				
+				title,
+				skin,
+				contstype,
+				conts,
+				memo,
+				datereg,
+				userid
+			)
+			VALUES
+			(
+				
+				#title#,
+				#skin#,
+				#contstype#,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				#memo#,
+				now(),
+				#userid#
+			)
+		]]>
+	</insert>
+	
+	<select id="ZEval.list" resultClass="zEvalVo">
+		<![CDATA[
+			SELECT
+				evalno,
+				title,
+				sitetitle,
+				datereg,
+				skin
+			FROM 
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								a.*
+								,(SELECT GROUP_CONCAT(SITETITLE) FROM ZEVALUSE where evalno = a.evalno) AS sitetitle
+								/*, get_sitetitle('ZEVALUSE','evalno', a.evalno) as sitetitle*/
+							FROM
+								ZEVAL a,   (SELECT @rownum := #m#) R
+							WHERE 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							ORDER BY evalno DESC
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+			
+			]]> 
+	</select>
+	
+	<select id="ZEval.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				ZEVAL
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# AND $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+	<select id="ZEval.getDetailInfo" resultClass="zEvalVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				ZEVAL
+			WHERE
+				evalno=#evalno#
+		]]>
+	</select>
+	
+	<delete id="ZEval.evalDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZEVAL
+			WHERE
+				evalno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<delete id="ZEval.evalUseDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZEVALUSE
+			WHERE
+				evalno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<update id="ZEval.update">
+		<![CDATA[
+		UPDATE
+			ZEVAL
+		SET
+			title=#title#,
+			skin=#skin#,
+			contstype=#contstype#,
+			conts=
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+			memo=#memo#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#
+		WHERE
+			evalno=#evalno#
+		]]>
+	</update>
+
+</sqlMap>

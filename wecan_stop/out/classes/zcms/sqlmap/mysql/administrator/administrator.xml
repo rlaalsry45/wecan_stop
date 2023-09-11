@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Administrator">
+	<typeAlias alias="pressVo" type="com.z5.zcms.admsys.administration.domain.PressVo"/>
+	<resultMap id="pressVo" class="com.z5.zcms.admsys.administration.domain.PressVo"/>
+	<typeAlias alias="pressRelVo" type="com.z5.zcms.admsys.administration.domain.PressRelVo"/>
+	<resultMap id="pressRelVo" class="com.z5.zcms.admsys.administration.domain.PressRelVo"/>
+	
+	<insert id="press_registration">
+		<![CDATA[
+			INSERT INTO w_press_monitoring
+			(
+					article_title
+				,	rel_event_name
+				,	rel_event_no
+				,	rel_event_url
+				,	protocol_type
+				,	create_user
+				,	create_date
+			)
+			VALUES
+			(
+					#article_title#
+				,	#rel_event_name#
+				,	#rel_event_no#
+				,	#rel_event_url#
+				,	#protocol_type#
+				,	#create_user#
+				,	NOW()
+			)
+		]]>
+		<selectKey keyProperty="NO" resultClass="Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="press_view" parameterClass="Integer" resultClass="pressVo">
+		<![CDATA[
+			SELECT
+					NO
+				,	article_title
+				,	rel_event_name
+				,	rel_event_no
+				,	rel_event_url
+				,	protocol_type
+				,	create_user
+				,	create_date
+				,	update_user
+				,	update_date
+				,	delete_user
+				,	delete_date
+				,	delete_yn
+			FROM
+				w_press_monitoring
+			WHERE
+					NO = #NO#
+				AND DELETE_YN = 'N'
+		]]>
+	</select>
+
+	<select id="listCount" parameterClass="pressVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				count(*) AS total
+			FROM
+				w_press_monitoring
+			WHERE 
+				DELETE_YN = 'N'
+			
+		]]>
+		<isNotEmpty prepend="AND" property="sdate">
+		<isEqual property="cond1" compareValue="sitedatereg">
+		<![CDATA[			
+			date_format(create_date,'%Y%m%d') between #sdate# and #edate#
+       	]]>				
+       	</isEqual>
+		</isNotEmpty>     
+     
+		<isNotEmpty prepend="AND" property="keyword">
+		<isEqual property="cond2" compareValue="article_title">
+		<![CDATA[			
+			article_title LIKE CONCAT('%',UPPER(#keyword#),'%')
+       	]]>				
+       	</isEqual>        	
+		<isEqual property="cond2" compareValue="create_userName">
+		<![CDATA[			
+			create_user in (SELECT USERID FROM zuser WHERE USERNAME LIKE CONCAT('%',UPPER(#keyword#),'%'))  
+       	]]>				
+       	</isEqual>  
+		</isNotEmpty>
+		
+	</select>
+
+	<select id="getlist" parameterClass="pressVo" resultClass="pressVo">
+		<![CDATA[
+			SELECT *
+			FROM
+				(
+					SELECT row_.*,
+							@rownum := @rownum + 1 AS rownum_
+					FROM (
+							SELECT
+									`NO`
+								,	article_title
+								,	rel_event_name
+								,	rel_event_no
+								,	rel_event_url
+								,	protocol_type
+								,	create_user
+								,   (SELECT USERNAME FROM zuser WHERE USERID = create_user) AS create_userName
+								,	create_date
+								,	update_user
+								,	update_date
+								,	delete_user
+								,	delete_date
+								,	delete_yn
+							FROM
+								w_press_monitoring a,   (SELECT @rownum := #m#) R
+							WHERE 
+								DELETE_YN = 'N'
+		]]>
+							<isNotEmpty prepend="AND" property="sdate">
+							<isEqual property="cond1" compareValue="sitedatereg">
+							<![CDATA[			
+								date_format(create_date,'%Y%m%d') between #sdate# and #edate#
+				        	]]>				
+				        	</isEqual>
+							</isNotEmpty>     
+			       
+							<isNotEmpty prepend="AND" property="keyword">
+							<isEqual property="cond2" compareValue="article_title">
+							<![CDATA[			
+								article_title LIKE CONCAT('%',UPPER(#keyword#),'%')
+				        	]]>				
+				        	</isEqual>        	
+							<isEqual property="cond2" compareValue="create_userName">
+							<![CDATA[			
+								create_user in (SELECT USERID FROM zuser WHERE USERNAME LIKE CONCAT('%',UPPER(#keyword#),'%'))
+				        	]]>				
+				        	</isEqual>  
+							</isNotEmpty>
+				<![CDATA[
+							order by create_date desc
+							LIMIT #m#, #n#
+						) row_
+					WHERE @rownum < (#n#+#m#)
+				) c
+
+		]]>
+	</select>
+	
+	<update id="press_update" parameterClass="pressVo">
+		<![CDATA[
+			UPDATE w_press_monitoring
+				SET		article_title = #article_title#
+					,	rel_event_name = #rel_event_name#
+					,	rel_event_no = #rel_event_no#
+					,	rel_event_url = #rel_event_url#
+					,	protocol_type = #protocol_type#
+					,	update_user = #update_user#
+					,	update_date = NOW()
+			WHERE
+				NO = #NO#
+		]]>
+	</update>
+
+	<update id="deleteRequestByTeacher" parameterClass="pressVo">
+		<![CDATA[
+			UPDATE w_press_monitoring 
+				SET 	DELETE_YN = 'Q'
+					,	DELETE_USER = #delete_user#
+					,	DELETE_DATE = NOW()	 
+			WHERE
+				NO IN
+		]]>
+		<iterate property="delList" open="(" close=")" conjunction=",">
+			#delList[]#
+		</iterate>
+	</update>	
+	
+	<insert id="registrationPressConAc" parameterClass="pressVo">
+		<![CDATA[	
+			INSERT INTO w_press_rel
+			(
+					con_ac_no
+				,	press_no
+				,	con_ac_type
+				,	create_user
+				,	create_date
+			)
+			VALUES
+		]]>
+		<iterate property="conAcPressNoList" conjunction=",">
+			(		#conAcPressNoList[]#
+				,	#NO#
+				,	#con_ac_type#
+				,	#create_user#
+				,	NOW()
+			)
+		</iterate>
+	</insert>
+	
+	<select id="retrievePressRelListByPressNo" parameterClass="pressRelVo" resultClass="pressRelVo">
+		<![CDATA[
+			SELECT 
+					A.NO
+				,	A.CON_AC_NO
+		]]>
+				<isEqual property="con_ac_type" compareValue="ac">
+				,	B.CONSULTING_ACTION_NO
+				</isEqual>
+				<isEqual property="con_ac_type" compareValue="con">
+				,	B.CONSULTING_HISTORY_NO	AS CONSULTING_ACTION_NO
+				</isEqual>
+		<![CDATA[
+
+				 
+			FROM 
+				W_PRESS_REL A
+				JOIN
+		]]>
+				<isEqual property="con_ac_type" compareValue="ac">
+					W_CONSULTING_ACTION_MASTER B
+				</isEqual>
+				<isEqual property="con_ac_type" compareValue="con">
+					W_CONSULTING_HISTORY_MASTER B
+				</isEqual>
+		<![CDATA[
+				ON
+					A.DELETE_YN ='N'
+				AND B.DELETE_YN = 'N'
+		]]>
+				<isEqual property="con_ac_type" compareValue="ac">
+				AND A.CON_AC_NO = B.actionNO				
+				</isEqual>
+				<isEqual property="con_ac_type" compareValue="con">
+				AND A.CON_AC_NO = B.NO
+				</isEqual>
+		<![CDATA[
+			WHERE
+					A.PRESS_NO  = #press_no#
+				AND A.CON_AC_TYPE =#con_ac_type#
+		]]>
+	</select>
+	
+	<delete id="deletePressRelByPressNo" parameterClass="Integer">
+		<![CDATA[
+			DELETE FROM W_PRESS_REL WHERE PRESS_NO = #press_no#
+		]]>
+	</delete>
+	
+	<!-- 상담, 진단에서 사용하는 언론 정보 -->
+	<insert id="registrationConAcWithPressNo" parameterClass="pressRelVo">
+		<![CDATA[	
+			INSERT INTO w_press_rel
+			(
+					con_ac_no
+				,	press_no
+				,	con_ac_type
+				,	create_user
+				,	create_date
+			)
+			VALUES
+		]]>
+		<iterate property="pressNoList" conjunction=",">
+			(		#con_ac_no#
+				,	#pressNoList[]#
+				,	#con_ac_type#
+				,	#create_user#
+				,	NOW()
+			)
+		</iterate>
+	</insert>
+	
+	<delete id="deletePressRelByConAcNo" parameterClass="Integer">
+		<![CDATA[
+			DELETE FROM W_PRESS_REL WHERE CON_AC_NO = #con_ac_no#
+		]]>
+	</delete>
+	
+	<select id="retrievePressRelListByConAcNo" parameterClass="pressRelVo" resultClass="pressRelVo">
+		<![CDATA[
+			SELECT 
+					B.NO
+				,	A.CON_AC_NO 
+				,	B.ARTICLE_TITLE
+				,	A.CREATE_USER
+				,	A.CREATE_DATE
+			FROM 
+				W_PRESS_REL A
+				JOIN
+				W_PRESS_MONITORING B
+				ON
+					A.PRESS_NO = B.NO
+				AND A.DELETE_YN ='N'
+				AND B.DELETE_YN = 'N'
+			WHERE
+					A.CON_AC_NO  = #con_ac_no#
+				AND A.CON_AC_TYPE =#con_ac_type#
+		]]>
+	</select>
+</sqlMap>

@@ -1,0 +1,253 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="java.util.*, java.text.*"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../lnb.jsp" flush="true" />
+            <div id="contents">
+                <form:form modelAttribute="AppActionMergeVo" name="OrgCDMFrm" method="post">
+                    <div class="contents_top">
+                        <div class="location">
+                            <a href="/admsys/orgculturedigmng/">HOME</a> <a href="/admsys/orgculturedigmng/picdigmng.html">성희롱방지 조직문화진단관리</a> <strong>전체 진단 관리 </strong>
+                        </div>
+                    </div>
+                    <div id="content">
+                        <ul class="homepagebbs">
+                            <li class="bg"><h3 class="sub">전체 진단 관리 목록</h3><!-- <a class="btmore03" href="/admsys/orgculturedigmng/picdigmng.html">+ 홈페이지등록</a> --></li>
+                            <li>
+								<jsp:include page="./picdigmng_search_part.jsp" flush="false" />
+                            </li>
+                            <li>
+							<div class="top_bt">
+                                <a class="btmore07" href="javascript:checkAll(true,'actionChkBx');">전체선택</a>
+                                <a class="btmore07" href="javascript:checkAll(false,'actionChkBx');">전체해제</a>
+                                <span id="totalCountText">검색결과 총 ${input.total}건이 조회(검색)되었습니다.</span>
+                                <!-- <a class="btmore05" href="javascript:del('actionChkBx');">삭제</a> -->
+                            </div>
+
+                                <div class="main_table">
+                                    <!--게시판 영역-->
+                                    <table class="main_table1" summary="번호, 그룹, 소속게시판, 그룹관리자, 관리">
+                                        <caption>관리목록</caption>
+                                        <colgroup>
+                                            <col width="5px" />
+                                            <col width="15%" />
+                                            <col width="15%" />
+                                            <col width="20%" />
+                                            <col width="15%" />
+                                            <col width="15%" />
+                                            <col width="15%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input class="bor_none" id="batch" type="checkbox" onclick="javascript:checkAll('','actionChkBx')" />
+                                                </th>
+                                                <th>상담번호</th>
+                                                <th>항목</th>
+                                                <th>담당관</th>
+                                                <th>경로</th>
+                                                <th>내용</th>
+                                                <th>등록일</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach items="${list}" var="each" varStatus="loop">
+                                                <tr>
+                                                    <td>
+														<input class="bor_none" type="checkbox" name="actionChkBx" value="${each.actionNO}">
+                                                    </td>
+                                                    <td><a href="javascript:viewDetailPage('${each.actionNO}','${each.consulting_action_no}');">${each.consulting_action_no}</a></td>
+                                                    <td>	                                                    <c:choose>
+	                                                    	<c:when test="${each.action_consulting_type eq 'init'}">초기상담</c:when>
+	                                                    	<c:when test="${each.action_consulting_type eq 'continuing'}">지속상담</c:when>
+	                                                    	<c:when test="${each.action_consulting_type eq 'ending'}">종결상담</c:when>
+	                                                    	<c:when test="${each.action_consulting_type eq 'monitoring1'}">모니터링(1차)</c:when>
+	                                                    	<c:when test="${each.action_consulting_type eq 'monitoring2'}">모니터링(2차)</c:when>
+	                                                    </c:choose>
+	                                                </td>
+                                                    <td>${each.manager_name}</td>
+                                                    <td>
+                                                    	<c:choose>
+	                                                    	<c:when test="${each.action_received_type eq 'tel'}">전화</c:when>
+															<c:when test="${each.action_received_type eq 'email'}">메일</c:when>
+															<c:when test="${each.action_received_type eq 'sms'}">문자</c:when>
+															<c:when test="${each.action_received_type eq 'etc'}">기타</c:when>
+                                                    	</c:choose>
+													</td>
+                                                    <td>${each.action_contents}</td>
+                                                    <td>${each.registration_date}</td>
+                                                </tr>
+                                            </c:forEach>
+                                            <c:if test="${input.total==0}">
+                                                <tr>
+                                                    <td colspan="9" style="padding:20;">조치 기록이 없습니다.</td>
+                                                </tr>
+                                            </c:if>
+                                        </tbody>
+                                    </table>
+                                    <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}' />
+                                    <!--/게시판 영역-->
+	                                <div class="top_bt">
+	                                	<a class="btmore05" href="javascript:excelDownload();">엑셀 다운로드</a>
+	                                	<a class="btmore05" href="javascript:window.print();">인쇄</a>
+	                                	
+	                       				<c:forEach items="${perm}" var="p" varStatus="ini">
+											<c:if test="${p.FUNCTION_TYPE eq 'FNTYP_15' and p.ALLOW_YN eq 'Y' }">
+												<a class="btmore01" href="javascript:deleteChecked();">삭제</a>
+											</c:if>
+										</c:forEach>
+	                            	</div>
+                                </div>
+                                <!--/main_table-->
+                            </li>
+                        </ul>
+                        <script>
+							$("#consulting_action_registration").click(function(){
+								$("#content").load("/admsys/orgculturedigmng/picdigmng_registration_form.html");
+							});
+
+							/*$("#content tbody > tr > td:eq(1)").click(function(){
+								console.log($(this).text());
+								$("#content").load("/admsys/orgculturedigmng/picdigmng_registration_form.html");
+							});*/
+
+							function deleteChecked(){
+								var dataList = new Array();
+
+								var chk_val = $(':checkbox[name=actionChkBx]:checked').map(function () {
+									var obj = new Object();
+									obj = parseInt($(this).val());
+									dataList.push(obj);
+								});
+
+								$.ajax({
+									  type: 'POST',
+									  url: "/admsys/orgculturedigmng/picdigmng_req_delete.html",
+									  data: {"delList":dataList},
+									  traditional:true,
+									  success: function(result){
+										  if ( result.retStatus == "SUCCESS" ) {
+											  alert("삭제 하였습니다.");
+											  location.href = "<c:url value='/admsys/orgculturedigmng/picdigmng.html' />";
+										  } else {
+											  alert("삭제에 실패 하였습니다.");
+										  }
+									  },
+									  error:function(e){
+										  alert("삭제중 오류가 발생하였습니다."+e.responseText  );
+									  }
+								});
+							}
+
+							function excelDownload(){
+								var eForm = $("#AppActionMergeVo").serialize();
+								
+								$.ajax({
+									  type: 'POST',
+									  url: "/admsys/orgculturedigmng/alldigsrch_excel.html",
+									  data: eForm,
+									  traditional:true,
+									  success: function(result){
+										  exportExcel(result.list);
+									  },
+									  error:function(e){
+										  alert("엑셀 다운로드중 오류가 발생하였습니다."+e.responseText  );
+									  }
+								});
+							}
+							
+							function s2ab(s) { 
+						 	    var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+						 	    var view = new Uint8Array(buf);  //create uint8array as viewer
+						 	    for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+						 	    return buf;    
+						 	}
+						    
+						    function exportExcel(data){ 
+						 	    // step 1. workbook 생성
+						 	    var wb = XLSX.utils.book_new();
+
+						 	    // step 2. 시트 만들기 
+						 	    var newWorksheet = excelHandler.getWorksheet(data);
+						 	    
+						 	    // step 3. workbook에 새로만든 워크시트에 이름을 주고 붙인다.  
+						 	    XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
+
+						 	    // step 4. 엑셀 파일 만들기 
+						 	    var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+
+						 	    // step 5. 엑셀 파일 내보내기 
+						 	    saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), excelHandler.getExcelFileName());
+						 	}
+						    
+						    var excelHandler = {
+						 	        getExcelFileName : function(){
+						 	            return '전체 진단 관리.xlsx';
+						 	        },
+						 	        getSheetName : function(){
+						 	            return '전체 진단 관리';
+						 	        },
+						 	        getExcelData : function(data){
+						 	        	var arr = new Array();
+						 	        	
+						            	for(var i=0; i< data.length; i++){
+						            		arr[i] = {'등록번호':data[i].consulting_action_no
+						            				//,'진행상태':
+						            				,'담당관명':data[i].manager
+						            				,'상담분류':data[i].action_consulting_type
+						            				,'상담일':data[i].registration_date
+						            				,'상담시작시간':data[i].registration_strtime
+						            				,'상담종료시간':data[i].registration_endtime
+						            				,'경로':data[i].action_received_type
+						            				,'연락처':data[i].contact_tel_no
+						            				,'이메일':data[i].contact_email
+						            				,'의뢰인명':data[i].client_name
+						            				,'의뢰인성별':data[i].client_gender
+						            				,'의뢰인소속':data[i].client_belong
+						            				,'피해자와의 관계':data[i].client_victim_rel_type
+						            				,'기관내 진행단계':data[i].org_accident_step
+						            				//,'조치':
+						            				//,'조치내용':data[i].action_contents
+						            				//,'향후계획':data[i].after_plan
+						            				//,'진단일정':data[i].manager
+						            				//,'진단위원':data[i].manager
+						            				//,'신청기관유형':data[i].manager
+						            				//,'기관명':data[i].manager
+						            				//,'상급기관명':data[i].manager
+						            				//,'현원':data[i].manager
+						            				//,'기관분류':data[i].manager
+						            				//,'기관담당자 소속 및 직위':data[i].manager
+						            				//,'기관담당자명':data[i].manager
+						            				//,'연락처':data[i].manager
+						            				//,'이메일':data[i].manager
+						            				//,'사건처리이력유무':data[i].manager
+						            				//,'발생시기':data[i].manager
+						            				//,'접수시기':data[i].manager
+						            				//,'피해유형':data[i].manager
+						            				//,'사건진행단계':data[i].manager
+						            				//,'특이사항':data[i].manager
+						            				//,'진단희망분야(처리이력없는기관)':data[i].manager
+						            				//,'진단희망분야(처리이력있는기관)':data[i].manager
+						            				//,'컨설팅 가능 시기':data[i].manager
+						            				//,'참고사항':data[i].manager
+						            				}                              
+						            	}
+						            												
+						 	           return arr;
+						 	        },
+						 	        getWorksheet : function(data){
+						 	            return XLSX.utils.json_to_sheet(this.getExcelData(data));
+						 	        }
+						 	}
+						</script>
+                    </div>
+                    <!--/content-->
+                </form:form>
+            </div>
+            <!--/contents-->
+			<script>
+			function viewDetailPage(NO, consulting_action_no){
+				$("#content").load("/admsys/orgculturedigmng/picdigmng_view.html", {'actionNO':NO,'consulting_action_no':consulting_action_no} );  
+			}			
+			</script>
+<jsp:include page="../end.jsp" flush="false" />

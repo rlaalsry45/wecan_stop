@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZManager">
+	<typeAlias alias="zManagerVo" type="com.z5.zcms.admsys.module.domain.ZManagerVo"/>
+	<resultMap id="zManagerVo" class="com.z5.zcms.admsys.module.domain.ZManagerVo"/>
+	
+	<insert id="ZManager.managerWrite">
+		<![CDATA[
+			INSERT INTO ZMANAGER
+			(
+				
+				title,
+				skin,
+				contstype,
+				conts,
+				depart,
+				manager,
+				contact,
+				email,
+				added,
+				datereg,
+				userid
+			)
+			VALUES
+			(
+				#title#,
+				#skin#,
+				#contstype#,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				#depart#,
+				#manager#,
+				#contact#,
+				#email#,
+				#added#,
+				now(),
+				#userid#
+			)
+		]]>
+	</insert>
+	
+	<select id="ZManager.list" resultClass="zManagerVo">
+		<![CDATA[
+			SELECT
+				managerno,
+				title,
+				sitetitle,
+				datereg,
+				skin
+			FROM 
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								a.*
+								,(SELECT GROUP_CONCAT(SITETITLE) FROM ZMANAGERUSE where managerno = a.managerno) AS sitetitle
+								/*, get_sitetitle('ZMANAGERUSE','managerno', a.managerno) as sitetitle*/
+							FROM
+								ZMANAGER a,   (SELECT @rownum := #m#) R
+							WHERE 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							ORDER BY managerno DESC
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+		
+			]]> 
+	</select>
+	
+	<select id="ZManager.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				ZMANAGER
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# AND $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+	<select id="ZManager.getDetailInfo" resultClass="zManagerVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				ZMANAGER
+			WHERE
+				managerno=#managerno#
+		]]>
+	</select>
+	
+	<delete id="ZManager.managerDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZMANAGER
+			WHERE
+				managerno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<delete id="ZManager.managerUseDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZMANAGERUSE
+			WHERE
+				managerno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<update id="ZManager.update">
+		<![CDATA[
+		UPDATE
+			ZMANAGER
+		SET
+			title=#title#,
+			skin=#skin#,
+			contstype=#contstype#,
+			conts=
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+			depart=#depart#,
+			manager=#manager#,
+			contact=#contact#,
+			email=#email#,
+			added=#added#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#
+		WHERE
+			managerno=#managerno#
+		]]>
+	</update>
+
+</sqlMap>

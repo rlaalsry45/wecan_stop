@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap	namespace="Counsel">
+	<typeAlias alias="CounselVO" type="com.z5.zcms.admsys.counsel.domain.CounselVO" />
+	<resultMap id="CounselVO" class="com.z5.zcms.admsys.counsel.domain.CounselVO"/>
+
+	<insert id="CounselDAO.insertCounsel">	
+		<selectKey resultClass="java.lang.Integer" keyProperty="counselClassificationnum">
+			<![CDATA[
+				SELECT IFNULL(MAX(COUNSEL_CLASSIFICATIONNUM),0)+1 AS counselClassificationnum
+				   FROM COUNSEL
+				  WHERE COUNSEL_CLASSIFICATION = #counselClassification#
+			]]>
+		</selectKey>
+		
+		<![CDATA[
+			INSERT INTO COUNSEL(
+				COUNSEL_CLASSIFICATION, 
+				COUNSEL_CLASSIFICATIONNUM, 
+				COUNSEL_GENDER, 
+				COUNSEL_NATION, 
+				COUNSEL_RELATION, 
+				COUNSEL_AGE, 
+				COUNSEL_REGION, 
+				COUNSEL_TYPE, 
+				REG_DATE, 
+				REG_ID
+			)VALUES(
+				#counselClassification#, 
+				#counselClassificationnum#, 
+				#counselGender#, 
+				#counselNation#, 
+				#counselRelation#, 
+				#counselAge#, 
+				#counselRegion#, 
+				#counselType#, 
+				now(), 
+				#regId#
+			)	 
+		]]>
+	</insert>
+
+	<select id="CounselDAO.getCounselRelation" parameterClass="CounselVO" resultClass="CounselVO">
+        <![CDATA[
+        	SELECT
+        		   cr.counselRelation, 
+        		   cr.counselRelationNm, 
+        		   SUM(cr.relationCntN1) relationCntN1, 
+        		   SUM(cr.relationCntN2) relationCntN2
+        	  FROM(
+            SELECT 
+            	   COUNSEL_RELATION counselRelation,
+            	   (SELECT CODE_NM FROM COMTCCMMNDETAILCODE WHERE CODE = COUNSEL_RELATION) counselRelationNm,
+            	   COUNT(COUNSEL_RELATION) relationCntN1,
+            	   0 relationCntN2
+			  FROM COUNSEL
+             WHERE COUNSEL_NATION = 'NAT001'
+             ]]>
+             <isEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+             	]]>
+             </isEmpty>
+             <isNotEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+             	]]>
+             </isNotEmpty>
+        <![CDATA[
+             GROUP BY COUNSEL_RELATION
+             UNION 
+            SELECT 
+            	   COUNSEL_RELATION counselRelation,
+            	   (SELECT CODE_NM FROM COMTCCMMNDETAILCODE WHERE CODE = COUNSEL_RELATION) counselRelationNm,
+            	   0 relationCntN1,
+            	   COUNT(COUNSEL_RELATION) relationCntN2
+			  FROM COUNSEL
+             WHERE COUNSEL_NATION = 'NAT002'
+               ]]>
+               <isEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+             	]]>
+             </isEmpty>
+             <isNotEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+             	]]>
+             </isNotEmpty> 
+        <![CDATA[ 
+             GROUP BY COUNSEL_RELATION
+             ) cr
+          GROUP BY cr.counselRelation
+            ]]>
+    </select>
+    
+    <select id="CounselDAO.getCounselAge" parameterClass="CounselVO" resultClass="CounselVO">
+        <![CDATA[
+        	SELECT
+        		   ca.counselAge, 
+        		   ca.counselAgeNm, 
+        		   SUM(ca.ageCntN1) ageCntN1, 
+        		   SUM(ca.ageCntN2) ageCntN2
+        	  FROM(
+            SELECT 
+            	   COUNSEL_AGE counselAge,
+            	   (SELECT CODE_NM FROM COMTCCMMNDETAILCODE WHERE CODE = COUNSEL_AGE) counselAgeNm,
+            	   COUNT(COUNSEL_AGE) ageCntN1,
+            	   0 ageCntN2
+			  FROM COUNSEL
+             WHERE COUNSEL_NATION = 'NAT001'
+             ]]>
+             <isEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+             	]]>
+             </isEmpty>
+             <isNotEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+             	]]>
+             </isNotEmpty>
+        <![CDATA[
+             GROUP BY COUNSEL_AGE
+             UNION 
+            SELECT 
+            	   COUNSEL_AGE counselAge,
+            	   (SELECT CODE_NM FROM COMTCCMMNDETAILCODE WHERE CODE = COUNSEL_AGE) counselAgeNm,
+            	   0 ageCntN1,
+            	   COUNT(COUNSEL_AGE) ageCntN2
+			  FROM COUNSEL
+             WHERE COUNSEL_NATION = 'NAT002'
+               ]]>
+               <isEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+             	]]>
+             </isEmpty>
+             <isNotEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+             	]]>
+             </isNotEmpty> 
+        <![CDATA[ 
+             GROUP BY COUNSEL_AGE
+             ) ca
+          GROUP BY ca.counselAge
+            ]]>
+    </select>
+    
+    <select id="CounselDAO.getCounselType" parameterClass="CounselVO" resultClass="CounselVO">
+        <![CDATA[
+        	SELECT
+        		   ct1.counselType, 
+        		   ct1.counselTypeNm, 
+        		   SUM(ct1.typeCntN1) typeCntN1, 
+        		   SUM(ct1.typeCntN2) typeCntN2
+        	  FROM(
+            SELECT 
+            	   COUNSEL_TYPE counselType,
+            	   (SELECT CODE_NM FROM COMTCCMMNDETAILCODE WHERE CODE = COUNSEL_TYPE) counselTypeNm,
+            	   COUNT(COUNSEL_TYPE) typeCntN1,
+            	   0 typeCntN2
+			  FROM COUNSEL
+             WHERE COUNSEL_NATION = 'NAT001'
+             ]]>
+             <isEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+             	]]>
+             </isEmpty>
+             <isNotEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+             	]]>
+             </isNotEmpty>
+        <![CDATA[
+             GROUP BY COUNSEL_TYPE
+             UNION 
+            SELECT 
+            	   COUNSEL_TYPE counselType,
+            	   (SELECT CODE_NM FROM COMTCCMMNDETAILCODE WHERE CODE = COUNSEL_TYPE) counselTypeNm,
+            	   0 typeCntN1,
+            	   COUNT(COUNSEL_TYPE) typeCntN2
+			  FROM COUNSEL
+             WHERE COUNSEL_NATION = 'NAT002'
+               ]]>
+               <isEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+             	]]>
+             </isEmpty>
+             <isNotEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+             	]]>
+             </isNotEmpty> 
+        <![CDATA[ 
+             GROUP BY COUNSEL_TYPE
+              ) ct1
+          GROUP BY ct1.counselType
+            ]]>
+    </select>
+    
+    <select id="CounselDAO.getCounselTime" parameterClass="CounselVO" resultClass="CounselVO">
+        <![CDATA[
+        	SELECT
+        		   ct2.counselTime, 
+        		   SUM(ct2.chatTCnt) chatTCnt, 
+        		   SUM(ct2.boardTCnt) boardTCnt
+        	  FROM(
+            SELECT 
+            	   DATE_FORMAT(REG_DATE, '%H') counselTime,
+            	   COUNT(*) chatTCnt,
+            	   0		boardTCnt
+			  FROM COUNSEL
+             WHERE COUNSEL_CLASSIFICATION = 'COU001'
+             ]]>
+             <isEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+             	]]>
+             </isEmpty>
+             <isNotEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+             	]]>
+             </isNotEmpty>
+        <![CDATA[
+             GROUP BY counselTime
+             UNION 
+            SELECT 
+            	   DATE_FORMAT(REG_DATE, '%H') counselTime,
+            	   0 		chatTCnt,
+            	   COUNT(*)	boardTCnt
+			  FROM COUNSEL
+             WHERE COUNSEL_CLASSIFICATION = 'COU002'
+               ]]>
+               <isEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+             	]]>
+             </isEmpty>
+             <isNotEmpty prepend="and" property="strdate">
+             	<![CDATA[
+             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+             	]]>
+             </isNotEmpty> 
+        <![CDATA[ 
+             GROUP BY counselTime
+             ) ct2
+          GROUP BY ct2.counselTime
+            ]]>
+    </select>
+    
+     <select id="CounselDAO.getCounselList" parameterClass="CounselVO" resultClass="CounselVO">
+        <![CDATA[
+        	SELECT
+        		   cd.counselDate, 
+        		   SUM(cd.chatCnt) chatCnt, 
+        		   SUM(cd.boardCnt) boardCnt, 
+        		   SUM(cd.kakaotalkCnt) kakaotalkCnt
+        	  FROM(
+		            SELECT 
+		            	   DATE_FORMAT(REG_DATE, '%Y%m%d') counselDate,
+		            	   COUNT(*) chatCnt,
+		            	   0		boardCnt,
+		            	   0		kakaotalkCnt
+					  FROM COUNSEL
+		             WHERE COUNSEL_CLASSIFICATION = 'COU001'
+		             ]]>
+		             <isEmpty prepend="and" property="strdate">
+		             	<![CDATA[
+		             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+		             	]]>
+		             </isEmpty>
+		             <isNotEmpty prepend="and" property="strdate">
+		             	<![CDATA[
+		             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+		             	]]>
+		             </isNotEmpty>
+		        <![CDATA[
+		             GROUP BY counselDate
+		             UNION 
+		            SELECT 
+		            	   DATE_FORMAT(REG_DATE, '%Y%m%d') counselDate,
+		            	   0 		chatCnt,
+		            	   COUNT(*)	boardCnt,
+		            	   0		kakaotalkCnt
+					  FROM COUNSEL
+		             WHERE COUNSEL_CLASSIFICATION = 'COU002'
+		               ]]>
+		               <isEmpty prepend="and" property="strdate">
+		             	<![CDATA[
+		             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+		             	]]>
+		             </isEmpty>
+		             <isNotEmpty prepend="and" property="strdate">
+		             	<![CDATA[
+		             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+		             	]]>
+		             </isNotEmpty> 
+		        <![CDATA[
+		        	 GROUP BY counselDate
+		             UNION 
+		            SELECT 
+		            	   DATE_FORMAT(REG_DATE, '%Y%m%d') counselDate,
+		            	   0 		chatCnt,
+		            	   0		boardCnt,
+		            	   COUNT(*)	kakaotalkCnt
+					  FROM COUNSELLOG
+		             WHERE COUNSEL_CLASSIFICATION = 'COU003'
+		               ]]>
+		               <isEmpty prepend="and" property="strdate">
+		             	<![CDATA[
+		             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL-1 MONTH), '%Y%m%d') AND DATE_FORMAT(NOW(), '%Y%m%d')
+		             	]]>
+		             </isEmpty>
+		             <isNotEmpty prepend="and" property="strdate">
+		             	<![CDATA[
+		             	DATE_FORMAT(REG_DATE, '%Y%m%d') BETWEEN #strdate# AND #enddate#
+		             	]]>
+		             </isNotEmpty>
+		       <![CDATA[
+		       		 GROUP BY counselDate
+		       	) cd
+		 	GROUP BY cd.counselDate
+		    ]]>
+    </select>
+    
+</sqlMap>

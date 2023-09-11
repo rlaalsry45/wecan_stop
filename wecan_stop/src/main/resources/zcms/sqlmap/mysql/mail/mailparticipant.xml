@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="MailParticipant">
+
+	<typeAlias  alias="MailParticipant" type="com.z5.zcms.frontsys.mail.domain.MailParticipant"/>
+	<resultMap  id="MailParticipant" class="com.z5.zcms.frontsys.mail.domain.MailParticipant" />
+	
+	
+	<select id="listCount" parameterClass="MailParticipant"  resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				count(*)
+			FROM TBL_MAIL_PARTICIPANT
+			WHERE 
+				(1=1)
+		]]>
+			 <isNotEqual  prepend="AND" property="userno" compareValue="0">
+				<![CDATA[	  userno = #userno# 		]]>						
+			</isNotEqual>	
+			 <isNotEqual  prepend="AND" property="idx" compareValue="0">
+				<![CDATA[	  idx = #idx# 		]]>						
+			</isNotEqual>	
+			<isNotEmpty prepend="and" property="keyword">
+				<![CDATA[
+					$cond1$ = #keyword# 
+				]]>
+			</isNotEmpty>	
+			<isNotEmpty   property="useremail" >
+				<![CDATA[	 AND  useremail = #useremail# 		]]>						
+			</isNotEmpty>
+			
+	</select>
+	
+
+	<select id="list" parameterClass="MailParticipant" resultClass="MailParticipant">
+		<![CDATA[
+			SELECT
+				seq
+				,idx
+				,userno
+				,useremail
+				,sended
+			from 
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        TBL_MAIL_PARTICIPANT.*
+						       
+				    	   from
+						        TBL_MAIL_PARTICIPANT
+								INNER JOIN TBL_ALLATORDER ON TBL_ALLATORDER.SORDERNO = TBL_MAIL_PARTICIPANT.SORDERNO AND TBL_ALLATORDER.SREPLYCD='0000'
+								,   (SELECT @rownum := #m#) R
+						   where 1 = 1
+			]]>
+							
+				 <isNotEqual  prepend="AND" property="userno" compareValue="0">
+					<![CDATA[	  userno = #userno# 		]]>						
+				</isNotEqual>	
+				 <isNotEqual  prepend="AND" property="idx" compareValue="0">
+					<![CDATA[	  idx = #idx# 		]]>											
+				</isNotEqual>	
+				<isNotEmpty   property="useremail" >
+					<![CDATA[	 AND  useremail = #useremail# 		]]>						
+				</isNotEmpty>
+			<![CDATA[
+							order by idx desc
+					 	) row_
+					where
+						@rownum < (#n#+#m#)
+				) re
+			
+			]]> 
+      
+	</select>
+
+    
+    
+    <select id="MailParticipant.detail" parameterClass="MailParticipant" resultClass="MailParticipant">
+ 		<![CDATA[
+           SELECT 
+				seq
+				,idx
+				,userno
+				,useremail
+				,sended
+
+			FROM 
+				TBL_MAIL_PARTICIPANT
+			WHERE  
+				rownum = 1
+ 		]]> 	<isNotEqual  prepend="AND" property="seq" compareValue="0">
+					<![CDATA[	  seq = #seq# 		]]>						
+				</isNotEqual>	
+				 <isNotEqual  prepend="AND" property="userno" compareValue="0">
+					<![CDATA[	  userno = #userno# 		]]>						
+				</isNotEqual>	
+				 <isNotEqual  prepend="AND" property="idx" compareValue="0">
+					<![CDATA[	  idx = #idx# 		]]>						
+				</isNotEqual>	
+				<isNotEmpty   property="useremail" >
+					<![CDATA[	 AND  useremail = #useremail# 		]]>						
+				</isNotEmpty>
+				
+    </select>
+    
+    <insert id="MailParticipant.insert" parameterClass="MailParticipant"  >
+    	<selectKey type="pre" resultClass="java.lang.String" keyProperty="seq">
+		<![CDATA[
+			SELECT TBL_MAIL_PARTICIPANT_SEQ_NO.nextval  FROM db_root
+		]]>
+		</selectKey>
+         <![CDATA[
+           INSERT INTO  TBL_MAIL_PARTICIPANT (
+				seq
+				,idx
+				,userno
+				,useremail
+				,sended
+			)
+			VALUES
+			(
+				 #seq#
+				,#idx#
+				,#userno#
+				,#useremail#
+				,#sended#
+			)
+			]]>
+    </insert>
+	
+    <update id="MailParticipant.update" parameterClass="MailParticipant"  >
+          <![CDATA[
+          UPDATE  TBL_MAIL_PARTICIPANT SET 
+				idx				= #idx#
+				,userno			= #userno#
+  				,useremail		= #useremail#
+				,sended			= #sended#
+				WHERE 
+					(1 = 1)
+				]]>
+				<isNotEqual  prepend="AND" property="seq" compareValue="0">
+					<![CDATA[	  seq = #seq# 		]]>						
+				</isNotEqual>	
+				 <isNotEqual  prepend="AND" property="userno" compareValue="0">
+					<![CDATA[	  userno = #userno# 		]]>						
+				</isNotEqual>	
+				 <isNotEqual  prepend="AND" property="idx" compareValue="0">
+					<![CDATA[	  idx = #idx# 		]]>						
+				</isNotEqual>	
+				<isNotEmpty   property="username" >
+					<![CDATA[	 AND  useremail = #useremail# 		]]>						
+				</isNotEmpty>
+				
+    </update>
+    
+    <delete id="MailParticipant.delete" parameterClass="MailParticipant" >
+     <![CDATA[
+          DELETE  
+          	FROM TBL_MAIL_PARTICIPANT 
+		  WHERE 
+			seq = #seq#
+				]]>
+				 <isNotEqual  prepend="AND" property="userno" compareValue="0">
+					<![CDATA[	  userno = #userno# 		]]>						
+				</isNotEqual>	
+				 <isNotEqual  prepend="AND" property="idx" compareValue="0">
+					<![CDATA[	  idx = #idx# 		]]>						
+				</isNotEqual>	
+				
+    </delete>
+    
+    <delete id="MailParticipant.deleteAll" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM TBL_MAIL_PARTICIPANT
+			WHERE seq IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	 <delete id="MailParticipant.deleteAllByFk" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM TBL_MAIL_PARTICIPANT
+			WHERE idx IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+</sqlMap>            

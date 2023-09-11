@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="wApplication">
+	<typeAlias alias="frontApplicationVo" type="com.z5.zcms.frontsys.front.domain.FrontApplicationVo"/>
+	<resultMap id="frontApplicationVo" class="com.z5.zcms.frontsys.front.domain.FrontApplicationVo"/>
+	<typeAlias alias="govInfoVo" type="com.z5.zcms.frontsys.front.domain.GovInfoVo"/>
+	<resultMap id="govInfoVo" class="com.z5.zcms.frontsys.front.domain.GovInfoVo"/>
+	
+	<insert id="registrationApplication">
+		<![CDATA[
+			INSERT INTO w_consulting_application_master
+			(
+					consulting_application_no
+				,	step_status
+				,	org_type					,	org_name
+				,	org_code					,	upper_org_code
+				,	upper_org_name				,	org_member_count
+				,	belong_job_title			,	org_client_name
+				,	org_client_tel_no			,	org_client_email
+				,	accident_response_hist		,	accident_date
+				,	receipt_date				,	harm_type_verbals
+				,	harm_type_body				,	harm_type_visual
+				,	harm_type_second			,	harm_type_etc
+				,	harm_etc_txt				,	accident_step
+				,	application_etc_txt			,	first_org_type_all
+				,	first_org_type_inorg		,	first_org_type_protect
+				,	first_org_type_etc			,	first_org_type_etc_txt
+				,	dup_org_type_check			,	dup_org_type_protect
+				,	dup_org_type_all			,	dup_org_type_inorg
+				,	dup_org_type_etc			,	dup_org_type_etc_txt
+				,	wish_consulting_date_1		,	wish_consulting_date_2
+				,	wish_consulting_date_3		,	wish_consulting_date_4
+				,	wish_consulting_date_5	
+				,	wish_consulting_date_1_yn	,	wish_consulting_date_2_yn
+				,	wish_consulting_date_3_yn	,	wish_consulting_date_4_yn
+				,	wish_consulting_date_5_yn
+				,	reference_etc				,	create_user
+				,	create_date					,	acc_exists_yn
+				,	org_type_gov_detail			,	ORGANIZATION_ID
+			)
+		VALUES
+		(		
+		]]>
+					<isNotEmpty property="consulting_application_no">
+							FN_ACTION_NO(#consulting_application_no#)
+					</isNotEmpty>
+					<isEmpty property="consulting_application_no">
+							FN_APPLICATION_NO()
+					</isEmpty>
+					<isNotEmpty property="step_status">
+						<isGreaterThan property="step_status" compareValue="0">
+							,	#step_status#
+						</isGreaterThan>
+						<isLessEqual property="step_status" compareValue="0">
+							,	1
+						</isLessEqual>
+					</isNotEmpty>
+					<isEmpty  property="step_status">
+						,	1
+					</isEmpty>
+		<![CDATA[
+				,	#org_type#					,	#org_name#
+				,	#org_code#					,	#upper_org_code#
+				,	#upper_org_name#			,	#org_member_count#
+				,	#belong_job_title#			,	#org_client_name#
+				,	#org_client_tel_no#			,	#org_client_email#				
+				,	#accident_response_hist#	
+				,	CASE WHEN #accident_date# = '' THEN NULL ELSE #accident_date# END 
+				,	CASE WHEN #receipt_date# = '' THEN NULL ELSE #receipt_date# END
+				,	#harm_type_verbals#				
+				,	#harm_type_body#			,	#harm_type_visual#
+				,	#harm_type_second#			,	#harm_type_etc#
+				,	#harm_etc_txt#				,	#accident_step#
+				,	#application_etc_txt#		,	#first_org_type_all#
+				,	#first_org_type_inorg#		,	#first_org_type_protect#
+				,	#first_org_type_etc#		,	#first_org_type_etc_txt#
+				,	#dup_org_type_check#		,	#dup_org_type_protect#
+				,	#dup_org_type_all#			,	#dup_org_type_inorg#
+				,	#dup_org_type_etc#			,	#dup_org_type_etc_txt#
+				,	#wish_consulting_date_1#	,	#wish_consulting_date_2#
+				,	#wish_consulting_date_3#	,	#wish_consulting_date_4#
+				,	#wish_consulting_date_5#	
+				,	#wish_consulting_date_1_yn#	,	#wish_consulting_date_2_yn#
+				,	#wish_consulting_date_3_yn#	,	#wish_consulting_date_4_yn#
+				,	#wish_consulting_date_5_yn#
+				,	#reference_etc#				,	#create_user#
+				,	NOW()						,	#acc_exists_yn#
+				,	#org_type_gov_detail#		,	#ORGANIZATION_ID#
+			)
+		]]>
+		<selectKey keyProperty="NO" resultClass="Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="retrieveApplicationTotalCount" parameterClass="frontApplicationVo" resultClass="Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*)
+			FROM
+				w_consulting_application_master a
+				,   (SELECT @rownum := #m#) R
+			WHERE
+				delete_yn = 'N'
+		]]>	<isNotEmpty property="step_status">
+				<isLessEqual property="step_status" compareValue="8">
+					<isGreaterThan property="step_status" compareValue="0">
+						AND step_status = #step_status#
+					</isGreaterThan>
+				</isLessEqual>
+			</isNotEmpty>
+			<isNotEmpty property="create_user">
+			AND create_user IN (
+								select
+									userid
+								from 
+									zuser z2 
+								where 
+									CHARGEORGID = (
+													select
+														CHARGEORGID 
+													from 
+														zuser z 
+													where 
+														z.USERID  = #create_user#
+													)
+								)
+			</isNotEmpty>
+		<![CDATA[
+			order by create_date desc
+		]]>
+	</select>
+	
+	<select id="retrieveApplicationList" parameterClass="frontApplicationVo" resultClass="frontApplicationVo">
+		<![CDATA[
+			SELECT *
+			FROM
+				(
+					SELECT row_.*,
+							@rownum := @rownum + 1 AS rownum_
+					FROM (		
+							SELECT
+								*
+							FROM
+								w_consulting_application_master
+								,   (SELECT @rownum := #m#) R
+							WHERE
+								delete_yn = 'N'	
+		]]>						<isNotEmpty property="step_status">
+									<isLessEqual property="step_status" compareValue="8">
+										<isGreaterThan property="step_status" compareValue="0">
+											AND step_status = #step_status#
+										</isGreaterThan>
+									</isLessEqual>
+									<isEqual property="step_status" compareValue="999">
+										AND create_date between str_to_date(concat(date_format( now(),'%Y'),'-01-01'),'%Y-%m-%d') and str_to_date(concat(date_format( now(),'%Y'),'-12-31'),'%Y-%m-%d')
+									</isEqual>
+								</isNotEmpty>
+								<isNotEmpty property="create_user">
+								AND create_user IN (
+													select
+														userid
+													from 
+														zuser z2 
+													where 
+														CHARGEORGID = (
+																		select
+																			CHARGEORGID 
+																		from 
+																			zuser z 
+																		where 
+																			z.USERID  = #create_user#
+																		)
+													)
+								</isNotEmpty>
+		<![CDATA[
+							order by create_date desc
+							LIMIT #m#, #n#
+						) row_
+					WHERE @rownum < (#n#+#m#)
+				) c
+		]]>
+	</select>
+	
+	<select id="applicationView" parameterClass="frontApplicationVo" resultClass="frontApplicationVo">
+		<![CDATA[
+			SELECT
+					NO
+				,	consulting_application_no
+				,	step_status, org_type
+				,	org_name
+				,	org_code				
+				,	upper_org_code
+				,	upper_org_name
+				,	org_member_count
+				,	belong_job_title
+				,	org_client_name
+				,	org_client_tel_no
+				,	org_client_email
+				,	accident_response_hist
+				,	accident_date
+				,	receipt_date
+				,	harm_type_verbals
+				,	harm_type_body
+				,	harm_type_visual
+				,	harm_type_second
+				,	harm_type_etc
+				,	harm_etc_txt
+				,	accident_step
+				,	application_etc_txt
+				,	first_org_type_all
+				,	first_org_type_inorg
+				,	first_org_type_protect
+				,	first_org_type_etc
+				,	first_org_type_etc_txt
+				,	dup_org_type_check
+				,	dup_org_type_protect
+				,	dup_org_type_all
+				,	dup_org_type_inorg
+				,	dup_org_type_etc
+				,	dup_org_type_etc_txt
+				,	wish_consulting_date_1
+				,	wish_consulting_date_2
+				,	wish_consulting_date_3
+				,	wish_consulting_date_4
+				,	wish_consulting_date_5
+				,	wish_consulting_date_1_yn
+				,	wish_consulting_date_2_yn
+				,	wish_consulting_date_3_yn
+				,	wish_consulting_date_4_yn
+				,	wish_consulting_date_5_yn
+				,	reference_etc
+				,	create_user
+				,	create_date
+				,	update_user
+				,	update_date
+				,	delete_user
+				,	delete_date
+				,	delete_yn
+				,	acc_exists_yn
+				,	org_type_gov_detail
+				,	ORGANIZATION_ID
+			FROM
+				w_consulting_application_master
+			WHERE
+		]]>
+			<isGreaterThan property="NO" compareValue="0">
+				NO = #NO#
+			</isGreaterThan>
+			<isEqual property="NO" compareValue="0">
+				consulting_application_no = #consulting_application_no#
+			</isEqual>
+
+
+	</select>
+	
+	<select id="srchGovList" parameterClass="GovInfoVo" resultClass="GovInfoVo">
+		<![CDATA[
+			SELECT
+					org_code
+  				,	org_name
+  				,	second_upper_org_code
+  				,	upper_org_code
+  				,	delegate_org_code
+  				,	exists_yn
+			FROM
+				w_org_info_list
+			WHERE
+				org_name LIKE CONCAT('%',#org_name#,'%')
+		]]>
+	</select>
+	
+	<update id="editApplicationInfo" parameterClass="frontApplicationVo">
+		<![CDATA[
+			UPDATE w_consulting_application_master
+				SET
+						step_status = #step_status#
+					,	org_type=#org_type#
+					,	org_name=#org_name#
+					,	org_code=#org_code#
+					,	upper_org_name=#upper_org_name#
+					,	upper_org_code=#upper_org_code#
+					,	org_member_count=#org_member_count#
+					,	belong_job_title=#belong_job_title#
+					,	org_client_name=#org_client_name#
+					,	org_client_tel_no=#org_client_tel_no#
+					,	org_client_email=#org_client_email#
+					,	accident_response_hist=#accident_response_hist#
+					,	accident_date = CASE WHEN #accident_date# = '' THEN NULL ELSE #accident_date# END 
+					,	receipt_date = CASE WHEN #receipt_date# = '' THEN NULL ELSE #receipt_date# END					
+					,	harm_type_verbals=#harm_type_verbals#
+					,	harm_type_body=#harm_type_body#
+					,	harm_type_visual=#harm_type_visual#
+					,	harm_type_second=#harm_type_second#
+					,	harm_type_etc=#harm_type_etc#
+					,	harm_etc_txt=#harm_etc_txt#
+					,	accident_step=#accident_step#
+					,	application_etc_txt=#application_etc_txt#
+					,	first_org_type_all=#first_org_type_all#
+					,	first_org_type_inorg=#first_org_type_inorg#
+					,	first_org_type_protect=#first_org_type_protect#
+					,	first_org_type_etc=#first_org_type_etc#
+					,	first_org_type_etc_txt=#first_org_type_etc_txt#
+					,	dup_org_type_check=#dup_org_type_check#
+					,	dup_org_type_protect=#dup_org_type_protect#
+					,	dup_org_type_all=#dup_org_type_all#
+					,	dup_org_type_inorg=#dup_org_type_inorg#
+					,	dup_org_type_etc=#dup_org_type_etc#
+					,	dup_org_type_etc_txt=#dup_org_type_etc_txt#
+					,	wish_consulting_date_1=#wish_consulting_date_1#
+					,	wish_consulting_date_2=#wish_consulting_date_2#
+					,	wish_consulting_date_3=#wish_consulting_date_3#
+					,	wish_consulting_date_4=#wish_consulting_date_4#
+					,	wish_consulting_date_5=#wish_consulting_date_5#
+					,	wish_consulting_date_1_yn=#wish_consulting_date_1_yn#
+					,	wish_consulting_date_2_yn=#wish_consulting_date_2_yn#
+					,	wish_consulting_date_3_yn=#wish_consulting_date_3_yn#
+					,	wish_consulting_date_4_yn=#wish_consulting_date_4_yn#
+					,	wish_consulting_date_5_yn=#wish_consulting_date_5_yn#
+					,	reference_etc=#reference_etc#
+					,	update_user=#update_user#
+					,	update_date=NOW()
+					,	acc_exists_yn=#acc_exists_yn#
+					,	org_type_gov_detail=#org_type_gov_detail#
+					,	ORGANIZATION_ID=#ORGANIZATION_ID#
+				WHERE
+		]]>
+			<isGreaterThan property="NO" compareValue="0">
+				NO = #NO#
+			</isGreaterThan>
+			<isEqual property="NO" compareValue="0">
+				consulting_application_no = #consulting_application_no#
+			</isEqual>		
+	</update>
+</sqlMap>

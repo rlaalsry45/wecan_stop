@@ -1,0 +1,228 @@
+package com.z5.zcms.security;
+
+import com.z5.zcms.admsys.user.domain.ZUserVo;
+import com.z5.zcms.admsys.user.service.ZUserLogService;
+import com.z5.zcms.admsys.user.service.ZUserService;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+
+import static com.z5.zcms.util.ZPrint.*;
+
+public class ZSavedAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
+	@Autowired
+    ZUserService zUserService;
+	
+    @Autowired
+    ZUserLogService zUserLogService;
+    
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    public void onAuthenticationFailure(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticationException auth
+    ) throws IOException, ServletException {
+
+        //폴더방식에 대한 고려
+        String subname = "";
+        if (request.getParameter("subname") != null) {
+            subname = "/" + request.getParameter("subname") + "/";
+        }
+
+        try {
+            String from   = request.getParameter("_from");
+            String to     = request.getParameter("_to");
+            String status = request.getParameter("status");
+            error("Login failed [subname='" + subname + "' login='" + from + "' to='" + to + "' status='" + status + "']");
+
+//            request.setAttribute("_to", to);
+            if(to != null) from = from+"&_to="+to;
+            
+            int logLength = 0;
+            if (StringUtils.isNotBlank(from)) {
+                logLength = from.indexOf("&");
+            }
+
+            if (logLength > 0) {
+                from = from.substring(0, logLength);
+                from = from+"&_to="+to;
+                
+                print("Login failed " + logLength + "[login-path='" + from + "']");
+                if (StringUtils.equals(status, "popup")) {
+                    from = from + "&status=popup&ztag=" + URLEncoder.encode(request.getParameter("ztag"), "utf-8");
+                }
+            }
+
+            //관리자일경우 이전 없앰.
+            if("aseanrok".equals(to)) from = null;
+            
+            String userid = request.getParameter("username");
+            ZUserVo zUserVo = new ZUserVo();
+            zUserVo.setUserid(userid);
+            
+            int cnt = zUserLogService.selectUserid(zUserVo); //로그인 시 입력한 아이디가 정확한 것인지 확인.
+            if (cnt > 0) {
+                if (userid.equals("aseanrok")) {
+                    if (from != null) {
+                        request.setAttribute("_from", from);
+                        if (from.matches(".*&fail=true.*")) {
+                            response.sendRedirect(from);
+                        } else {
+                            response.sendRedirect(from + "&fail=true");
+                        }
+                    } else {
+                        //이전 로그인 페이지가 없을 경우.
+                        response.sendRedirect(request.getContextPath() + "/login.html?fail=true");
+                    }//아이디가 존재하지 않음을 알림.
+                } else {
+                    //admin이 아닐경우
+                	int logincount = zUserLogService.selectLoginCount(zUserVo);
+                    if(logincount>=5) {
+                    	response.sendRedirect(request.getContextPath() + "/login.html?pwfivefail=true");
+                    }else {
+                    	if(!"admin".equals(userid) && !"adminTest".equals(userid)) {
+	                     	//비밀번호 틀렸다는 메시지 표시해야함.
+	                     	//로그인 시 비밀번호가 틀린경우 logincount에 1을 더해준다.
+	                     	zUserVo.setCnt(logincount+1);
+	                     	zUserLogService.updateCnt(zUserVo);
+                    	}
+                    }
+
+                    //메일 발송은 임시로 막아둔다. 사용할 경우 아래의 로직 이용
+                    /*
+                    if(logincount >= 5){
+                        //메일 발송========================================================
+                        String title =null;
+
+                        String masterName="관리자";
+                        String masterEmail = EgovProperties.getProperty("Globals.mail.admin");
+
+                        zUserVo.setUseremail(userid);
+
+                        String userEmailBase64 = URLEncoder.encode(StringUtil.makeBase64ForObject(zUserVo.getUseremail()),"utf-8");
+                        String serverName = null;
+                        if(request.getServerName().replaceFirst("www.", "").equals("kf.or.kr")){
+                            title = "한국국제교류재단 인증메일입니다.";
+                            serverName = URLEncoder.encode(StringUtil.makeBase64ForObject("https://www."+request.getServerName().replaceFirst("www.", "")),"utf-8");
+                        }else{
+                            title = "Korea Foundation certified mail.";
+                            serverName = URLEncoder.encode(StringUtil.makeBase64ForObject("https://"+request.getServerName().replaceFirst("www.", "")),"utf-8");
+                        }
+
+                         //메시지 가져오기==================================================
+                         String certURL = "https://www.kf.or.kr/user/twoea/logReset.html?" + "&account=" + userEmailBase64 + "&serverName=" + serverName + "&logincount=" + logincount;
+                         String msg = this.getEmailMessage(zUserVo.getUseremail(),certURL,request.getServerName().replaceFirst("www.", "").equals("kf.or.kr")?1:2);
+
+                         //폼메일 발송
+                         FormMailUtil.sendMail(zUserVo.getUseremail(), masterEmail, masterName, title, msg);
+
+                        //비밀번호 5회이상 틀렸고 메일발송되었으며 발송된 메일로 인증하면 다시 로그인시도 가능함을 알림.
+                        if(from != null){
+                            request.setAttribute("_from", from);
+                            if(from.matches(".*&pwfivefail=true.*")){
+                                response.sendRedirect(from);
+                            }else{
+                                response.sendRedirect(from+"&pwfivefail=true");
+                            }
+                        }else{
+                            //이전 로그인 페이지가 없을 경우.
+                            response.sendRedirect(request.getContextPath() + "/login.html?pwfivefail=true");
+                        }
+
+                    }else{
+                        */ //메일 발송과 관련된 로직은 여기 까지
+                    if (from != null) {
+                    	System.out.println("from=>"+from);
+                        request.setAttribute("_from", from);
+                        if (from.matches(".*&fail=true.*")) {
+//                                response.sendRedirect(from + "&cnt=" + zUserVo.getCnt());
+                            response.sendRedirect(from);
+                        } else {
+//                                response.sendRedirect(from+"&pwfail=true&cnt=" + zUserVo.getCnt());
+                            response.sendRedirect(from + "&fail=true");
+                        }
+                    } else {
+                        //이전 로그인 페이지가 없을 경우.
+                        response.sendRedirect(request.getContextPath() + "/login.html?fail=true&cnt=" + zUserVo.getCnt());
+                        //response.sendRedirect(request.getContextPath() + subname + "?&pwfail=true");
+                    }
+                    /*}*/
+                }
+            } else {
+                //id가 존재하지 않는경우
+            	
+                if (from != null) {
+                    request.setAttribute("_from", from);
+                    if (from.matches(".*&fail=true.*")) {
+                        response.sendRedirect(from);
+                    } else {
+                        response.sendRedirect(from + "&fail=true");
+                    }
+                } else {
+                    //이전 로그인 페이지가 없을 경우.
+                    response.sendRedirect(request.getContextPath() + "/login.html?fail=true");
+                    //response.sendRedirect(request.getContextPath() + subname + "?&fail=true");
+                }//아이디가 존재하지 않음을 알림.
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getEmailMessage(String useremail, String certURL, int lang) {
+
+        String msg = "";
+        if (lang == 1) {
+            msg += "<body style=\"margin:0;padding:0;\">" +
+                    "    <div class=\"mail-wrap\" style=\"width:482px;\">" +
+                    "    <div class=\"password\">" +
+                    "        <img style=\"border:0;\"src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/img_login.gif\" alt=\"이메일 인증 개인정보 보호를 위해서 이메일 인증을 진행합니다. 안녕하세요? 로그인 시 비밀번호를 5회이상 잘못입력하였기 때문에 이메일 인증을 진행합니다. 아래의 “로그인 재설정” 버튼을 클릭하시면 다시 로그인을 시도할 수 있습니다.\" />" +
+                    "    </div>" +
+                    "    <div class=\"btn-c\" style=\"margin-top:15px;text-align:center;\">" +
+                    "        <a href=\"" + certURL + "\"><img style=\"border:0;\" src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/btn_resetlogin.gif\" alt=\"로그인 재설정\" /></a>" +
+                    "    </div>" +
+                    "    <ul class=\"clist\" style=\"margin:14px 0 0 0;padding:0;list-style:none;\">" +
+                    "        <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ “이메일 인증” 버튼을 클릭하여도 연결이 되지 않으면,  아래의 주소를 복사하여 브라우저의 주소창에 입력하여 주세요.</li>" +
+                    "        <li style=\"font-size:12px;line-height:18px;list-style:none;\">" + certURL + "</li>" +
+                    "        <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ 이 메일은 발신전용 메일이므로 회신이 불가능합니다.</li>" +
+                    "        <li style=\"font-size:12px;line-height:18px;list-style:none;\">잘못 수신된 메일이라면 본 메일을 무시해 주십시오.</li>" +
+                    "    </ul>" +
+                    "    <p class=\"text\">감사합니다.</p>" +
+                    "    </div>" +
+                    "</body>";
+        } else if (lang == 2) {
+            msg += "<body style=\"margin:0;padding:0;\">" +
+                    "    <div class=\"mail-wrap\" style=\"width:482px;\">" +
+                    "    <div class=\"password\">" +
+                    "        <img style=\"border:0;\"src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/img_login_en.gif\" alt=\"이메일 인증 개인정보 보호를 위해서 이메일 인증을 진행합니다. 안녕하세요? 로그인 시 비밀번호를 5회이상 잘못입력하였기 때문에 이메일 인증을 진행합니다. 아래의 “로그인 재설정” 버튼을 클릭하시면 다시 로그인을 시도할 수 있습니다.\" />" +
+                    "    </div>" +
+                    "    <div class=\"btn-c\" style=\"margin-top:15px;text-align:center;\">" +
+                    "        <a href=\"" + certURL + "\"><img style=\"border:0;\" src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/btn_resetlogin_en.gif\" alt=\"로그인 재설정\" /></a>" +
+                    "    </div>" +
+                    "    <ul class=\"clist\" style=\"margin:14px 0 0 0;padding:0;list-style:none;\">" +
+                    "        <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ If ‘Verify E-mail’ does not work, copy the following address in your browser.</li>" +
+                    "        <li style=\"font-size:12px;line-height:18px;list-style:none;\">" + certURL + "</li>" +
+                    "        <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ This is an automated e-mail. Pleas do not reply directly to this e-mail.</li>" +
+                    "        <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ If you received this by error, please ignore this e-mail.</li>" +
+                    "    </ul>" +
+                    "    <p class=\"text\">Thank you.</p>" +
+                    "    </div>" +
+                    "</body>";
+        }
+        return msg;
+    }
+}

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZmainHis">
+	
+	<typeAlias alias="zmainHisVo" type="com.z5.zcms.admsys.main.domain.ZmainHisVo"/>
+	<resultMap id="zmainHisVo" class="com.z5.zcms.admsys.main.domain.ZmainHisVo"/>
+	<resultMap id="zmainVo" class="com.z5.zcms.admsys.main.domain.ZmainVo"/>
+	
+ 	<select id="zmainHisDAO.list" resultClass="zmainHisVo">
+		<![CDATA[
+ 			SELECT	*
+			FROM ZMAINHIS
+			WHERE mainno =#mainno#
+			
+		]]> 
+	</select>	
+	
+ 	<select id="zmainHisDAO.selectbypk" parameterClass="zmainHisVo" resultClass="zmainVo">
+		<![CDATA[
+			SELECT 
+				  mainhistype as maintype
+				, mainhistitle as maintitle
+				, mainhisstatus as mainstatus
+				, mainhiscontstype as maincontstype
+				, mainhisconts as mainconts 
+			FROM ZMAINHIS 
+			WHERE mainhisno=#mainhisno#
+		]]>
+	</select>
+	
+	<insert id="zmainHisDAO.write">
+		<![CDATA[
+			INSERT INTO ZMAINHIS 
+				(
+					 mainno
+					, mainhisdate
+					, mainhistitle
+					, mainhisstatus
+					, mainhiscontstype
+					, mainhisconts
+					, mainhisstaffid
+					, mainhisstaffsect
+					, mainhisstaffname
+					, mainhisstaffemail
+					, mainhisstafftel
+					, mainhisstafffax
+					, mainhishis
+					, mainhisdatereg
+					, mainhisdatemod
+					, siteno
+					, userid
+					, mainhishit
+					, mainhisscore
+					, mainhisscoreentry
+					, mainhisuse
+					, mainhistags
+					, mainhistype
+				)
+			SELECT 
+					 mainno
+						, date_format(now(),'%Y%m%d%H%i%s')
+						, maintitle
+						, mainstatus
+						, maincontstype
+						, mainconts
+						, mainstaffid
+						, mainstaffsect
+						, mainstaffname
+						, mainstaffemail
+						, mainstafftel
+						, mainstafffax
+						, mainhis
+						, maindatereg
+						, maindatemod
+						, siteno
+						, #userid#
+						, mainhit
+						, mainscore
+						, mainscoreentry
+						, mainuse
+						, maintags
+						, maintype 
+					FROM ZMAIN 
+					WHERE mainno=#mainno#
+				 
+		]]>
+	</insert>
+	
+	
+	<delete id="zmainHisDAO.delete" parameterClass="zmainHisVo">
+		        DELETE 
+		        FROM ZmainHIS 
+		        WHERE mainhisno=#mainhisno#
+
+		
+	</delete>	
+</sqlMap>

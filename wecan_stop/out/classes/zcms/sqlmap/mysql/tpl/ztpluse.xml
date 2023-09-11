@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Ztpluse">
+	
+	<typeAlias alias="ztpluseVo" type="com.z5.zcms.admsys.tpl.domain.ZtplUseVo"/>
+	<resultMap id="ztpluseVo" class="com.z5.zcms.admsys.tpl.domain.ZtplUseVo"/>
+
+	<delete id="ztplUseDAO.delete" parameterClass="java.util.List">
+		        DELETE 
+		    		FROM ZTPLUSE 
+		  			where TPLNO in
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+		
+	</delete>
+	
+	<delete id="ztplUseDAO.deleteOfSite" parameterClass="ztplUseVo">
+		<![CDATA[
+		        DELETE 
+		    		FROM ZTPLUSE 
+		  			WHERE siteno = #siteno#
+		  			and menuno = #menuno#
+		]]>  
+	</delete>	
+	
+	<select id="ztplUseDAO.listCount" parameterClass="ztplUseVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*)
+			FROM
+				ZTPLUSE
+			WHERE tplNO = #tplno#
+			  AND SITENO = #siteno#
+		]]>
+	</select>
+	
+	<insert id="ztplUseDAO.write">
+		<![CDATA[
+			INSERT INTO ZTPLUSE
+			(
+				tplno
+				,siteno
+				,sitetitle
+				,userid
+				,menuno
+			) VALUES
+			(	
+				#tplno#
+				,#siteno#
+				,(SELECT sitetitle FROM ZSITE WHERE siteno = #siteno#)
+				,#userid#
+				,#menuno#
+			)
+		]]>
+	</insert>	
+
+</sqlMap>

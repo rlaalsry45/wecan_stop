@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZtplHis">
+	
+	<typeAlias alias="ztplHisVo" type="com.z5.zcms.admsys.tpl.domain.ZtplHisVo"/>
+	<resultMap id="ztplHisVo" class="com.z5.zcms.admsys.tpl.domain.ZtplHisVo"/>
+	<resultMap id="ztplVo" class="com.z5.zcms.admsys.tpl.domain.ZtplVo"/>
+	
+	<select id="ztplHisDAO.list" resultClass="ztplHisVo">
+		<![CDATA[
+			SELECT	*
+			FROM ZTPLHIS
+			WHERE TPLNO =#tplno#
+			
+			]]>
+							
+	</select>	
+
+	
+	<select id="ztplHisDAO.selectbypk" parameterClass="ztplHisVo" resultClass="ztplVo">
+		<![CDATA[
+			SELECT 
+					  tplhistitle as tpltitle
+					, '1' as tplposition
+					, '1' as tpltype
+					, '1' as tplhis
+					, tplhiscontstype as tplcontstype
+					, tplhisconts as tplconts
+					, tplhismemo as tplmemo 
+			FROM ZTPLHIS 
+			WHERE tplhisno=#tplhisno#
+				]]>
+	</select>
+	
+	<insert id="ztplHisDAO.write">
+		<![CDATA[
+			INSERT INTO ZTPLHIS 
+				( tplhistitle
+				, tplhisdatereg
+				, tplhisdatemod
+				, tplhiscontstype
+				, tplhisconts
+				, tplhisfileorg
+				, tplhisfilesave
+				, tplhisuserid
+				, tplhissiteno
+				, tplhismemo
+				, userid
+				, tplhisdate
+				, tplno
+				)
+				 SELECT 
+				 	 tpltitle
+				 	, tpldatereg
+				 	, tpldatemod
+				 	, tplcontstype
+				 	, tplconts
+				 	, tplfileorg
+				 	, tplfilesave
+				 	, userid
+				 	, siteno
+				 	, tplmemo
+				 	, #userid#
+				 	, date_format(now(),'%Y%m%d%H%i%s')
+				 	, tplno 
+				 FROM ZTPL 
+				 WHERE tplno=#tplno#
+		]]>
+	</insert>
+	
+	
+	<delete id="ztplHisDAO.delete" parameterClass="ztplHisVo">
+		        DELETE 
+		        FROM ZTPLHIS 
+		        WHERE tplhisno=#tplhisno#
+
+		
+	</delete>	
+</sqlMap>

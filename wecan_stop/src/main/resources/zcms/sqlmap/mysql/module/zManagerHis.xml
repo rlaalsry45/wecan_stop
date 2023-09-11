@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZManagerHis">
+	<typeAlias alias="zManagerHisVo" type="com.z5.zcms.admsys.module.domain.ZManagerHisVo"/>
+	<typeAlias alias="zManagerVo" type="com.z5.zcms.admsys.module.domain.ZManagerVo"/>
+	<resultMap id="zManagerHisVo" class="zManagerHisVo"/>
+	
+	<select id="ZManagerHis.list" parameterClass="zManagerVo" resultClass="zManagerHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZMANAGERHIS
+			WHERE
+				managerno=#managerno#
+			ORDER BY
+				hisno DESC
+		]]>
+	</select>
+
+	<select id="ZManagerHis.getByPk" parameterClass="zManagerHisVo" resultClass="zManagerHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZMANAGERHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</select>
+	
+	<delete id="ZManagerHis.delete" parameterClass="zManagerHisVo">
+		<![CDATA[
+			DELETE FROM 
+				ZMANAGERHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</delete>
+	
+	<delete id="ZManagerHis.deleteMuti" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZMANAGERHIS
+			WHERE
+				managerno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<insert id="ZManagerHis.insert" parameterClass="zManagerVo">
+		<![CDATA[
+			INSERT INTO ZMANAGERHIS
+			(
+				
+				title,
+				skin,
+				contstype,
+				conts,
+				depart,
+				manager,
+				contact,
+				email,
+				added,
+				datereg,
+				datemod,
+				userid,
+				datehis,
+				managerno
+			)
+			SELECT
+				title,
+				skin,
+				contstype,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				depart,
+				manager,
+				contact,
+				email,
+				added,
+				datereg,
+				datemod,
+				#userid#,
+				now(),
+				managerno
+			FROM
+				ZMANAGER
+			WHERE
+				managerno=#managerno#
+		]]>
+	</insert>
+
+</sqlMap>

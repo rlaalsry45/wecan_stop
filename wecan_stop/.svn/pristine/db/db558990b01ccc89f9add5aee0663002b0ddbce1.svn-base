@@ -1,0 +1,671 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="java.util.*, java.text.*"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../lnb.jsp" flush="true" />
+            <div id="contents">
+                <form:form modelAttribute="ZStatisticsMngVo" name="frm" method="post">
+                    <div class="contents_top">
+                        <div class="location">
+                            <a href="/admsys/statisticsmng/">HOME</a> <a href="/admsys/statisticsmng/index.html">통계관리</a> <strong>사전질의</strong>
+                        </div>
+                        <%--<div class="TopSearch">
+                            <span>SEARCH AREA</span>
+                            <select style="height:27px;" name="cond1">
+                                <option value="term" <c:if test="${input.cond1=='term'}"><c:out value='selected' /></c:if>>기간</option>
+                            </select>
+                              <input id="d4311" name="sdate" class="Wdate" type="text" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'d4312\')}'})" value="<c:out value='${input.sdate}' />" style="width:128px;"/>
+                                        ~
+                              <input id="d4312" name="edate" class="Wdate" type="text" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'d4311\')}'})" value="<c:out value='${input.edate}' />" style="width:128px;"/>
+                            <input class="bt01" type="submit" value="검색" onclick="/admsys/statisticsmng/index.html" />
+                        </div> --%>
+                    </div>
+                    <div id="content">
+                        <ul class="homepagebbs">
+                            <li class="bg"><h3 class="sub">사전질의</h3></li> 
+                            <li>
+                            	<div id="wrap">
+									<div class="search_box">
+										<table>
+											<caption>검색</caption>
+											<colgroup>
+												<col style="width:250px;">
+												<col style="width:auto;">
+											</colgroup>
+											<tbody>
+												<tr>
+													<th>기&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;간</th>
+													<td>
+														<fmt:parseDate value="${input.sdate}" pattern="yyyy-MM-dd" var="isd" />
+														<fmt:parseDate value="${input.edate}" pattern="yyyy-MM-dd" var="ied" />
+														<div class="input_box">
+															<input type="date" id="sdate" name="sdate" class="date" value="<fmt:formatDate type="both" value="${isd}" pattern="yyyy-MM-dd" />" min="1970-01-01" max="2030-12-31" placeholder="년/월/일" style="width: 160px;">
+														</div>
+														~
+														<div class="input_box">
+															<input type="date" id="edate" name="edate" class="date" value="<fmt:formatDate type="both" value="${ied}" pattern="yyyy-MM-dd" />" min="1970-01-01" max="2030-12-31" placeholder="년/월/일" style="width: 160px;">
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<th>기&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;관</th>
+													<td>
+														<div class="input_box">
+															<input type="checkbox" name="org1" id="chk_public" value="gov" <c:if test="${input.org1 eq 'gov'}">checked</c:if>>
+															<label for="chk_public" class="on">공공</label>
+														</div>
+														<div class="input_box">
+															<input type="checkbox" name="org2" id="chk_private" value="priv" <c:if test="${input.org2 eq 'priv'}">checked</c:if>>
+															<label for="chk_private" class="on">민간</label>
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<th>유&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;형</th>
+													<td>
+														<div class="input_box">
+															<input type="checkbox" name="type1" id="chk_type1" value="A" <c:if test="${input.type1 eq 'A'}">checked</c:if>>
+															<label for="chk_type1" class="on">여성가족부신고사건(A)</label>
+														</div>
+														<div class="input_box">
+															<input type="checkbox" name="type2" id="chk_type2" value="B" <c:if test="${input.type2 eq 'B'}">checked</c:if>>
+															<label for="chk_type2" class="on">기관신청건(B)</label>
+														</div>
+														<div class="input_box">
+															<input type="checkbox" name="type3" id="chk_type3" value="C" <c:if test="${input.type3 eq 'C'}">checked</c:if>>
+															<label for="chk_type3" class="on">여가부선정/타부처이관(C)</label>
+														</div>
+														<div class="input_box">
+															<input type="checkbox" name="type4" id="chk_type4" value="D" <c:if test="${input.type4 eq 'D'}">checked</c:if>>
+															<label for="chk_type4" class="on">현장점검(D)</label>
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<th>기&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;관&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;코&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;드</th>
+													<td>
+														<div class="input_box basic">
+															<input type="text" name="orgId" id="orgId" value="${input.orgId}">
+														</div>
+													</td>
+												</tr>
+												<tr>
+													<th>전단일지번호(사건번호)</th>
+													<td>
+														<div class="input_box basic">
+															<input type="text" name="consulting_application_no" id="consulting_application_no" value="${input.consulting_application_no}">
+														</div>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+										<div class="btn_wrap">
+											<button class="search_btn" onclick="search();">조&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;회</button>
+										</div>
+									</div>
+									<br>
+									<div class="research_list">
+										<table>
+											<caption>사전질의</caption>
+											<colgroup>
+												<col style="width:auto;">
+												<col style="width:auto;">
+												<col style="width:auto;">
+												<col style="width:195px;">
+												<col style="width:195px;">
+												<col style="width:275px;">
+												<col style="width:225px;">
+											</colgroup>
+											<thead>
+												<tr>
+													<th colspan="5">질&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;문</th>
+													<th>답</th>
+													<th>선&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;택</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td class="td_first" colspan="5"><span class="cate">Ⅰ. 조직문화관련</span></td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5" rowspan="6"><span class="point_color">1.</span>소속기관의 유형</td>
+													<td>중앙부처/국가기관</td>
+													<td>${getPrequery.prequeryCnt01_1}</td>
+												</tr>
+												<tr>
+													<td>지방자치단체</td>
+													<td>${getPrequery.prequeryCnt01_2}</td>
+												</tr>
+												<tr>
+													<td>공직유관단체</td>
+													<td>${getPrequery.prequeryCnt01_3}</td>
+												</tr>
+												<tr>
+													<td>초·중·고교</td>
+													<td>${getPrequery.prequeryCnt01_4}</td>
+												</tr>
+												<tr>
+													<td>대학교</td>
+													<td>${getPrequery.prequeryCnt01_5}</td>
+												</tr>
+												<tr>
+													<td>민간/기타</td>
+													<td>${getPrequery.prequeryCnt01_6}</td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5" rowspan="8"><span class="point_color">2.</span>성희롱 방지 조직문화 진단을 신청하신 이유가 무엇인가요?</td>
+													<td>고충업무 담당자인데 업무에 대해 잘 모르고 있어서</td>
+													<td>${getPrequery.prequeryCnt02_1}</td>
+												</tr>
+												<tr>
+													<td>고충처리 절차나 지침은 마련해 두었는데 활성화가 안 되고 있는 것 같아서</td>
+													<td>${getPrequery.prequeryCnt02_2}</td>
+												</tr>
+												<tr>
+													<td>기관 내 사건처리절차와 지침 등을 마련 중인데 맞게 잘 준비하고 있는지 궁금해서</td>
+													<td>${getPrequery.prequeryCnt02_3}</td>
+												</tr>
+												<tr>
+													<td>사건처리를 한 번도 해보지 않아 어떻게 해야 할지 조언을 얻고 싶어서</td>
+													<td>${getPrequery.prequeryCnt02_4}</td>
+												</tr>
+												<tr>
+													<td>현재 기관 내 발생한 사건처리 중인데 지침에 맞게 잘 처리하고 있는지 긴가민가해서</td>
+													<td>${getPrequery.prequeryCnt02_5}</td>
+												</tr>
+												<tr>
+													<td>기관 내 사건 발생하여 처리 완료하였는데 후속조치 마련을 비롯한 자문이 필요해서</td>
+													<td>${getPrequery.prequeryCnt02_6}</td>
+												</tr>
+												<tr>
+													<td>기관의 성희롱·성폭행 예방 및 재발방지 대책을 체계적으로 수립하고 싶어서</td>
+													<td>${getPrequery.prequeryCnt02_7}</td>
+												</tr>
+												<tr>
+													<td>기타</td>
+													<td>${getPrequery.prequeryCnt02_8}</td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5" rowspan="2"><span class="point_color">3.</span>최근 2년간 발생한 내부 성 고충 사건이 있으신가요?</td>
+													<td>있음</td>
+													<td>${getPrequery.prequeryCnt03_1}</td>
+												</tr>
+												<tr>
+													<td>없음</td>
+													<td>${getPrequery.prequeryCnt03_2}</td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5"><span class="cate">사건처리과정</span></td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5"><span class="point_color">4.</span>기관에서 발생한 성희롱·성폭행 사건의 대상 유형은?</td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first align_center" colspan="3"><span class="point_color">피해자</span></td>
+													<td colspan="2"><span class="point_color">가해자</span></td>
+													<td></td>
+													<td></td>
+												</tr>
+												<c:forEach var="each" items="${getPrequery4List}">
+												<tr>
+													<td class="td_first align_center" colspan="3">${each.prequery4_1}</td>
+													<td colspan="2">${each.prequery4_2}</td>
+													<td></td>
+													<td></td>
+												</tr>
+												</c:forEach>
+												<tr>
+													<td class="td_first" colspan="5" rowspan="8"><span class="point_color">5.</span>어떤 경로로 사건을 최초 인지하였나요?</td>
+													<td>피해자가 고충상담창구로 직접 신고</td>
+													<td>${getPrequery.prequeryCnt05_1}</td>
+												</tr>
+												<tr>
+													<td>타 기관(수사기관 등)을 통해 인지</td>
+													<td>${getPrequery.prequeryCnt05_2}</td>
+												</tr>
+												<tr>
+													<td>피해자가 자신의 상급자를 통해 신고</td>
+													<td>${getPrequery.prequeryCnt05_3}</td>
+												</tr>
+												<tr>
+													<td>SNS, 언론보도를 통해 인지</td>
+													<td>${getPrequery.prequeryCnt05_4}</td>
+												</tr>
+												<tr>
+													<td>피해자 상담 과정에서 인지</td>
+													<td>${getPrequery.prequeryCnt05_5}</td>
+												</tr>
+												<tr>
+													<td>기관 실태조사 통해 인지</td>
+													<td>${getPrequery.prequeryCnt05_6}</td>
+												</tr>
+												<tr>
+													<td>동료/상급자가 직접 목격·신고</td>
+													<td>${getPrequery.prequeryCnt05_7}</td>
+												</tr>
+												<tr>
+													<td>기타 경로를 통해 인지</td>
+													<td>${getPrequery.prequeryCnt05_8}</td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5"><span class="point_color">6.</span>사건 진행 과정에서 구체적으로 어떤 조치가 이뤄졌나요?</td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5" rowspan="9"><span class="point_color">6-1.</span>피해자에 대한 조치사항</td>
+													<td>행위자와의 공간 분리</td>
+													<td>${getPrequery.prequeryCnt06_1_1}</td>
+												</tr>
+												<tr>
+													<td>의료비/심리치료비 지원</td>
+													<td>${getPrequery.prequeryCnt06_1_2}</td>
+												</tr>
+												<tr>
+													<td>휴가·유급</td>
+													<td>${getPrequery.prequeryCnt06_1_3_1}</td>
+												</tr>
+												<tr>
+													<td>휴가·무급</td>
+													<td>${getPrequery.prequeryCnt06_1_3_2}</td>
+												</tr>
+												<tr>
+													<td>심리상담</td>
+													<td>${getPrequery.prequeryCnt06_1_4}</td>
+												</tr>
+												<tr>
+													<td>행위자 조치 전 의견 청취</td>
+													<td>${getPrequery.prequeryCnt06_1_5}</td>
+												</tr>
+												<tr>
+													<td>상담/의료/법률지원 기관 연계</td>
+													<td>${getPrequery.prequeryCnt06_1_6}</td>
+												</tr>
+												<tr>
+													<td>기타조치사항/사건 처리 과정</td>
+													<td>${getPrequery.prequeryCnt06_1_7}</td>
+												</tr>
+												<tr>
+													<td>해당없음</td>
+													<td>${getPrequery.prequeryCnt06_1_8}</td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5" rowspan="7"><span class="point_color">6-2.</span>성희롱 행위자에 대한 조치사항</td>
+													<td>공간 분리</td>
+													<td>${getPrequery.prequeryCnt06_2_1}</td>
+												</tr>
+												<tr>
+													<td>행위자 대상 특별 교육</td>
+													<td>${getPrequery.prequeryCnt06_2_2}</td>
+												</tr>
+												<tr>
+													<td>수사기관 신고</td>
+													<td>${getPrequery.prequeryCnt06_2_3}</td>
+												</tr>
+												<tr>
+													<td>업무 제한(수업배제,업무배제)</td>
+													<td>${getPrequery.prequeryCnt06_2_4}</td>
+												</tr>
+												<tr>
+													<td>상급기관에 행위자 인사조치 요청</td>
+													<td>${getPrequery.prequeryCnt06_2_5}</td>
+												</tr>
+												<tr>
+													<td>징계(구체적인 징계 내용)</td>
+													<td>${getPrequery.prequeryCnt06_2_6}</td>
+												</tr>
+												<tr>
+													<td>해당없음</td>
+													<td>${getPrequery.prequeryCnt06_2_7}</td>
+												</tr>
+												<tr>
+													<td class="td_first depth" colspan="5" rowspan="6"><span class="point_color">6-2-1.</span>공간분리 사항</td>
+													<td>행위자 부서변경(수업변경,학급변경 등)</td>
+													<td>${getPrequery.prequeryCnt06_2_1_1}</td>
+												</tr>
+												<tr>
+													<td>행위자 휴가조치(일반,육아휴직 등)</td>
+													<td>${getPrequery.prequeryCnt06_2_1_2}</td>
+												</tr>
+												<tr>
+													<td>행위자 근무장소 변경</td>
+													<td>${getPrequery.prequeryCnt06_2_1_3}</td>
+												</tr>
+												<tr>
+													<td>행위자 대기발령 / 직위해제</td>
+													<td>${getPrequery.prequeryCnt06_2_1_4}</td>
+												</tr>
+												<tr>
+													<td>행위자 자택근무 명령</td>
+													<td>${getPrequery.prequeryCnt06_2_1_5}</td>
+												</tr>
+												<tr>
+													<td>기타</td>
+													<td>${getPrequery.prequeryCnt06_2_1_6}</td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5" rowspan="5"><span class="point_color">6-3.</span>2차 피해 또는 기관에 대한 조치사항</td>
+													<td>기관 실태조사 실시-전수조사</td>
+													<td>${getPrequery.prequeryCnt06_3_1_1}</td>
+												</tr>
+												<tr>
+													<td>기관 실태조사 실시-시건 관련 부서/인원 대상</td>
+													<td>${getPrequery.prequeryCnt06_3_1_2}</td>
+												</tr>
+												<tr>
+													<td>성희롱/2차 피해 방지 특별 예방 교육 실시</td>
+													<td>${getPrequery.prequeryCnt06_3_2}</td>
+												</tr>
+												<tr>
+													<td>기타 후속 조치사항</td>
+													<td>${getPrequery.prequeryCnt06_3_3}</td>
+												</tr>
+												<tr>
+													<td>해당없음</td>
+													<td>${getPrequery.prequeryCnt06_3_4}</td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5" rowspan="4"><span class="point_color">7.</span>기관 내 사건처리의 특이사항이 있었다면 체크해 주세요.</td>
+													<td>해당없음</td>
+													<td>${getPrequery.prequeryCnt07_1}</td>
+												</tr>
+												<tr>
+													<td>당사자 합의로 종결</td>
+													<td>${getPrequery.prequeryCnt07_2}</td>
+												</tr>
+												<tr>
+													<td>징계 이후 행위자(가해자)의 불복 절차 진행 중</td>
+													<td>${getPrequery.prequeryCnt07_3}</td>
+												</tr>
+												<tr>
+													<td>기타</td>
+													<td>${getPrequery.prequeryCnt07_4}</td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5"><span class="cate">기관 현황:일반</span></td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5" rowspan="3"><span class="point_color">8.</span>기관 내 사이버신고센터 설치 방식</td>
+													<td>별도 메일 계정 개설</td>
+													<td>${getPrequery.prequeryCnt08_1}</td>
+												</tr>
+												<tr>
+													<td>임직원 업무포털 내 개설</td>
+													<td>${getPrequery.prequeryCnt08_2}</td>
+												</tr>
+												<tr>
+													<td>외부업체 운영 사이트 이용<br>(ex.레드휘슬 등)</td>
+													<td>${getPrequery.prequeryCnt08_3}</td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5"><span class="point_color">9.</span>기관의 성고충 상담원의 구성과 성희롱고충심의위원회의 구성은 어떻게 이루어져 있나요?</td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first align_center" colspan="3"><span class="point_color">성고충 상담원 구성</span></td>
+													<td colspan="2"><span class="point_color">성희롱고충심의위원회 구성</span></td>
+													<td></td>
+													<td></td>
+												</tr>
+												<c:forEach var="each" items="${getPrequery9List}">
+                                        		<c:set var="prequery9_1Arr" value="${fn:split(each.prequery9_1,',')}" />
+                                        		<c:set var="prequery9_2Arr" value="${fn:split(each.prequery9_2,',')}" />
+                                        		<c:forEach var="prequery9_1" items="${prequery9_1Arr}" varStatus="status">
+													<c:if test="${status.count eq 1}">
+													<c:set var="prequery9_1_1" value="${prequery9_1}" />
+													</c:if>
+													<c:if test="${status.count eq 2}">
+													<c:set var="prequery9_1_2" value="${prequery9_1}" />
+													</c:if>
+													<c:if test="${status.count eq 3}">
+													<c:set var="prequery9_1_3" value="${prequery9_1}" />
+													</c:if>
+													<c:if test="${status.count eq 4}">
+													<c:set var="prequery9_1_4" value="${prequery9_1}" />
+													</c:if>
+												</c:forEach>
+												<c:forEach var="prequery9_2" items="${prequery9_2Arr}" varStatus="status">
+													<c:if test="${status.count eq 1}">
+													<c:set var="prequery9_2_1" value="${prequery9_2}" />
+													</c:if>
+													<c:if test="${status.count eq 2}">
+													<c:set var="prequery9_2_2" value="${prequery9_2}" />
+													</c:if>
+													<c:if test="${status.count eq 3}">
+													<c:set var="prequery9_2_3" value="${prequery9_2}" />
+													</c:if>
+												</c:forEach>
+												<tr>
+													<td class="td_first align_center" colspan="3">남자 ${prequery9_1_1}명, 여자 ${prequery9_1_2}명<br>고충상담원 교육* 이수: 총 ${prequery9_1_3}명 이수 ※이수연도(각각 작성): ${prequery9_1_4}</td>
+													<td colspan="2">남자 ${prequery9_2_1}명, 여자 ${prequery9_2_2}명<br>성희롱·성폭력방지 관련 전문가 위촉: ${prequery9_2_3}명</td>
+													<td></td>
+													<td></td>
+												</tr>
+												</c:forEach>
+												<tr>
+													<td class="td_first" colspan="5"><span class="point_color">10.</span>임직원 수와 남녀성비</td>
+													<td></td>
+													<td></td>
+												</tr>
+												<c:forEach var="each" items="${getPrequery10List}">
+                                        		<c:set var="prequery10_1Arr" value="${fn:split(each.prequery10_1,',')}" />
+                                        		<c:set var="prequery10_2Arr" value="${fn:split(each.prequery10_2,',')}" />
+                                        		<c:set var="prequery10_3Arr" value="${fn:split(each.prequery10_3,',')}" />
+                                        		<c:set var="prequery10_4Arr" value="${fn:split(each.prequery10_4,',')}" />
+                                        		<c:forEach var="prequery10_1" items="${prequery10_1Arr}" varStatus="status">
+													<c:if test="${status.count eq 1}">
+													<c:set var="prequery10_1_1" value="${prequery10_1}" />
+													</c:if>
+													<c:if test="${status.count eq 2}">
+													<c:set var="prequery10_1_2" value="${prequery10_1}" />
+													</c:if>
+													<c:if test="${status.count eq 3}">
+													<c:set var="prequery10_1_3" value="${prequery10_1}" />
+													</c:if>
+													<c:if test="${status.count eq 4}">
+													<c:set var="prequery10_1_4" value="${prequery10_1}" />
+													</c:if>
+												</c:forEach>
+												<c:forEach var="prequery10_2" items="${prequery10_2Arr}" varStatus="status">
+													<c:if test="${status.count eq 1}">
+													<c:set var="prequery10_2_1" value="${prequery10_2}" />
+													</c:if>
+													<c:if test="${status.count eq 2}">
+													<c:set var="prequery10_2_2" value="${prequery10_2}" />
+													</c:if>
+													<c:if test="${status.count eq 3}">
+													<c:set var="prequery10_2_3" value="${prequery10_2}" />
+													</c:if>
+													<c:if test="${status.count eq 4}">
+													<c:set var="prequery10_2_4" value="${prequery10_2}" />
+													</c:if>
+												</c:forEach>
+												<c:forEach var="prequery10_3" items="${prequery10_3Arr}" varStatus="status">
+													<c:if test="${status.count eq 1}">
+													<c:set var="prequery10_3_1" value="${prequery10_3}" />
+													</c:if>
+													<c:if test="${status.count eq 2}">
+													<c:set var="prequery10_3_2" value="${prequery10_3}" />
+													</c:if>
+													<c:if test="${status.count eq 3}">
+													<c:set var="prequery10_3_3" value="${prequery10_3}" />
+													</c:if>
+													<c:if test="${status.count eq 4}">
+													<c:set var="prequery10_3_4" value="${prequery10_3}" />
+													</c:if>
+												</c:forEach>
+												<c:forEach var="prequery10_4" items="${prequery10_4Arr}" varStatus="status">
+													<c:if test="${status.count eq 1}">
+													<c:set var="prequery10_4_1" value="${prequery10_4}" />
+													</c:if>
+													<c:if test="${status.count eq 2}">
+													<c:set var="prequery10_4_2" value="${prequery10_4}" />
+													</c:if>
+													<c:if test="${status.count eq 3}">
+													<c:set var="prequery10_4_3" value="${prequery10_4}" />
+													</c:if>
+													<c:if test="${status.count eq 4}">
+													<c:set var="prequery10_4_4" value="${prequery10_4}" />
+													</c:if>
+												</c:forEach>
+												<tr>
+													<td class="td_first sb_none"></td>
+													<td class="sb_none"><span class="point_color">임원</span></td>
+													<td class="sb_none"><span class="point_color">교·직원(정규)</span></td>
+													<td class="sb_none"><span class="point_color">교·직원(정규)</span></td>
+													<td class="sb_none"><span class="point_color">학생</span></td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first sb_none">남성</td>
+													<td class="sb_none">${prequery10_1_1}</td>
+													<td class="sb_none">${prequery10_1_2}</td>
+													<td class="sb_none">${prequery10_1_3}</td>
+													<td class="sb_none">${prequery10_1_4}</td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first sb_none">여성</td>
+													<td class="sb_none">${prequery10_2_1}</td>
+													<td class="sb_none">${prequery10_2_2}</td>
+													<td class="sb_none">${prequery10_2_3}</td>
+													<td class="sb_none">${prequery10_2_4}</td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first sb_none">합계</td>
+													<td class="sb_none">${prequery10_3_1}</td>
+													<td class="sb_none">${prequery10_3_2}</td>
+													<td class="sb_none">${prequery10_3_3}</td>
+													<td class="sb_none">${prequery10_3_4}</td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first sb_none">성비</td>
+													<td class="sb_none">${prequery10_4_1}</td>
+													<td class="sb_none">${prequery10_4_2}</td>
+													<td class="sb_none">${prequery10_4_3}</td>
+													<td class="sb_none">${prequery10_4_4}</td>
+													<td></td>
+													<td></td>
+												</tr>
+												</c:forEach>
+												<tr>
+													<td class="td_first" colspan="5"><span class="point_color">11.</span>조직의 특성</td>
+													<td></td>
+													<td></td>
+												</tr>
+												<c:forEach var="each" items="${getPrequery11List}">
+				                                <tr>
+				                                    <td class="td_first" colspan="3">${each.prequery11}</td>
+				                                </tr>
+				                                </c:forEach>
+												<tr>
+													<td class="td_first" colspan="5"><span class="cate">기타</span></td>
+													<td></td>
+													<td></td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5" rowspan="5"><span class="point_color">12.</span>작성자 정보</td>
+													<td>정규직</td>
+													<td>${getPrequery.prequeryCnt12_1}</td>
+												</tr>
+												<tr>
+													<td>무기계약직</td>
+													<td>${getPrequery.prequeryCnt12_2}</td>
+												</tr>
+												<tr>
+													<td>계약직</td>
+													<td>${getPrequery.prequeryCnt12_3}</td>
+												</tr>
+												<tr>
+													<td>담당하고 있습니다.</td>
+													<td>${getPrequery.prequeryCnt12_4}</td>
+												</tr>
+												<tr>
+													<td>담당하고 있지 않습니다.</td>
+													<td>${getPrequery.prequeryCnt12_5}</td>
+												</tr>
+												<tr>
+													<td class="td_first" colspan="5"><span class="point_color">13.</span>조직문화 진단을 통해 자문받고 싶은 사항이 있으시다면 기재해 주세요.</td>
+													<td></td>
+													<td></td>
+												</tr>
+												<c:forEach var="each" items="${getPrequery13List}">
+												<tr>
+                                       		  		<td class="td_first sb_none">① 사건처리절차 관련</td>
+                                       		  		<td colspan="4">${each.prequery13_1}</td>
+                                       		  		<td></td>
+                                       		  		<td></td>
+                                       		  	</tr>
+                                       		  	<tr>
+                                       		  		<td class="td_first sb_none">② 피해자 보호 방안 관련</td>
+                                       		  		<td colspan="4">${each.prequery13_2}</td>
+                                       		  		<td></td>
+                                       		  		<td></td>
+                                       		  	</tr>
+                                       		  	<tr>
+                                       		  		<td class="td_first sb_none">③ 성고충상담창구 관련</td>
+                                       		  		<td colspan="4">${each.prequery13_3}</td>
+                                       		  		<td></td>
+                                       		  		<td></td>
+                                       		  	</tr>
+                                       		  	<tr>
+                                       		  		<td class="td_first sb_none">④ 고충심의위원회 운영 관련</td>
+                                       		  		<td colspan="4">${each.prequery13_4}</td>
+                                       		  		<td></td>
+                                       		  		<td></td>
+                                       		  	</tr>
+                                       		  	<tr>
+                                       		  		<td class="td_first sb_none">⑤ 폭력예방교육 및<br>재발방지대책 관련</td>
+                                       		  		<td colspan="4">${each.prequery13_5}</td>
+                                       		  		<td></td>
+                                       		  		<td></td>
+                                       		  	</tr>
+                                       		  	<tr>
+                                       		  		<td class="td_first sb_none">⑥ 성희롱･성폭력예방지침 관련</td>
+                                       		  		<td colspan="4">${each.prequery13_6}</td>
+                                       		  		<td></td>
+                                       		  		<td></td>
+                                       		  	</tr>
+                                       		  	<tr>
+                                       		  		<td class="td_first sb_none">⑦ 기타</td>
+                                       		  		<td colspan="4">${each.prequery13_7}</td>
+                                       		  		<td></td>
+                                       		  		<td></td>
+                                       		  	</tr>
+												</c:forEach>
+											</tbody>
+										</table>
+<!-- 										<div class="btn_wrap"> -->
+<!-- 											<a href="#" class="excel_download"><span>엑셀 다운로드</span></a> -->
+<!-- 										</div> -->
+									</div>
+								</div>
+                            </li>
+                        </ul>
+                        <script type="text/javascript">
+	                        function search(){
+								$("#ZStatisticsMngVo").attr("action","/admsys/statisticsmng/prequeryrsrch.html");
+								$("#ZStatisticsMngVo").submit();
+							}
+						</script>
+                    </div>
+                    <!--/content-->
+                </form:form>
+            </div>
+            <!--/contents-->
+<jsp:include page="../end.jsp" flush="false" />

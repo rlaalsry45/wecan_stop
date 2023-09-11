@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Satisfaction">
+	<typeAlias alias="satisfactionVo" type="com.z5.zcms.admsys.module.domain.SatisfactionVo"/>
+	<resultMap id="satisfactionVo" class="com.z5.zcms.admsys.module.domain.SatisfactionVo"/>
+	
+	<insert id="Satisfaction.satisfactionWrite">
+		<![CDATA[
+			INSERT INTO SATISFACTION
+			(
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				target,
+				contstype,
+				conts,
+				added,
+				memo,
+				datereg,
+				userid,
+				mainview,
+				total
+			)
+			VALUES
+			(
+				
+				#title#,
+				#skin#,
+				#sdate#,
+				#edate#,
+				#target#,
+				#contstype#,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				#added#,
+				#memo#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#,
+				#mainview#,
+				#total#
+			)
+		]]>
+	</insert>
+	
+	<select id="Satisfaction.list" resultClass="satisfactionVo">
+		<![CDATA[
+			SELECT
+				satisfactionno,
+				title,
+				 (CASE WHEN now()<sdate THEN '진행전' WHEN now()>edate THEN '완료' ELSE '진행중' END) useyn,
+				target,
+				sdate,
+				edate,
+				sitetitle,
+				datereg,
+				skin
+			FROM 
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								a.*
+								,(SELECT GROUP_CONCAT(SITETITLE) FROM SATISFACTIONUSE where satisfactionno = a.satisfactionno) AS sitetitle
+								/*, get_sitetitle('SATISFACTIONUSE','satisfactionno', a.satisfactionno) as sitetitle*/
+							FROM
+								SATISFACTION a,   (SELECT @rownum := #m#) R
+							WHERE 1 = 1
+			]]>
+						   	<isNotEmpty prepend="and" property="cond1">
+						   		<isNotEmpty property="sdate">
+				           		<isNotEmpty property="edate">
+								<![CDATA[
+									DATE_FORMAT($cond1$,'%Y%m%d') BETWEEN #sdate# AND #edate#
+								]]>
+								</isNotEmpty>
+								</isNotEmpty>
+							</isNotEmpty>
+				           	<isNotEmpty prepend="and" property="cond2">
+				           		<isNotEmpty property="keyword">
+								<![CDATA[ UPPER($cond2$) LIKE CONCAT('%',UPPER(#keyword#),'%') ]]>
+								</isNotEmpty>
+							</isNotEmpty>
+			<![CDATA[
+							ORDER BY satisfactionno DESC
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+			
+			]]> 
+	</select>
+	
+	<select id="Satisfaction.getLatestSatisfaction" resultClass="satisfactionVo">
+		<![CDATA[
+			SELECT S.* 
+				FROM 
+					(SELECT * 
+						FROM SATISFACTION 
+						WHERE now() >= sdate 
+							AND now() <= edate
+						ORDER BY satisfactionno DESC) S
+				LIMIT 1
+			]]> 
+	</select>
+	
+	<select id="Satisfaction.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				SATISFACTION
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+		   		<isNotEmpty property="sdate">
+           		<isNotEmpty property="edate">
+				<![CDATA[
+					DATE_FORMAT($cond1$,'%Y%m%d') BETWEEN #sdate# AND #edate#
+				]]>
+				</isNotEmpty>
+				</isNotEmpty>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+	<select id="Satisfaction.getDetailInfo" resultClass="satisfactionVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				SATISFACTION
+			WHERE
+				satisfactionno=#satisfactionno#
+		]]>
+	</select>
+	
+	<delete id="Satisfaction.satisfactionDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				SATISFACTION
+			WHERE
+				satisfactionno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<delete id="Satisfaction.satisfactionUseDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				SATISFACTIONUSE
+			WHERE
+				satisfactionno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<update id="Satisfaction.update">
+		<![CDATA[
+		UPDATE
+			SATISFACTION
+		SET
+			title=#title#,
+			skin=#skin#,
+			sdate=#sdate#,
+			edate=#edate#,
+			target=#target#,
+			contstype=#contstype#,
+			conts=
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+			added=#added#,
+			memo=#memo#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#,
+			mainview=#mainview#
+		WHERE
+			satisfactionno=#satisfactionno#
+		]]>
+	</update>
+
+</sqlMap>

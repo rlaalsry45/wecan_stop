@@ -1,0 +1,738 @@
+package com.z5.zcms.admsys.user.domain;
+
+import java.io.Serializable;
+
+public class ZUser implements Serializable {
+    private static final long serialVersionUID = 1L;
+    public String licenseeno;
+    public String comname;
+    public String comtype;
+    public String comtel;
+    public String comaddrno;
+    public String comaddr;
+    public String comaddr2;
+    public String chargername;
+    public String chargemobile;
+    public String chargeremail;
+    private String userno;
+    private String userid;
+    private String userpasswd;
+    private String userstatus;
+    private String userscope;
+    private String userauth;
+    private String usergrpno;
+    private String usersectno;
+    private String usercate;
+    private String username;
+    private String usernick;
+    private String useremail;
+    private String usertel;
+    private String usermobile;
+    private String userfax;
+    private String usersocialno;
+    private String useripinno;
+    private String useraddrno;
+    private String useraddr;
+    private String useraddr2;
+    private String userbirth;
+    private String usersex;
+    private String usercnt;
+    private String userdatereg;
+    private String userdatemod;
+    private String useripreg;
+    private String useripmod;
+    private String usermemo;
+    private String useroutreason;
+    private String usermailling;
+    private String usersms;
+    private String userdatedrop;
+    private String userhomepage;
+    private String userhint;
+    private String useranswer;
+    private String enabled;
+    private String useridx;
+    private String admission_date;
+    private String admission_month;
+    private String usertelco;
+    private String userfaxco;
+    //battery 추가
+    private String usertype;//	회원형태 0:일반회원,1:과제회원
+    private String usercompanyname;//	회사명
+    private String usercompanystatus;//	회사직책
+    private String usertaskno;//	과제번호
+    private String usertasksection;//	과제회원구분
+    private String usertaskstatus;//	과제역할(직책)
+    private String istmppasswd;//임시비밀번호인가 아닌가
+
+    private String newsletter1;
+    private String newsletter2;
+    private String newsletter3;
+    private String newsletter4;
+    private String parentname;//보호자이름
+    private String username2;//영어이름
+    private String dept_nm;//부서명
+    private String work_grade;
+    private String work_title;
+    private String device; //PC,MOBILE,TABLET
+
+    //KPA
+    private String userconfirm;
+    private String userconfirmdate;
+    private String useroutrequest;
+    private String sort;
+
+
+    public String getLicenseeno() {
+        return licenseeno;
+    }
+
+    public void setLicenseeno(String licenseeno) {
+        this.licenseeno = licenseeno;
+    }
+
+    public String getComname() {
+        return comname;
+    }
+
+    public void setComname(String comname) {
+        this.comname = comname;
+    }
+
+    public String getComtype() {
+        return comtype;
+    }
+
+    public void setComtype(String comtype) {
+        this.comtype = comtype;
+    }
+
+    public String getComtel() {
+        return comtel;
+    }
+
+    public void setComtel(String comtel) {
+        this.comtel = comtel;
+    }
+
+    public String getComaddrno() {
+        return comaddrno;
+    }
+
+    public void setComaddrno(String comaddrno) {
+        this.comaddrno = comaddrno;
+    }
+
+    public String getComaddr() {
+        return comaddr;
+    }
+
+    public void setComaddr(String comaddr) {
+        this.comaddr = comaddr;
+    }
+
+    public String getComaddr2() {
+        return comaddr2;
+    }
+
+    public void setComaddr2(String comaddr2) {
+        this.comaddr2 = comaddr2;
+    }
+
+    public String getChargername() {
+        return chargername;
+    }
+
+    public void setChargername(String chargername) {
+        this.chargername = chargername;
+    }
+
+    public String getChargemobile() {
+        return chargemobile;
+    }
+
+    public void setChargemobile(String chargemobile) {
+        this.chargemobile = chargemobile;
+    }
+
+    public String getChargeremail() {
+        return chargeremail;
+    }
+
+    public void setChargeremail(String chargeremail) {
+        this.chargeremail = chargeremail;
+    }
+
+    public String getUserconfirmdate() {
+        return userconfirmdate;
+    }
+
+    public void setUserconfirmdate(String userconfirmdate) {
+        this.userconfirmdate = userconfirmdate;
+    }
+
+    public String getUserconfirm() {
+        return userconfirm;
+    }
+
+    public void setUserconfirm(String userconfirm) {
+        this.userconfirm = userconfirm;
+    }
+
+    public String getUseroutrequest() {
+        return useroutrequest;
+    }
+
+    public void setUseroutrequest(String useroutrequest) {
+        this.useroutrequest = useroutrequest;
+    }
+
+    public String getDept_nm() {
+        return dept_nm;
+    }
+
+    public void setDept_nm(String dept_nm) {
+        this.dept_nm = dept_nm;
+    }
+
+    public String getWork_grade() {
+        return work_grade;
+    }
+
+    public void setWork_grade(String work_grade) {
+        this.work_grade = work_grade;
+    }
+
+    public String getWork_title() {
+        return work_title;
+    }
+
+    public void setWork_title(String work_title) {
+        this.work_title = work_title;
+    }
+
+    public String getParentname() {
+        return parentname;
+    }
+
+    public void setParentname(String parentname) {
+        this.parentname = parentname;
+    }
+
+    public String getUsername2() {
+        return username2;
+    }
+
+    public void setUsername2(String username2) {
+        this.username2 = username2;
+    }
+
+    public String getNewsletter1() {
+        return newsletter1;
+    }
+
+    public void setNewsletter1(String newsletter1) {
+        this.newsletter1 = newsletter1;
+    }
+
+    public String getNewsletter2() {
+        return newsletter2;
+    }
+
+    public void setNewsletter2(String newsletter2) {
+        this.newsletter2 = newsletter2;
+    }
+
+    public String getNewsletter3() {
+        return newsletter3;
+    }
+
+    public void setNewsletter3(String newsletter3) {
+        this.newsletter3 = newsletter3;
+    }
+
+    public String getNewsletter4() {
+        return newsletter4;
+    }
+
+    public void setNewsletter4(String newsletter4) {
+        this.newsletter4 = newsletter4;
+    }
+
+    public String getUserno() {
+        return userno;
+    }
+
+    public void setUserno(String userno) {
+        this.userno = userno;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+
+    public String getUserpasswd() {
+        return userpasswd;
+    }
+
+    public void setUserpasswd(String userpasswd) {
+        this.userpasswd = userpasswd;
+    }
+
+    public String getUserstatus() {
+        return userstatus;
+    }
+
+    public void setUserstatus(String userstatus) {
+        this.userstatus = userstatus;
+    }
+
+    public String getUserscope() {
+        return userscope;
+    }
+
+    public void setUserscope(String userscope) {
+        this.userscope = userscope;
+    }
+
+    public String getUserauth() {
+        return userauth;
+    }
+
+    public void setUserauth(String userauth) {
+        this.userauth = userauth;
+    }
+
+    public String getUsergrpno() {
+        return usergrpno;
+    }
+
+    public void setUsergrpno(String usergrpno) {
+        this.usergrpno = usergrpno;
+    }
+
+    public String getUsersectno() {
+        return usersectno;
+    }
+
+    public void setUsersectno(String usersectno) {
+        this.usersectno = usersectno;
+    }
+
+    public String getUsercate() {
+        return usercate;
+    }
+
+    public void setUsercate(String usercate) {
+        this.usercate = usercate;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsernick() {
+        return usernick;
+    }
+
+    public void setUsernick(String usernick) {
+        this.usernick = usernick;
+    }
+
+    public String getUseremail() {
+        return useremail;
+    }
+
+    public void setUseremail(String useremail) {
+        this.useremail = useremail;
+    }
+
+    public String getUsertel() {
+        return usertel;
+    }
+
+    public void setUsertel(String usertel) {
+        this.usertel = usertel;
+    }
+
+    public String getUsermobile() {
+        return usermobile;
+    }
+
+    public void setUsermobile(String usermobile) {
+        this.usermobile = usermobile;
+    }
+
+    public String getUserfax() {
+        return userfax;
+    }
+
+    public void setUserfax(String userfax) {
+        this.userfax = userfax;
+    }
+
+    public String getUsersocialno() {
+        return usersocialno;
+    }
+
+    public void setUsersocialno(String usersocialno) {
+        this.usersocialno = usersocialno;
+    }
+
+    public String getUseripinno() {
+        return useripinno;
+    }
+
+    public void setUseripinno(String useripinno) {
+        this.useripinno = useripinno;
+    }
+
+    public String getUseraddrno() {
+        return useraddrno;
+    }
+
+    public void setUseraddrno(String useraddrno) {
+        this.useraddrno = useraddrno;
+    }
+
+    public String getUseraddr() {
+        return useraddr;
+    }
+
+    public void setUseraddr(String useraddr) {
+        this.useraddr = useraddr;
+    }
+
+    public String getUseraddr2() {
+        return useraddr2;
+    }
+
+    public void setUseraddr2(String useraddr2) {
+        this.useraddr2 = useraddr2;
+    }
+
+    public String getUserbirth() {
+        return userbirth;
+    }
+
+    public void setUserbirth(String userbirth) {
+        this.userbirth = userbirth;
+    }
+
+    public String getUsersex() {
+        return usersex;
+    }
+
+    public void setUsersex(String usersex) {
+        this.usersex = usersex;
+    }
+
+    public String getUsercnt() {
+        return usercnt;
+    }
+
+    public void setUsercnt(String usercnt) {
+        this.usercnt = usercnt;
+    }
+
+    public String getUserdatereg() {
+        return userdatereg;
+    }
+
+    public void setUserdatereg(String userdatereg) {
+        this.userdatereg = userdatereg;
+    }
+
+    public String getUserdatemod() {
+        return userdatemod;
+    }
+
+    public void setUserdatemod(String userdatemod) {
+        this.userdatemod = userdatemod;
+    }
+
+    public String getUseripreg() {
+        return useripreg;
+    }
+
+    public void setUseripreg(String useripreg) {
+        this.useripreg = useripreg;
+    }
+
+    public String getUseripmod() {
+        return useripmod;
+    }
+
+    public void setUseripmod(String useripmod) {
+        this.useripmod = useripmod;
+    }
+
+    public String getUsermemo() {
+        return usermemo;
+    }
+
+    public void setUsermemo(String usermemo) {
+        this.usermemo = usermemo;
+    }
+
+    public String getUseroutreason() {
+        return useroutreason;
+    }
+
+    public void setUseroutreason(String useroutreason) {
+        this.useroutreason = useroutreason;
+    }
+
+    public String getUsermailling() {
+        return usermailling;
+    }
+
+    public void setUsermailling(String usermailling) {
+        this.usermailling = usermailling;
+    }
+
+    public String getUsersms() {
+        return usersms;
+    }
+
+    public void setUsersms(String usersms) {
+        this.usersms = usersms;
+    }
+
+    public String getUserdatedrop() {
+        return userdatedrop;
+    }
+
+    public void setUserdatedrop(String userdatedrop) {
+        this.userdatedrop = userdatedrop;
+    }
+
+    public String getUserhomepage() {
+        return userhomepage;
+    }
+
+    public void setUserhomepage(String userhomepage) {
+        this.userhomepage = userhomepage;
+    }
+
+    public String getUserhint() {
+        return userhint;
+    }
+
+    public void setUserhint(String userhint) {
+        this.userhint = userhint;
+    }
+
+    public String getUseranswer() {
+        return useranswer;
+    }
+
+    public void setUseranswer(String useranswer) {
+        this.useranswer = useranswer;
+    }
+
+    public String getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(String enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getUsertype() {
+        return usertype;
+    }
+
+    public void setUsertype(String usertype) {
+        this.usertype = usertype;
+    }
+
+    public String getUsercompanyname() {
+        return usercompanyname;
+    }
+
+    public void setUsercompanyname(String usercompanyname) {
+        this.usercompanyname = usercompanyname;
+    }
+
+    public String getUsercompanystatus() {
+        return usercompanystatus;
+    }
+
+    public void setUsercompanystatus(String usercompanystatus) {
+        this.usercompanystatus = usercompanystatus;
+    }
+
+    public String getUsertaskno() {
+        return usertaskno;
+    }
+
+    public void setUsertaskno(String usertaskno) {
+        this.usertaskno = usertaskno;
+    }
+
+    public String getUsertasksection() {
+        return usertasksection;
+    }
+
+    public void setUsertasksection(String usertasksection) {
+        this.usertasksection = usertasksection;
+    }
+
+    public String getUsertaskstatus() {
+        return usertaskstatus;
+    }
+
+    public void setUsertaskstatus(String usertaskstatus) {
+        this.usertaskstatus = usertaskstatus;
+    }
+
+    public String getIstmppasswd() {
+        return istmppasswd;
+    }
+
+    public void setIstmppasswd(String istmppasswd) {
+        this.istmppasswd = istmppasswd;
+    }
+
+    public String getSort() {
+        return sort;
+    }
+
+    public void setSort(String sort) {
+        this.sort = sort;
+    }
+
+    public String getUseridx() {
+        return useridx;
+    }
+
+    public void setUseridx(String useridx) {
+        this.useridx = useridx;
+    }
+
+    public String getAdmission_date() {
+        return admission_date;
+    }
+
+    public void setAdmission_date(String admission_date) {
+        this.admission_date = admission_date;
+    }
+
+    public String getAdmission_month() {
+        return admission_month;
+    }
+
+    public void setAdmission_month(String admission_month) {
+        this.admission_month = admission_month;
+    }
+
+    public String getUserfaxco() {
+        return userfaxco;
+    }
+
+    public void setUserfaxco(String userfaxco) {
+        this.userfaxco = userfaxco;
+    }
+
+    public String getUsertelco() {
+        return usertelco;
+    }
+
+    public void setUsertelco(String usertelco) {
+        this.usertelco = usertelco;
+    }
+
+    public String getDevice() {
+		return device;
+	}
+
+	public void setDevice(String device) {
+		this.device = device;
+	}
+
+	@Override
+    public String toString() {
+        return "ZUser{" +
+                "licenseeno='" + licenseeno + '\'' +
+                ", comname='" + comname + '\'' +
+                ", comtype='" + comtype + '\'' +
+                ", comtel='" + comtel + '\'' +
+                ", comaddrno='" + comaddrno + '\'' +
+                ", comaddr='" + comaddr + '\'' +
+                ", comaddr2='" + comaddr2 + '\'' +
+                ", chargername='" + chargername + '\'' +
+                ", chargemobile='" + chargemobile + '\'' +
+                ", chargeremail='" + chargeremail + '\'' +
+                ", userno='" + userno + '\'' +
+                ", userid='" + userid + '\'' +
+                ", userpasswd='" + userpasswd + '\'' +
+                ", userstatus='" + userstatus + '\'' +
+                ", userscope='" + userscope + '\'' +
+                ", userauth='" + userauth + '\'' +
+                ", usergrpno='" + usergrpno + '\'' +
+                ", usersectno='" + usersectno + '\'' +
+                ", usercate='" + usercate + '\'' +
+                ", username='" + username + '\'' +
+                ", usernick='" + usernick + '\'' +
+                ", useremail='" + useremail + '\'' +
+                ", usertel='" + usertel + '\'' +
+                ", usermobile='" + usermobile + '\'' +
+                ", userfax='" + userfax + '\'' +
+                ", usersocialno='" + usersocialno + '\'' +
+                ", useripinno='" + useripinno + '\'' +
+                ", useraddrno='" + useraddrno + '\'' +
+                ", useraddr='" + useraddr + '\'' +
+                ", useraddr2='" + useraddr2 + '\'' +
+                ", userbirth='" + userbirth + '\'' +
+                ", usersex='" + usersex + '\'' +
+                ", usercnt='" + usercnt + '\'' +
+                ", userdatereg='" + userdatereg + '\'' +
+                ", userdatemod='" + userdatemod + '\'' +
+                ", useripreg='" + useripreg + '\'' +
+                ", useripmod='" + useripmod + '\'' +
+                ", usermemo='" + usermemo + '\'' +
+                ", useroutreason='" + useroutreason + '\'' +
+                ", usermailling='" + usermailling + '\'' +
+                ", usersms='" + usersms + '\'' +
+                ", userdatedrop='" + userdatedrop + '\'' +
+                ", userhomepage='" + userhomepage + '\'' +
+                ", userhint='" + userhint + '\'' +
+                ", useranswer='" + useranswer + '\'' +
+                ", enabled='" + enabled + '\'' +
+                ", useridx='" + useridx + '\'' +
+                ", admission_date='" + admission_date + '\'' +
+                ", admission_month='" + admission_month + '\'' +
+                ", usertelco='" + usertelco + '\'' +
+                ", userfaxco='" + userfaxco + '\'' +
+                ", usertype='" + usertype + '\'' +
+                ", usercompanyname='" + usercompanyname + '\'' +
+                ", usercompanystatus='" + usercompanystatus + '\'' +
+                ", usertaskno='" + usertaskno + '\'' +
+                ", usertasksection='" + usertasksection + '\'' +
+                ", usertaskstatus='" + usertaskstatus + '\'' +
+                ", istmppasswd='" + istmppasswd + '\'' +
+                ", newsletter1='" + newsletter1 + '\'' +
+                ", newsletter2='" + newsletter2 + '\'' +
+                ", newsletter3='" + newsletter3 + '\'' +
+                ", newsletter4='" + newsletter4 + '\'' +
+                ", parentname='" + parentname + '\'' +
+                ", username2='" + username2 + '\'' +
+                ", dept_nm='" + dept_nm + '\'' +
+                ", work_grade='" + work_grade + '\'' +
+                ", work_title='" + work_title + '\'' +
+                ", device='" + device + '\'' +
+                ", userconfirm='" + userconfirm + '\'' +
+                ", userconfirmdate='" + userconfirmdate + '\'' +
+                ", useroutrequest='" + useroutrequest + '\'' +
+                ", sort='" + sort + '\'' +
+                '}';
+    }
+}

@@ -1,0 +1,1010 @@
+package com.z5.zcms.admsys.consultingmng.domain;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.z5.zcms.admsys.common.domain.CommonVo;
+
+public class WConsultingMngVo extends CommonVo {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2136813525890473405L;
+
+	int NO = 0;
+	String consulting_history_no = "";
+	String manager = "";
+	String manager_name = "";// 담당자 이름
+	String consulting_type = "";
+	String tel_type = "";
+	String registration_date = "";
+	String received_type = "";
+	String contact_tel_no = "";
+	String consulting_req_type = "";
+	String contact_method_type = "";
+	String contact_method_type_etc = "";
+	String client_name = "";
+	String client_gender = "";
+	String client_belong = "";
+	String client_victim_rel_type = "";
+	String client_victim_rel_type_etc = "";
+	String victim_name = "";
+	String victim_gender_type = "";
+	String victim_belong = "";
+	String offender_name = "";
+	String offender_gender_type = "";
+	String offender_belong = "";
+	String offender_victim_rel_type = "";
+	String offender_victim_rel_type_etc = "";
+	String harm_first_type_rape = "";
+	String harm_first_type_harass = "";
+	String harm_first_type_verbal = "";
+	String harm_first_type_visual = "";
+	String harm_first_type_etc = "";
+	String harm_sec_type = "";
+	String harm_sec_type_security = "";
+	String harm_sec_type_seprate = "";
+	String harm_sec_type_intention = "";
+	String harm_sec_type_identity = "";
+	String harm_sec_etc = "";
+	String harm_sec_etc_txt = "";
+	String harm_etc = "";
+	String harm_etc_txt = "";
+	String harm_first_type_sexism = "";
+	String harm_first_type_unknown = "";
+	String harm_first_type_none = "";
+	String response_type_info = "";
+	String response_type_advice = "";
+	String response_type_intro_org = "";
+	String response_type_intro_org_women = "";
+	String response_type_intro_org_labor = "";
+	String response_type_intro_org_police = "";
+	String response_type_intro_org_education = "";
+	String response_type_intro_org_human = "";
+	String response_type_intro_org_etc = "";
+	String response_type_intro_org_etc_txt = "";
+	String response_type_service_rel = "";
+	String response_type_service_rel_con = "";
+	String response_type_service_rel_law = "";
+	String response_type_service_rel_medical = "";
+	String response_type_service_rel_etc = "";
+	String response_type_service_rel_etc_txt = "";
+	String response_type_etc = "";
+	String response_type_etc_txt = "";
+	String consulting_contents = "";
+	String consulting_contents_etc = "";
+	int boardno = 0;
+	String action_history_no = "";
+	String press_group_no = "";
+	String delete_reason = "";
+	String create_user = "";
+	String create_date = "";
+	String update_user = "";
+	String update_date = "";
+	String delete_user = "";
+	String delete_date = "";
+	String delete_yn = "";
+	String consulting_type_txt = "";
+	String received_type_txt = "";
+	String consulting_req_type_txt = "";
+	String contact_method_type_txt = "";
+	String client_gender_txt = "";
+	String client_victim_rel_type_txt = "";
+	String victim_gender_type_txt = "";
+	String offender_gender_type_txt = "";
+	String offender_victim_rel_type_txt = "";
+	String harm_first_type_txt = "";
+	String response_type_txt = "";
+	String response_type_service_txt = "";
+	String registration_date_from = "";
+	String registration_date_to = "";
+	String consulting_start_date = "";
+	String consulting_start_date_from = "";
+	String consulting_start_date_to = "";
+	String consulting_end_date = "";
+	String consulting_end_date_from = "";
+	String consulting_end_date_to = "";
+
+	List<String> delList = new ArrayList<String>();
+	List<String> updList = new ArrayList<String>();
+	String retStatus = "";
+	String retMessage = "";
+	String mode = "";
+	String edit_reason = "";
+	List<String> fileList = new ArrayList<String>();
+	List<String> pressList = new ArrayList<String>();
+
+	String bbsType = "";// P:담당관, A:전체상담
+
+	List<String> managerList = new ArrayList<String>();
+	String loginUserId = "";
+	String con_ac_type = "";
+
+	String excelName = "";
+
+	public WConsultingMngVo() {
+		super();
+		this.tel_type = "N";
+		this.consulting_req_type = "N";
+		this.harm_first_type_rape = "N";
+		this.harm_first_type_harass = "N";
+		this.harm_first_type_verbal = "N";
+		this.harm_first_type_visual = "N";
+		this.harm_first_type_etc = "N";
+		this.harm_sec_type = "N";
+		this.harm_sec_type_security = "N";
+		this.harm_sec_type_seprate = "N";
+		this.harm_sec_type_intention = "N";
+		this.harm_sec_type_identity = "N";
+		this.harm_sec_etc = "N";
+		this.harm_etc = "N";
+		this.harm_first_type_sexism = "N";
+		this.harm_first_type_unknown = "N";
+		this.harm_first_type_none = "N";
+		this.response_type_info = "N";
+		this.response_type_advice = "N";
+		this.response_type_intro_org = "N";
+		this.response_type_intro_org_women = "N";
+		this.response_type_intro_org_labor = "N";
+		this.response_type_intro_org_police = "N";
+		this.response_type_intro_org_education = "N";
+		this.response_type_intro_org_human = "N";
+		this.response_type_intro_org_etc = "N";
+		this.response_type_service_rel = "N";
+		this.response_type_service_rel_con = "N";
+		this.response_type_service_rel_law = "N";
+		this.response_type_service_rel_medical = "N";
+		this.response_type_service_rel_etc = "N";
+		this.response_type_etc = "N";
+	}
+
+	public int getNO() {
+		return NO;
+	}
+
+	public void setNO(int nO) {
+		NO = nO;
+	}
+
+	public String getConsulting_history_no() {
+		return consulting_history_no;
+	}
+
+	public void setConsulting_history_no(String consulting_history_no) {
+		this.consulting_history_no = consulting_history_no;
+	}
+
+	public String getManager() {
+		return manager;
+	}
+
+	public void setManager(String manager) {
+		this.manager = manager;
+	}
+
+	public String getConsulting_type() {
+		return consulting_type;
+	}
+
+	public void setConsulting_type(String consulting_type) {
+		this.consulting_type = consulting_type;
+	}
+
+	public String getTel_type() {
+		return tel_type;
+	}
+
+	public void setTel_type(String tel_type) {
+		this.tel_type = tel_type;
+	}
+
+	public String getRegistration_date() {
+		return registration_date;
+	}
+
+	public void setRegistration_date(String registration_date) {
+		this.registration_date = registration_date;
+	}
+
+	public String getReceived_type() {
+		return received_type;
+	}
+
+	public void setReceived_type(String received_type) {
+		this.received_type = received_type;
+	}
+
+	public String getContact_tel_no() {
+		return contact_tel_no;
+	}
+
+	public void setContact_tel_no(String contact_tel_no) {
+		this.contact_tel_no = contact_tel_no;
+	}
+
+	public String getConsulting_req_type() {
+		return consulting_req_type;
+	}
+
+	public void setConsulting_req_type(String consulting_req_type) {
+		this.consulting_req_type = consulting_req_type;
+	}
+
+	public String getContact_method_type() {
+		return contact_method_type;
+	}
+
+	public void setContact_method_type(String contact_method_type) {
+		this.contact_method_type = contact_method_type;
+	}
+
+	public String getContact_method_type_etc() {
+		return contact_method_type_etc;
+	}
+
+	public void setContact_method_type_etc(String contact_method_type_etc) {
+		this.contact_method_type_etc = contact_method_type_etc;
+	}
+
+	public String getClient_name() {
+		return client_name;
+	}
+
+	public void setClient_name(String client_name) {
+		this.client_name = client_name;
+	}
+
+	public String getClient_gender() {
+		return client_gender;
+	}
+
+	public void setClient_gender(String client_gender) {
+		this.client_gender = client_gender;
+	}
+
+	public String getClient_belong() {
+		return client_belong;
+	}
+
+	public void setClient_belong(String client_belong) {
+		this.client_belong = client_belong;
+	}
+
+	public String getClient_victim_rel_type() {
+		return client_victim_rel_type;
+	}
+
+	public void setClient_victim_rel_type(String client_victim_rel_type) {
+		this.client_victim_rel_type = client_victim_rel_type;
+	}
+
+	public String getClient_victim_rel_type_etc() {
+		return client_victim_rel_type_etc;
+	}
+
+	public void setClient_victim_rel_type_etc(String client_victim_rel_type_etc) {
+		this.client_victim_rel_type_etc = client_victim_rel_type_etc;
+	}
+
+	public String getVictim_name() {
+		return victim_name;
+	}
+
+	public void setVictim_name(String victim_name) {
+		this.victim_name = victim_name;
+	}
+
+	public String getVictim_gender_type() {
+		return victim_gender_type;
+	}
+
+	public void setVictim_gender_type(String victim_gender_type) {
+		this.victim_gender_type = victim_gender_type;
+	}
+
+	public String getVictim_belong() {
+		return victim_belong;
+	}
+
+	public void setVictim_belong(String victim_belong) {
+		this.victim_belong = victim_belong;
+	}
+
+	public String getOffender_name() {
+		return offender_name;
+	}
+
+	public void setOffender_name(String offender_name) {
+		this.offender_name = offender_name;
+	}
+
+	public String getOffender_gender_type() {
+		return offender_gender_type;
+	}
+
+	public void setOffender_gender_type(String offender_gender_type) {
+		this.offender_gender_type = offender_gender_type;
+	}
+
+	public String getOffender_belong() {
+		return offender_belong;
+	}
+
+	public void setOffender_belong(String offender_belong) {
+		this.offender_belong = offender_belong;
+	}
+
+	public String getOffender_victim_rel_type() {
+		return offender_victim_rel_type;
+	}
+
+	public void setOffender_victim_rel_type(String offender_victim_rel_type) {
+		this.offender_victim_rel_type = offender_victim_rel_type;
+	}
+
+	public String getOffender_victim_rel_type_etc() {
+		return offender_victim_rel_type_etc;
+	}
+
+	public void setOffender_victim_rel_type_etc(String offender_victim_rel_type_etc) {
+		this.offender_victim_rel_type_etc = offender_victim_rel_type_etc;
+	}
+
+	public String getHarm_first_type_rape() {
+		return harm_first_type_rape;
+	}
+
+	public void setHarm_first_type_rape(String harm_first_type_rape) {
+		this.harm_first_type_rape = harm_first_type_rape;
+	}
+
+	public String getHarm_first_type_harass() {
+		return harm_first_type_harass;
+	}
+
+	public void setHarm_first_type_harass(String harm_first_type_harass) {
+		this.harm_first_type_harass = harm_first_type_harass;
+	}
+
+	public String getHarm_first_type_verbal() {
+		return harm_first_type_verbal;
+	}
+
+	public void setHarm_first_type_verbal(String harm_first_type_verbal) {
+		this.harm_first_type_verbal = harm_first_type_verbal;
+	}
+
+	public String getHarm_first_type_visual() {
+		return harm_first_type_visual;
+	}
+
+	public void setHarm_first_type_visual(String harm_first_type_visual) {
+		this.harm_first_type_visual = harm_first_type_visual;
+	}
+
+	public String getHarm_first_type_etc() {
+		return harm_first_type_etc;
+	}
+
+	public void setHarm_first_type_etc(String harm_first_type_etc) {
+		this.harm_first_type_etc = harm_first_type_etc;
+	}
+
+	public String getHarm_sec_type() {
+		return harm_sec_type;
+	}
+
+	public void setHarm_sec_type(String harm_sec_type) {
+		this.harm_sec_type = harm_sec_type;
+	}
+
+	public String getHarm_sec_type_security() {
+		return harm_sec_type_security;
+	}
+
+	public void setHarm_sec_type_security(String harm_sec_type_security) {
+		this.harm_sec_type_security = harm_sec_type_security;
+	}
+
+	public String getHarm_sec_type_seprate() {
+		return harm_sec_type_seprate;
+	}
+
+	public void setHarm_sec_type_seprate(String harm_sec_type_seprate) {
+		this.harm_sec_type_seprate = harm_sec_type_seprate;
+	}
+
+	public String getHarm_sec_type_intention() {
+		return harm_sec_type_intention;
+	}
+
+	public void setHarm_sec_type_intention(String harm_sec_type_intention) {
+		this.harm_sec_type_intention = harm_sec_type_intention;
+	}
+
+	public String getHarm_sec_type_identity() {
+		return harm_sec_type_identity;
+	}
+
+	public void setHarm_sec_type_identity(String harm_sec_type_identity) {
+		this.harm_sec_type_identity = harm_sec_type_identity;
+	}
+
+	public String getHarm_sec_etc() {
+		return harm_sec_etc;
+	}
+
+	public void setHarm_sec_etc(String harm_sec_etc) {
+		this.harm_sec_etc = harm_sec_etc;
+	}
+
+	public String getHarm_sec_etc_txt() {
+		return harm_sec_etc_txt;
+	}
+
+	public void setHarm_sec_etc_txt(String harm_sec_etc_txt) {
+		this.harm_sec_etc_txt = harm_sec_etc_txt;
+	}
+
+	public String getHarm_etc() {
+		return harm_etc;
+	}
+
+	public void setHarm_etc(String harm_etc) {
+		this.harm_etc = harm_etc;
+	}
+
+	public String getHarm_etc_txt() {
+		return harm_etc_txt;
+	}
+
+	public void setHarm_etc_txt(String harm_etc_txt) {
+		this.harm_etc_txt = harm_etc_txt;
+	}
+
+	public String getHarm_first_type_sexism() {
+		return harm_first_type_sexism;
+	}
+
+	public void setHarm_first_type_sexism(String harm_first_type_sexism) {
+		this.harm_first_type_sexism = harm_first_type_sexism;
+	}
+
+	public String getHarm_first_type_unknown() {
+		return harm_first_type_unknown;
+	}
+
+	public void setHarm_first_type_unknown(String harm_first_type_unknown) {
+		this.harm_first_type_unknown = harm_first_type_unknown;
+	}
+
+	public String getHarm_first_type_none() {
+		return harm_first_type_none;
+	}
+
+	public void setHarm_first_type_none(String harm_first_type_none) {
+		this.harm_first_type_none = harm_first_type_none;
+	}
+
+	public String getResponse_type_info() {
+		return response_type_info;
+	}
+
+	public void setResponse_type_info(String response_type_info) {
+		this.response_type_info = response_type_info;
+	}
+
+	public String getResponse_type_advice() {
+		return response_type_advice;
+	}
+
+	public void setResponse_type_advice(String response_type_advice) {
+		this.response_type_advice = response_type_advice;
+	}
+
+	public String getResponse_type_intro_org() {
+		return response_type_intro_org;
+	}
+
+	public void setResponse_type_intro_org(String response_type_intro_org) {
+		this.response_type_intro_org = response_type_intro_org;
+	}
+
+	public String getResponse_type_intro_org_women() {
+		return response_type_intro_org_women;
+	}
+
+	public void setResponse_type_intro_org_women(String response_type_intro_org_women) {
+		this.response_type_intro_org_women = response_type_intro_org_women;
+	}
+
+	public String getResponse_type_intro_org_labor() {
+		return response_type_intro_org_labor;
+	}
+
+	public void setResponse_type_intro_org_labor(String response_type_intro_org_labor) {
+		this.response_type_intro_org_labor = response_type_intro_org_labor;
+	}
+
+	public String getResponse_type_intro_org_police() {
+		return response_type_intro_org_police;
+	}
+
+	public void setResponse_type_intro_org_police(String response_type_intro_org_police) {
+		this.response_type_intro_org_police = response_type_intro_org_police;
+	}
+
+	public String getResponse_type_intro_org_education() {
+		return response_type_intro_org_education;
+	}
+
+	public void setResponse_type_intro_org_education(String response_type_intro_org_education) {
+		this.response_type_intro_org_education = response_type_intro_org_education;
+	}
+
+	public String getResponse_type_intro_org_human() {
+		return response_type_intro_org_human;
+	}
+
+	public void setResponse_type_intro_org_human(String response_type_intro_org_human) {
+		this.response_type_intro_org_human = response_type_intro_org_human;
+	}
+
+	public String getResponse_type_intro_org_etc() {
+		return response_type_intro_org_etc;
+	}
+
+	public void setResponse_type_intro_org_etc(String response_type_intro_org_etc) {
+		this.response_type_intro_org_etc = response_type_intro_org_etc;
+	}
+
+	public String getResponse_type_intro_org_etc_txt() {
+		return response_type_intro_org_etc_txt;
+	}
+
+	public void setResponse_type_intro_org_etc_txt(String response_type_intro_org_etc_txt) {
+		this.response_type_intro_org_etc_txt = response_type_intro_org_etc_txt;
+	}
+
+	public String getResponse_type_service_rel() {
+		return response_type_service_rel;
+	}
+
+	public void setResponse_type_service_rel(String response_type_service_rel) {
+		this.response_type_service_rel = response_type_service_rel;
+	}
+
+	public String getResponse_type_service_rel_con() {
+		return response_type_service_rel_con;
+	}
+
+	public void setResponse_type_service_rel_con(String response_type_service_rel_con) {
+		this.response_type_service_rel_con = response_type_service_rel_con;
+	}
+
+	public String getResponse_type_service_rel_law() {
+		return response_type_service_rel_law;
+	}
+
+	public void setResponse_type_service_rel_law(String response_type_service_rel_law) {
+		this.response_type_service_rel_law = response_type_service_rel_law;
+	}
+
+	public String getResponse_type_service_rel_medical() {
+		return response_type_service_rel_medical;
+	}
+
+	public void setResponse_type_service_rel_medical(String response_type_service_rel_medical) {
+		this.response_type_service_rel_medical = response_type_service_rel_medical;
+	}
+
+	public String getResponse_type_service_rel_etc() {
+		return response_type_service_rel_etc;
+	}
+
+	public void setResponse_type_service_rel_etc(String response_type_service_rel_etc) {
+		this.response_type_service_rel_etc = response_type_service_rel_etc;
+	}
+
+	public String getResponse_type_etc() {
+		return response_type_etc;
+	}
+
+	public void setResponse_type_etc(String response_type_etc) {
+		this.response_type_etc = response_type_etc;
+	}
+
+	public String getResponse_type_etc_txt() {
+		return response_type_etc_txt;
+	}
+
+	public void setResponse_type_etc_txt(String response_type_etc_txt) {
+		this.response_type_etc_txt = response_type_etc_txt;
+	}
+
+	public String getConsulting_contents() {
+		return consulting_contents;
+	}
+
+	public void setConsulting_contents(String consulting_contents) {
+		this.consulting_contents = consulting_contents;
+	}
+
+	public String getConsulting_contents_etc() {
+		return consulting_contents_etc;
+	}
+
+	public void setConsulting_contents_etc(String consulting_contents_etc) {
+		this.consulting_contents_etc = consulting_contents_etc;
+	}
+
+	public int getBoardno() {
+		return boardno;
+	}
+
+	public void setBoardno(int boardno) {
+		this.boardno = boardno;
+	}
+
+	public String getAction_history_no() {
+		return action_history_no;
+	}
+
+	public void setAction_history_no(String action_history_no) {
+		this.action_history_no = action_history_no;
+	}
+
+	public String getPress_group_no() {
+		return press_group_no;
+	}
+
+	public void setPress_group_no(String press_group_no) {
+		this.press_group_no = press_group_no;
+	}
+
+	public String getDelete_reason() {
+		return delete_reason;
+	}
+
+	public void setDelete_reason(String delete_reason) {
+		this.delete_reason = delete_reason;
+	}
+
+	public String getCreate_user() {
+		return create_user;
+	}
+
+	public void setCreate_user(String create_user) {
+		this.create_user = create_user;
+	}
+
+	public String getCreate_date() {
+		return create_date;
+	}
+
+	public void setCreate_date(String create_date) {
+		this.create_date = create_date;
+	}
+
+	public String getUpdate_user() {
+		return update_user;
+	}
+
+	public void setUpdate_user(String update_user) {
+		this.update_user = update_user;
+	}
+
+	public String getUpdate_date() {
+		return update_date;
+	}
+
+	public void setUpdate_date(String update_date) {
+		this.update_date = update_date;
+	}
+
+	public String getDelete_user() {
+		return delete_user;
+	}
+
+	public void setDelete_user(String delete_user) {
+		this.delete_user = delete_user;
+	}
+
+	public String getDelete_date() {
+		return delete_date;
+	}
+
+	public void setDelete_date(String delete_date) {
+		this.delete_date = delete_date;
+	}
+
+	public String getDelete_yn() {
+		return delete_yn;
+	}
+
+	public void setDelete_yn(String delete_yn) {
+		this.delete_yn = delete_yn;
+	}
+
+	public List<String> getDelList() {
+		return delList;
+	}
+
+	public void setDelList(List<String> delList) {
+		this.delList = delList;
+	}
+
+	public String getRetStatus() {
+		return retStatus;
+	}
+
+	public void setRetStatus(String retStatus) {
+		this.retStatus = retStatus;
+	}
+
+	public String getRetMessage() {
+		return retMessage;
+	}
+
+	public void setRetMessage(String retMessage) {
+		this.retMessage = retMessage;
+	}
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+	public String getEdit_reason() {
+		return edit_reason;
+	}
+
+	public void setEdit_reason(String edit_reason) {
+		this.edit_reason = edit_reason;
+	}
+
+	public List<String> getFileList() {
+		return fileList;
+	}
+
+	public void setFileList(List<String> fileList) {
+		this.fileList = fileList;
+	}
+
+	public List<String> getPressList() {
+		return pressList;
+	}
+
+	public void setPressList(List<String> pressList) {
+		this.pressList = pressList;
+	}
+
+	public List<String> getManagerList() {
+		return managerList;
+	}
+
+	public void setManagerList(List<String> managerList) {
+		this.managerList = managerList;
+	}
+
+	public List<String> getUpdList() {
+		return updList;
+	}
+
+	public void setUpdList(List<String> updList) {
+		this.updList = updList;
+	}
+
+	public String getBbsType() {
+		return bbsType;
+	}
+
+	public void setBbsType(String bbsType) {
+		this.bbsType = bbsType;
+	}
+
+	public String getCon_ac_type() {
+		return con_ac_type;
+	}
+
+	public void setCon_ac_type(String con_ac_type) {
+		this.con_ac_type = con_ac_type;
+	}
+
+	public String getLoginUserId() {
+		return loginUserId;
+	}
+
+	public void setLoginUserId(String loginUserId) {
+		this.loginUserId = loginUserId;
+	}
+
+	public String getManager_name() {
+		return manager_name;
+	}
+
+	public void setManager_name(String manager_name) {
+		this.manager_name = manager_name;
+	}
+
+	public String getResponse_type_service_rel_etc_txt() {
+		return response_type_service_rel_etc_txt;
+	}
+
+	public void setResponse_type_service_rel_etc_txt(String response_type_service_rel_etc_txt) {
+		this.response_type_service_rel_etc_txt = response_type_service_rel_etc_txt;
+	}
+
+	public String getExcelName() {
+		return excelName;
+	}
+
+	public void setExcelName(String excelName) {
+		this.excelName = excelName;
+	}
+
+	public String getRegistration_date_from() {
+		return registration_date_from;
+	}
+
+	public void setRegistration_date_from(String registration_date_from) {
+		this.registration_date_from = registration_date_from;
+	}
+
+	public String getRegistration_date_to() {
+		return registration_date_to;
+	}
+
+	public void setRegistration_date_to(String registration_date_to) {
+		this.registration_date_to = registration_date_to;
+	}
+
+	public String getConsulting_start_date() {
+		return consulting_start_date;
+	}
+
+	public void setConsulting_start_date(String consulting_start_date) {
+		this.consulting_start_date = consulting_start_date;
+	}
+
+	public String getConsulting_start_date_from() {
+		return consulting_start_date_from;
+	}
+
+	public void setConsulting_start_date_from(String consulting_start_date_from) {
+		this.consulting_start_date_from = consulting_start_date_from;
+	}
+
+	public String getConsulting_start_date_to() {
+		return consulting_start_date_to;
+	}
+
+	public void setConsulting_start_date_to(String consulting_start_date_to) {
+		this.consulting_start_date_to = consulting_start_date_to;
+	}
+
+	public String getConsulting_end_date() {
+		return consulting_end_date;
+	}
+
+	public void setConsulting_end_date(String consulting_end_date) {
+		this.consulting_end_date = consulting_end_date;
+	}
+
+	public String getConsulting_end_date_from() {
+		return consulting_end_date_from;
+	}
+
+	public void setConsulting_end_date_from(String consulting_end_date_from) {
+		this.consulting_end_date_from = consulting_end_date_from;
+	}
+
+	public String getConsulting_end_date_to() {
+		return consulting_end_date_to;
+	}
+
+	public void setConsulting_end_date_to(String consulting_end_date_to) {
+		this.consulting_end_date_to = consulting_end_date_to;
+	}
+
+	public String getConsulting_req_type_txt() {
+		return consulting_req_type_txt;
+	}
+
+	public void setConsulting_req_type_txt(String consulting_req_type_txt) {
+		this.consulting_req_type_txt = consulting_req_type_txt;
+	}
+
+	public String getReceived_type_txt() {
+		return received_type_txt;
+	}
+
+	public void setReceived_type_txt(String received_type_txt) {
+		this.received_type_txt = received_type_txt;
+	}
+
+	public String getContact_method_type_txt() {
+		return contact_method_type_txt;
+	}
+
+	public void setContact_method_type_txt(String contact_method_type_txt) {
+		this.contact_method_type_txt = contact_method_type_txt;
+	}
+
+	public String getClient_victim_rel_type_txt() {
+		return client_victim_rel_type_txt;
+	}
+
+	public void setClient_victim_rel_type_txt(String client_victim_rel_type_txt) {
+		this.client_victim_rel_type_txt = client_victim_rel_type_txt;
+	}
+
+	public String getVictim_gender_type_txt() {
+		return victim_gender_type_txt;
+	}
+
+	public void setVictim_gender_type_txt(String victim_gender_type_txt) {
+		this.victim_gender_type_txt = victim_gender_type_txt;
+	}
+
+	public String getOffender_gender_type_txt() {
+		return offender_gender_type_txt;
+	}
+
+	public void setOffender_gender_type_txt(String offender_gender_type_txt) {
+		this.offender_gender_type_txt = offender_gender_type_txt;
+	}
+
+	public String getOffender_victim_rel_type_txt() {
+		return offender_victim_rel_type_txt;
+	}
+
+	public void setOffender_victim_rel_type_txt(String offender_victim_rel_type_txt) {
+		this.offender_victim_rel_type_txt = offender_victim_rel_type_txt;
+	}
+
+	public String getHarm_first_type_txt() {
+		return harm_first_type_txt;
+	}
+
+	public void setHarm_first_type_txt(String harm_first_type_txt) {
+		this.harm_first_type_txt = harm_first_type_txt;
+	}
+
+	public String getResponse_type_txt() {
+		return response_type_txt;
+	}
+
+	public void setResponse_type_txt(String response_type_txt) {
+		this.response_type_txt = response_type_txt;
+	}
+
+	public String getConsulting_type_txt() {
+		return consulting_type_txt;
+	}
+
+	public void setConsulting_type_txt(String consulting_type_txt) {
+		this.consulting_type_txt = consulting_type_txt;
+	}
+
+	public String getClient_gender_txt() {
+		return client_gender_txt;
+	}
+
+	public void setClient_gender_txt(String client_gender_txt) {
+		this.client_gender_txt = client_gender_txt;
+	}
+
+	public String getResponse_type_service_txt() {
+		return response_type_service_txt;
+	}
+
+	public void setResponse_type_service_txt(String response_type_service_txt) {
+		this.response_type_service_txt = response_type_service_txt;
+	}
+	
+}

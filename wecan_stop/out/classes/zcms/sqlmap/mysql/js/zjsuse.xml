@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Zjsuse">
+	
+	<typeAlias alias="zjsuseVo" type="com.z5.zcms.admsys.js.domain.ZjsUseVo"/>
+	<resultMap id="zjsuseVo" class="com.z5.zcms.admsys.js.domain.ZjsUseVo"/>
+
+	<delete id="zjsUseDAO.delete" parameterClass="java.util.List">
+		        DELETE 
+		    		FROM ZJSUSE 
+		  			WHERE JSNO IN
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+		
+	</delete>
+	
+	<delete id="zjsUseDAO.deleteOfSite" parameterClass="zjsUseVo">
+		<![CDATA[
+		        DELETE 
+		    		FROM ZJSUSE 
+		  			WHERE siteno = #siteno#
+		  			and menuno = #menuno#
+		]]>  
+	</delete>	
+		
+	<select id="zjsUseDAO.listCount" parameterClass="zjsUseVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*)
+			FROM
+				ZJSUSE
+			WHERE jsNO = #jsno#
+			  AND SITENO = #siteno#
+		]]>
+	</select>
+	
+	<insert id="zjsUseDAO.write">
+		<![CDATA[
+			INSERT INTO ZJSUSE
+			(
+				jsno
+				,siteno
+				,sitetitle
+				,userid
+				,menuno
+			) VALUES
+			(	
+				#jsno#
+				,#siteno#
+				,(SELECT sitetitle FROM ZSITE WHERE siteno = #siteno#)
+				,#userid#
+				,#menuno#
+			)
+		]]>
+	</insert>
+
+</sqlMap>

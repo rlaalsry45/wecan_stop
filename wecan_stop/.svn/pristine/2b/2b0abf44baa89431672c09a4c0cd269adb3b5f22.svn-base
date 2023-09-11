@@ -1,0 +1,820 @@
+package com.z5.zcms.admsys.statisticsmng.domain;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sourceforge.jtds.jdbc.DateTime;
+
+public class ZStatisticsMngVo implements Serializable {
+	
+	private static final long serialVersionUID = -3121061857173846435L;
+	
+	private String counselCnt;
+	private String counselCnt01;
+	private String counselCnt02;
+	private String counselCnt03;
+	private String counselCnt04;
+	private String counselCnt05;
+	private String counselCnt06;
+	private String counselCnt07;
+	private String counselCnt08;
+	private String counselCnt09;
+	private String counselCnt10;
+	private String counselCnt11;
+	private String counselCnt12;
+	private String counselCnt13;
+	private String counselCnt14;
+	private String counselCnt15;
+	
+	private String consultingCnt01;
+	private String consultingCnt02;
+	private String consultingCnt03;
+	private String consultingCnt04;
+	private String consultingCnt05;
+	private String consultingCnt06;
+	private String consultingCnt07;
+	private String consultingCnt08;
+	private String consultingCnt09;
+	private String consultingCnt10;
+	private String consultingCnt11;
+	private String consultingCnt12;
+	private String consultingCnt13;
+	private String consultingCnt14;
+	private String consultingCnt15;
+	private String consultingCnt16;
+	
+	private String satisfactionCnt01;
+	private String satisfactionCnt02;
+	private String satisfactionCnt03;
+	private String satisfactionCnt04;
+	private String satisfactionCnt05;
+	private String satisfactionCnt06;
+	private String surveyCnt01A;
+	private String surveyCnt02A;
+	private String surveyCnt03A;
+	private String surveyCnt04A;
+	private String surveyCnt05A;
+	private String surveyCnt06A;
+	private String surveyCnt07A;
+	private String surveyCnt08A;
+	private String surveyCnt01B;
+	private String surveyCnt02B;
+	private String surveyCnt03B;
+	private String surveyCnt04B;
+	private String surveyCnt05B;
+	private String surveyCnt06B;
+	private String surveyCnt07B;
+	private String surveyCnt08B;
+	
+	private String askno1opinion;
+	private String askno2opinion;
+	private String askno3opinion;
+	private String askno4opinion;
+	private String askno5opinion;
+	private String askno6opinion;
+	private String askno7opinion;
+	private String askno7_1_1opinion;
+	private String askno7_2_1opinion;
+	private String askno8opinion;
+	private String askno9;
+	private String askno10opinion;
+	private String askno11opinion;
+	private String askno12opinion;
+	private String askno13opinion;
+	
+	private String sdate;
+	private String edate;
+	private String org1;
+	private String org2;
+	private String orgType1;
+	private String orgType2;
+	private String type1;
+	private String type2;
+	private String type3;
+	private String type4;
+	private String orgId;
+	private String consulting_application_no;
+	
+	private String prequeryCnt01;
+	private String prequeryCnt02;
+	private String prequeryCnt03;
+	private String prequeryCnt04;
+	private String prequeryCnt05;
+	private String prequeryCnt06;
+	private String prequeryCnt07;
+	private String prequeryCnt08;
+	private String prequeryCnt09;
+	
+	private String prequery2_8opinion;
+	private String prequery4_1;
+	private String prequery4_2;
+	private String prequery5_8opinion;
+	private String prequery6_1_7opinion;
+	private String prequery6_2_6opinion;
+	private String prequery6_2_1_6opinion;
+	private String prequery6_3_3opinion;
+	private String prequery7_4opinion;
+	private String prequery9_1;
+	private String prequery9_2;
+	private String prequery10_1;
+	private String prequery10_2;
+	private String prequery10_3;
+	private String prequery10_4;
+	private String prequery11;
+	private String prequery13_1;
+	private String prequery13_2;
+	private String prequery13_3;
+	private String prequery13_4;
+	private String prequery13_5;
+	private String prequery13_6;
+	private String prequery13_7;
+	
+	List<String> typeList = new ArrayList<String>();
+	
+	public String getCounselCnt() {
+		return counselCnt;
+	}
+	public void setCounselCnt(String counselCnt) {
+		this.counselCnt = counselCnt;
+	}
+	public String getCounselCnt01() {
+		return counselCnt01;
+	}
+	public void setCounselCnt01(String counselCnt01) {
+		this.counselCnt01 = counselCnt01;
+	}
+	public String getCounselCnt02() {
+		return counselCnt02;
+	}
+	public void setCounselCnt02(String counselCnt02) {
+		this.counselCnt02 = counselCnt02;
+	}
+	public String getCounselCnt03() {
+		return counselCnt03;
+	}
+	public void setCounselCnt03(String counselCnt03) {
+		this.counselCnt03 = counselCnt03;
+	}
+	public String getCounselCnt04() {
+		return counselCnt04;
+	}
+	public void setCounselCnt04(String counselCnt04) {
+		this.counselCnt04 = counselCnt04;
+	}
+	public String getCounselCnt05() {
+		return counselCnt05;
+	}
+	public void setCounselCnt05(String counselCnt05) {
+		this.counselCnt05 = counselCnt05;
+	}
+	public String getCounselCnt06() {
+		return counselCnt06;
+	}
+	public void setCounselCnt06(String counselCnt06) {
+		this.counselCnt06 = counselCnt06;
+	}
+	public String getCounselCnt07() {
+		return counselCnt07;
+	}
+	public void setCounselCnt07(String counselCnt07) {
+		this.counselCnt07 = counselCnt07;
+	}
+	public String getCounselCnt08() {
+		return counselCnt08;
+	}
+	public void setCounselCnt08(String counselCnt08) {
+		this.counselCnt08 = counselCnt08;
+	}
+	public String getCounselCnt09() {
+		return counselCnt09;
+	}
+	public void setCounselCnt09(String counselCnt09) {
+		this.counselCnt09 = counselCnt09;
+	}
+	public String getCounselCnt10() {
+		return counselCnt10;
+	}
+	public void setCounselCnt10(String counselCnt10) {
+		this.counselCnt10 = counselCnt10;
+	}
+	public String getCounselCnt11() {
+		return counselCnt11;
+	}
+	public void setCounselCnt11(String counselCnt11) {
+		this.counselCnt11 = counselCnt11;
+	}
+	public String getCounselCnt12() {
+		return counselCnt12;
+	}
+	public void setCounselCnt12(String counselCnt12) {
+		this.counselCnt12 = counselCnt12;
+	}
+	public String getCounselCnt13() {
+		return counselCnt13;
+	}
+	public void setCounselCnt13(String counselCnt13) {
+		this.counselCnt13 = counselCnt13;
+	}
+	public String getCounselCnt14() {
+		return counselCnt14;
+	}
+	public void setCounselCnt14(String counselCnt14) {
+		this.counselCnt14 = counselCnt14;
+	}
+	public String getCounselCnt15() {
+		return counselCnt15;
+	}
+	public void setCounselCnt15(String counselCnt15) {
+		this.counselCnt15 = counselCnt15;
+	}
+	public String getConsultingCnt01() {
+		return consultingCnt01;
+	}
+	public void setConsultingCnt01(String consultingCnt01) {
+		this.consultingCnt01 = consultingCnt01;
+	}
+	public String getConsultingCnt02() {
+		return consultingCnt02;
+	}
+	public void setConsultingCnt02(String consultingCnt02) {
+		this.consultingCnt02 = consultingCnt02;
+	}
+	public String getConsultingCnt03() {
+		return consultingCnt03;
+	}
+	public void setConsultingCnt03(String consultingCnt03) {
+		this.consultingCnt03 = consultingCnt03;
+	}
+	public String getConsultingCnt04() {
+		return consultingCnt04;
+	}
+	public void setConsultingCnt04(String consultingCnt04) {
+		this.consultingCnt04 = consultingCnt04;
+	}
+	public String getConsultingCnt05() {
+		return consultingCnt05;
+	}
+	public void setConsultingCnt05(String consultingCnt05) {
+		this.consultingCnt05 = consultingCnt05;
+	}
+	public String getConsultingCnt06() {
+		return consultingCnt06;
+	}
+	public void setConsultingCnt06(String consultingCnt06) {
+		this.consultingCnt06 = consultingCnt06;
+	}
+	public String getConsultingCnt07() {
+		return consultingCnt07;
+	}
+	public void setConsultingCnt07(String consultingCnt07) {
+		this.consultingCnt07 = consultingCnt07;
+	}
+	public String getConsultingCnt08() {
+		return consultingCnt08;
+	}
+	public void setConsultingCnt08(String consultingCnt08) {
+		this.consultingCnt08 = consultingCnt08;
+	}
+	public String getConsultingCnt09() {
+		return consultingCnt09;
+	}
+	public void setConsultingCnt09(String consultingCnt09) {
+		this.consultingCnt09 = consultingCnt09;
+	}
+	public String getConsultingCnt10() {
+		return consultingCnt10;
+	}
+	public void setConsultingCnt10(String consultingCnt10) {
+		this.consultingCnt10 = consultingCnt10;
+	}
+	public String getConsultingCnt11() {
+		return consultingCnt11;
+	}
+	public void setConsultingCnt11(String consultingCnt11) {
+		this.consultingCnt11 = consultingCnt11;
+	}
+	public String getConsultingCnt12() {
+		return consultingCnt12;
+	}
+	public void setConsultingCnt12(String consultingCnt12) {
+		this.consultingCnt12 = consultingCnt12;
+	}
+	public String getConsultingCnt13() {
+		return consultingCnt13;
+	}
+	public void setConsultingCnt13(String consultingCnt13) {
+		this.consultingCnt13 = consultingCnt13;
+	}
+	public String getConsultingCnt14() {
+		return consultingCnt14;
+	}
+	public void setConsultingCnt14(String consultingCnt14) {
+		this.consultingCnt14 = consultingCnt14;
+	}
+	public String getConsultingCnt15() {
+		return consultingCnt15;
+	}
+	public void setConsultingCnt15(String consultingCnt15) {
+		this.consultingCnt15 = consultingCnt15;
+	}
+	public String getConsultingCnt16() {
+		return consultingCnt16;
+	}
+	public void setConsultingCnt16(String consultingCnt16) {
+		this.consultingCnt16 = consultingCnt16;
+	}
+	public String getSatisfactionCnt01() {
+		return satisfactionCnt01;
+	}
+	public void setSatisfactionCnt01(String satisfactionCnt01) {
+		this.satisfactionCnt01 = satisfactionCnt01;
+	}
+	public String getSatisfactionCnt02() {
+		return satisfactionCnt02;
+	}
+	public void setSatisfactionCnt02(String satisfactionCnt02) {
+		this.satisfactionCnt02 = satisfactionCnt02;
+	}
+	public String getSatisfactionCnt03() {
+		return satisfactionCnt03;
+	}
+	public void setSatisfactionCnt03(String satisfactionCnt03) {
+		this.satisfactionCnt03 = satisfactionCnt03;
+	}
+	public String getSatisfactionCnt04() {
+		return satisfactionCnt04;
+	}
+	public void setSatisfactionCnt04(String satisfactionCnt04) {
+		this.satisfactionCnt04 = satisfactionCnt04;
+	}
+	public String getSatisfactionCnt05() {
+		return satisfactionCnt05;
+	}
+	public void setSatisfactionCnt05(String satisfactionCnt05) {
+		this.satisfactionCnt05 = satisfactionCnt05;
+	}
+	public String getSatisfactionCnt06() {
+		return satisfactionCnt06;
+	}
+	public void setSatisfactionCnt06(String satisfactionCnt06) {
+		this.satisfactionCnt06 = satisfactionCnt06;
+	}
+	public String getAskno1opinion() {
+		return askno1opinion;
+	}
+	public void setAskno1opinion(String askno1opinion) {
+		this.askno1opinion = askno1opinion;
+	}
+	public String getAskno2opinion() {
+		return askno2opinion;
+	}
+	public void setAskno2opinion(String askno2opinion) {
+		this.askno2opinion = askno2opinion;
+	}
+	public String getAskno3opinion() {
+		return askno3opinion;
+	}
+	public void setAskno3opinion(String askno3opinion) {
+		this.askno3opinion = askno3opinion;
+	}
+	public String getAskno4opinion() {
+		return askno4opinion;
+	}
+	public void setAskno4opinion(String askno4opinion) {
+		this.askno4opinion = askno4opinion;
+	}
+	public String getAskno5opinion() {
+		return askno5opinion;
+	}
+	public void setAskno5opinion(String askno5opinion) {
+		this.askno5opinion = askno5opinion;
+	}
+	public String getAskno6opinion() {
+		return askno6opinion;
+	}
+	public void setAskno6opinion(String askno6opinion) {
+		this.askno6opinion = askno6opinion;
+	}
+	public String getAskno7opinion() {
+		return askno7opinion;
+	}
+	public void setAskno7opinion(String askno7opinion) {
+		this.askno7opinion = askno7opinion;
+	}
+	public String getAskno8opinion() {
+		return askno8opinion;
+	}
+	public void setAskno8opinion(String askno8opinion) {
+		this.askno8opinion = askno8opinion;
+	}
+	public String getAskno9() {
+		return askno9;
+	}
+	public void setAskno9(String askno9) {
+		this.askno9 = askno9;
+	}
+	public String getSurveyCnt01A() {
+		return surveyCnt01A;
+	}
+	public void setSurveyCnt01A(String surveyCnt01A) {
+		this.surveyCnt01A = surveyCnt01A;
+	}
+	public String getSurveyCnt02A() {
+		return surveyCnt02A;
+	}
+	public void setSurveyCnt02A(String surveyCnt02A) {
+		this.surveyCnt02A = surveyCnt02A;
+	}
+	public String getSurveyCnt03A() {
+		return surveyCnt03A;
+	}
+	public void setSurveyCnt03A(String surveyCnt03A) {
+		this.surveyCnt03A = surveyCnt03A;
+	}
+	public String getSurveyCnt04A() {
+		return surveyCnt04A;
+	}
+	public void setSurveyCnt04A(String surveyCnt04A) {
+		this.surveyCnt04A = surveyCnt04A;
+	}
+	public String getSurveyCnt05A() {
+		return surveyCnt05A;
+	}
+	public void setSurveyCnt05A(String surveyCnt05A) {
+		this.surveyCnt05A = surveyCnt05A;
+	}
+	public String getSurveyCnt06A() {
+		return surveyCnt06A;
+	}
+	public void setSurveyCnt06A(String surveyCnt06A) {
+		this.surveyCnt06A = surveyCnt06A;
+	}
+	public String getSurveyCnt07A() {
+		return surveyCnt07A;
+	}
+	public void setSurveyCnt07A(String surveyCnt07A) {
+		this.surveyCnt07A = surveyCnt07A;
+	}
+	public String getSurveyCnt08A() {
+		return surveyCnt08A;
+	}
+	public void setSurveyCnt08A(String surveyCnt08A) {
+		this.surveyCnt08A = surveyCnt08A;
+	}
+	public String getSurveyCnt01B() {
+		return surveyCnt01B;
+	}
+	public void setSurveyCnt01B(String surveyCnt01B) {
+		this.surveyCnt01B = surveyCnt01B;
+	}
+	public String getSurveyCnt02B() {
+		return surveyCnt02B;
+	}
+	public void setSurveyCnt02B(String surveyCnt02B) {
+		this.surveyCnt02B = surveyCnt02B;
+	}
+	public String getSurveyCnt03B() {
+		return surveyCnt03B;
+	}
+	public void setSurveyCnt03B(String surveyCnt03B) {
+		this.surveyCnt03B = surveyCnt03B;
+	}
+	public String getSurveyCnt04B() {
+		return surveyCnt04B;
+	}
+	public void setSurveyCnt04B(String surveyCnt04B) {
+		this.surveyCnt04B = surveyCnt04B;
+	}
+	public String getSurveyCnt05B() {
+		return surveyCnt05B;
+	}
+	public void setSurveyCnt05B(String surveyCnt05B) {
+		this.surveyCnt05B = surveyCnt05B;
+	}
+	public String getSurveyCnt06B() {
+		return surveyCnt06B;
+	}
+	public void setSurveyCnt06B(String surveyCnt06B) {
+		this.surveyCnt06B = surveyCnt06B;
+	}
+	public String getSurveyCnt07B() {
+		return surveyCnt07B;
+	}
+	public void setSurveyCnt07B(String surveyCnt07B) {
+		this.surveyCnt07B = surveyCnt07B;
+	}
+	public String getSurveyCnt08B() {
+		return surveyCnt08B;
+	}
+	public void setSurveyCnt08B(String surveyCnt08B) {
+		this.surveyCnt08B = surveyCnt08B;
+	}
+	public String getAskno7_1_1opinion() {
+		return askno7_1_1opinion;
+	}
+	public void setAskno7_1_1opinion(String askno7_1_1opinion) {
+		this.askno7_1_1opinion = askno7_1_1opinion;
+	}
+	public String getAskno7_2_1opinion() {
+		return askno7_2_1opinion;
+	}
+	public void setAskno7_2_1opinion(String askno7_2_1opinion) {
+		this.askno7_2_1opinion = askno7_2_1opinion;
+	}
+	public String getAskno10opinion() {
+		return askno10opinion;
+	}
+	public void setAskno10opinion(String askno10opinion) {
+		this.askno10opinion = askno10opinion;
+	}
+	public String getAskno11opinion() {
+		return askno11opinion;
+	}
+	public void setAskno11opinion(String askno11opinion) {
+		this.askno11opinion = askno11opinion;
+	}
+	public String getAskno12opinion() {
+		return askno12opinion;
+	}
+	public void setAskno12opinion(String askno12opinion) {
+		this.askno12opinion = askno12opinion;
+	}
+	public String getAskno13opinion() {
+		return askno13opinion;
+	}
+	public void setAskno13opinion(String askno13opinion) {
+		this.askno13opinion = askno13opinion;
+	}
+	public String getSdate() {
+		return sdate;
+	}
+	public void setSdate(String sdate) {
+		this.sdate = sdate;
+	}
+	public String getEdate() {
+		return edate;
+	}
+	public void setEdate(String edate) {
+		this.edate = edate;
+	}
+	public String getOrg1() {
+		return org1;
+	}
+	public void setOrg1(String org1) {
+		this.org1 = org1;
+	}
+	public String getOrg2() {
+		return org2;
+	}
+	public void setOrg2(String org2) {
+		this.org2 = org2;
+	}
+	public String getOrgType1() {
+		return orgType1;
+	}
+	public void setOrgType1(String orgType1) {
+		this.orgType1 = orgType1;
+	}
+	public String getOrgType2() {
+		return orgType2;
+	}
+	public void setOrgType2(String orgType2) {
+		this.orgType2 = orgType2;
+	}
+	public String getPrequeryCnt01() {
+		return prequeryCnt01;
+	}
+	public void setPrequeryCnt01(String prequeryCnt01) {
+		this.prequeryCnt01 = prequeryCnt01;
+	}
+	public String getPrequeryCnt02() {
+		return prequeryCnt02;
+	}
+	public void setPrequeryCnt02(String prequeryCnt02) {
+		this.prequeryCnt02 = prequeryCnt02;
+	}
+	public String getPrequeryCnt03() {
+		return prequeryCnt03;
+	}
+	public void setPrequeryCnt03(String prequeryCnt03) {
+		this.prequeryCnt03 = prequeryCnt03;
+	}
+	public String getPrequeryCnt04() {
+		return prequeryCnt04;
+	}
+	public void setPrequeryCnt04(String prequeryCnt04) {
+		this.prequeryCnt04 = prequeryCnt04;
+	}
+	public String getPrequeryCnt05() {
+		return prequeryCnt05;
+	}
+	public void setPrequeryCnt05(String prequeryCnt05) {
+		this.prequeryCnt05 = prequeryCnt05;
+	}
+	public String getPrequeryCnt06() {
+		return prequeryCnt06;
+	}
+	public void setPrequeryCnt06(String prequeryCnt06) {
+		this.prequeryCnt06 = prequeryCnt06;
+	}
+	public String getPrequeryCnt07() {
+		return prequeryCnt07;
+	}
+	public void setPrequeryCnt07(String prequeryCnt07) {
+		this.prequeryCnt07 = prequeryCnt07;
+	}
+	public String getPrequeryCnt08() {
+		return prequeryCnt08;
+	}
+	public void setPrequeryCnt08(String prequeryCnt08) {
+		this.prequeryCnt08 = prequeryCnt08;
+	}
+	public String getPrequeryCnt09() {
+		return prequeryCnt09;
+	}
+	public void setPrequeryCnt09(String prequeryCnt09) {
+		this.prequeryCnt09 = prequeryCnt09;
+	}
+	public String getPrequery2_8opinion() {
+		return prequery2_8opinion;
+	}
+	public void setPrequery2_8opinion(String prequery2_8opinion) {
+		this.prequery2_8opinion = prequery2_8opinion;
+	}
+	public String getPrequery4_1() {
+		return prequery4_1;
+	}
+	public void setPrequery4_1(String prequery4_1) {
+		this.prequery4_1 = prequery4_1;
+	}
+	public String getPrequery4_2() {
+		return prequery4_2;
+	}
+	public void setPrequery4_2(String prequery4_2) {
+		this.prequery4_2 = prequery4_2;
+	}
+	public String getPrequery5_8opinion() {
+		return prequery5_8opinion;
+	}
+	public void setPrequery5_8opinion(String prequery5_8opinion) {
+		this.prequery5_8opinion = prequery5_8opinion;
+	}
+	public String getPrequery6_1_7opinion() {
+		return prequery6_1_7opinion;
+	}
+	public void setPrequery6_1_7opinion(String prequery6_1_7opinion) {
+		this.prequery6_1_7opinion = prequery6_1_7opinion;
+	}
+	public String getPrequery6_2_6opinion() {
+		return prequery6_2_6opinion;
+	}
+	public void setPrequery6_2_6opinion(String prequery6_2_6opinion) {
+		this.prequery6_2_6opinion = prequery6_2_6opinion;
+	}
+	public String getPrequery6_2_1_6opinion() {
+		return prequery6_2_1_6opinion;
+	}
+	public void setPrequery6_2_1_6opinion(String prequery6_2_1_6opinion) {
+		this.prequery6_2_1_6opinion = prequery6_2_1_6opinion;
+	}
+	public String getPrequery6_3_3opinion() {
+		return prequery6_3_3opinion;
+	}
+	public void setPrequery6_3_3opinion(String prequery6_3_3opinion) {
+		this.prequery6_3_3opinion = prequery6_3_3opinion;
+	}
+	public String getPrequery7_4opinion() {
+		return prequery7_4opinion;
+	}
+	public void setPrequery7_4opinion(String prequery7_4opinion) {
+		this.prequery7_4opinion = prequery7_4opinion;
+	}
+	public String getPrequery9_1() {
+		return prequery9_1;
+	}
+	public void setPrequery9_1(String prequery9_1) {
+		this.prequery9_1 = prequery9_1;
+	}
+	public String getPrequery9_2() {
+		return prequery9_2;
+	}
+	public void setPrequery9_2(String prequery9_2) {
+		this.prequery9_2 = prequery9_2;
+	}
+	public String getPrequery10_1() {
+		return prequery10_1;
+	}
+	public void setPrequery10_1(String prequery10_1) {
+		this.prequery10_1 = prequery10_1;
+	}
+	public String getPrequery10_2() {
+		return prequery10_2;
+	}
+	public void setPrequery10_2(String prequery10_2) {
+		this.prequery10_2 = prequery10_2;
+	}
+	public String getPrequery10_3() {
+		return prequery10_3;
+	}
+	public void setPrequery10_3(String prequery10_3) {
+		this.prequery10_3 = prequery10_3;
+	}
+	public String getPrequery10_4() {
+		return prequery10_4;
+	}
+	public void setPrequery10_4(String prequery10_4) {
+		this.prequery10_4 = prequery10_4;
+	}
+	public String getPrequery11() {
+		return prequery11;
+	}
+	public void setPrequery11(String prequery11) {
+		this.prequery11 = prequery11;
+	}
+	public String getPrequery13_1() {
+		return prequery13_1;
+	}
+	public void setPrequery13_1(String prequery13_1) {
+		this.prequery13_1 = prequery13_1;
+	}
+	public String getPrequery13_2() {
+		return prequery13_2;
+	}
+	public void setPrequery13_2(String prequery13_2) {
+		this.prequery13_2 = prequery13_2;
+	}
+	public String getPrequery13_3() {
+		return prequery13_3;
+	}
+	public void setPrequery13_3(String prequery13_3) {
+		this.prequery13_3 = prequery13_3;
+	}
+	public String getPrequery13_4() {
+		return prequery13_4;
+	}
+	public void setPrequery13_4(String prequery13_4) {
+		this.prequery13_4 = prequery13_4;
+	}
+	public String getPrequery13_5() {
+		return prequery13_5;
+	}
+	public void setPrequery13_5(String prequery13_5) {
+		this.prequery13_5 = prequery13_5;
+	}
+	public String getPrequery13_6() {
+		return prequery13_6;
+	}
+	public void setPrequery13_6(String prequery13_6) {
+		this.prequery13_6 = prequery13_6;
+	}
+	public String getPrequery13_7() {
+		return prequery13_7;
+	}
+	public void setPrequery13_7(String prequery13_7) {
+		this.prequery13_7 = prequery13_7;
+	}
+	public List<String> getTypeList() {
+		return typeList;
+	}
+	public void setTypeList(List<String> typeList) {
+		this.typeList = typeList;
+	}
+	public String getType1() {
+		return type1;
+	}
+	public void setType1(String type1) {
+		this.type1 = type1;
+	}
+	public String getType2() {
+		return type2;
+	}
+	public void setType2(String type2) {
+		this.type2 = type2;
+	}
+	public String getType3() {
+		return type3;
+	}
+	public void setType3(String type3) {
+		this.type3 = type3;
+	}
+	public String getType4() {
+		return type4;
+	}
+	public void setType4(String type4) {
+		this.type4 = type4;
+	}
+	public String getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
+	public String getConsulting_application_no() {
+		return consulting_application_no;
+	}
+	public void setConsulting_application_no(String consulting_application_no) {
+		this.consulting_application_no = consulting_application_no;
+	}
+	
+}

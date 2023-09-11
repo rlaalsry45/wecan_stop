@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZmenuHis">
+
+	<typeAlias alias="zmenuHisVo" type="com.z5.zcms.admsys.menu.domain.ZmenuHisVo"/>
+	<resultMap id="zmenuHisVo" class="com.z5.zcms.admsys.menu.domain.ZmenuHisVo"/>
+	<resultMap id="zmenuVo" class="com.z5.zcms.admsys.menu.domain.ZmenuVo"/>
+
+
+ 	<select id="zmenuHisDAO.list" resultClass="zmenuHisVo">
+		<![CDATA[
+ 			select	*
+			from zmenuhis
+			where menuno =#menuno#
+			order by menuhisdate desc
+
+			]]>
+
+	</select>
+
+
+ 	<select id="zmenuHisDAO.selectbypk" parameterClass="zmenuHisVo" resultClass="zmenuVo">
+		<![CDATA[
+			SELECT
+				  '1' as menustatus
+				, '01' as menutype
+				, '1' as menuhis
+				, menuhistitle as menutitle
+				/*, menuhistoptype as menutoptype*/
+				, menuhistop as menutop
+				, menuhiscontstype as menucontstype
+				, menuhisconts as menuconts
+				/*, menuhisbtmtype as menubtmtype*/
+				, menuhisbtm as menubtm
+				, menuhissubcss as menusubcss
+				, menuhissubjs as menusubjs
+				, menuhisttpl as menuttpl
+				, menuhisltpl as menultpl
+				, menuhisrtpl as menurtpl
+				, menuhisbtpl as menubtpl
+			FROM ZMENUHIS WHERE menuhisno=#menuhisno#
+				]]>
+	</select>
+
+	<insert id="zmenuHisDAO.write">
+		<![CDATA[
+
+			INSERT INTO ZMENUHIS
+			(
+				  menuno
+				, menuhisdate
+				, userid
+				, menuhistitle
+				, menuhistop
+				, menuhisbtm
+				, menuhiscontstype
+				, menuhisconts
+				, menuhisdatereg
+				, menuhisdatemod
+				, menuhisuserid
+				, menuhissubcss
+				, menuhissubjs
+				, menuhisttpl
+				, menuhisltpl
+				, menuhisrtpl
+				, menuhisbtpl
+				, siteno
+				, menuhistags
+			)
+				 SELECT
+				 		 menuno
+					 	, date_format(now(),'%Y%m%d%H%i%s')
+					 	, #userid#
+					 	, menutitle
+					 	, menutop
+					 	, menubtm
+					 	, menucontstype
+					 	, menuconts
+					 	, menudatereg
+					 	, menudatemod
+					 	, userid
+					 	, menusubcss
+					 	, menusubjs
+					 	, menuttpl
+					 	, menultpl
+					 	, menurtpl
+					 	, menubtpl
+					 	, siteno
+					 	, menutags
+					 FROM ZMENU
+					 WHERE menuno=#menuno#
+					   AND siteno=#siteno#
+
+
+		]]>
+	</insert>
+
+
+	<delete id="zmenuHisDAO.delete" parameterClass="zmenuHisVo">
+		        DELETE
+		        FROM ZMENUHIS
+		        WHERE menuhisno=#menuhisno#
+	</delete>
+
+	<delete id="zmenuHisDAO.deleteAll" parameterClass="java.util.List">
+	        DELETE
+	   		FROM ZMENUHIS
+	 			where menuhisno in
+	        <iterate open="(" close=")" conjunction=",">
+	            #arrDeleteNo[]#
+	        </iterate>
+	</delete>
+
+	<delete id="zmenuHisDAO.deleteMenuWithSiteno" parameterClass="zmenuHisVo">
+		        DELETE
+		    		FROM ZMENUHIS
+		  			where menuno in
+		  			<iterate property="arrDeleteNo" open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+			          and siteno = #siteno#
+	</delete>
+
+	<select id="zmenuHisDAO.getHisListbySitenoAndMenuno" resultClass="zmenuHisVo">
+		<![CDATA[
+ 			SELECT	*
+			FROM ZMENUHIS
+			WHERE menuno =#menuno#
+			  and siteno =#siteno#
+			order by menuhisdate desc
+
+			]]>
+	</select>
+
+	<select id="zmenuHisDAO.historylist" parameterClass="zmenuHisVo" resultClass="zmenuHisVo">
+		SELECT
+			A.*
+		FROM
+			ZMENUHIS A
+		WHERE 1 = 1
+			AND MENUNO =#menuno#
+			AND SITENO =#siteno#
+		<isNotEmpty prepend="and" property="cond1">
+			<![CDATA[ $cond1$ >= #sdate# and $cond1$ <= #edate# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+			<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+		</isNotEmpty>
+		ORDER BY MENUHISNO DESC
+		<isGreaterThan property="n" compareValue="0">
+			LIMIT #m#, #n#
+		</isGreaterThan>
+	</select>
+
+	<!--<select id="zmenuHisDAO.historylist" parameterClass="zmenuHisVo" resultClass="zmenuHisVo">-->
+		<!--<![CDATA[-->
+			<!--SELECT *-->
+			<!--from -->
+				<!--(-->
+					<!--select-->
+						<!--row_.*-->
+						<!--, @rownum := @rownum + 1 AS rownum_-->
+					<!--from-->
+						<!--(-->
+							<!--select-->
+						        <!--a.*-->
+				    	   <!--from-->
+						        <!--zmenuhis a, (SELECT @rownum := 0) R-->
+						   <!--where 1 = 1-->
+						   <!--and menuno =#menuno#-->
+			  			   <!--and siteno =#siteno#-->
+			<!--]]>-->
+							<!--<isNotEmpty prepend="and" property="cond1">-->
+								<!--<![CDATA[ $cond1$ >= #sdate# and $cond1$ <= #edate# ]]>-->
+							<!--</isNotEmpty>-->
+							<!--<isNotEmpty prepend="and" property="cond2">-->
+								<!--<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>-->
+							<!--</isNotEmpty>-->
+			<!--<![CDATA[-->
+							<!--order by menuhisno desc-->
+					 	<!--) row_-->
+					<!--where-->
+						<!--@rownum < (#n#+#m#)-->
+				<!--) t-->
+			<!--where-->
+				<!--rownum_ > #m#-->
+			<!--]]> -->
+	<!--</select>-->
+
+
+	<select id="zmenuHisDAO.historylistCount" parameterClass="zmenuHisVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				zmenuhis
+			where 1 = 1
+			and menuno =#menuno#
+	   		and siteno =#siteno#
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# and $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					upper($cond2$) like '%'||upper(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+
+</sqlMap>

@@ -1,0 +1,65 @@
+/**common**/
+div#skin h1,h2,h3,h4,div,ol,ul,li,dl,dt,dd,p,form,input,select,textarea{margin:0;padding:0;font:12px 'dotum'}
+div#skin ul, ol, li {list-style:none}
+div#skin h1, h2, h3, h4, h5, h6 {margin:0px;padding:0px}
+div#skin table, th, td {border-collapse:collapse}
+div#skin img, fieldset{padding:0;border:0 none; vertical-align:top}
+div#skin a{text-decoration:none; border:0px}
+div#skin a:hover{text-decoration:underline; border:0px}
+div#skin hr, caption, legend{display:none}
+div#skin .bold{font-weight:bold}
+div#skin .invisible{display:none}
+div#skin h2#hd{display:none}
+div#skin caption{display:none}
+/*div#skin label{display:none}*/
+div#skin label.visible_label{display:inline}
+div#skin .img_hidden{display:none}
+div#skin input.bor_none{border:none}
+div#skin legend{display:none}
+div#skin .untitle{display:none}
+div#skin .clear{clear:both}
+.fl{float:left}
+.fr{float:right}
+.ftw{font-weight:bold}
+.fcr{color:#ff0000}
+.tal{text-align:left;}
+.tac{text-align:center;}
+.tar{text-align:right;}
+
+
+
+/**********고객제안민원****************/
+#min_table01 {width:650px;margin:15px 0 0 20px;	float:left;clear:both;display:inline;}
+#min_table01 p.min_btn01 {padding-top:20px;text-align:right;}
+#min_table01 p.min_btn01 a {padding-right:10px;}
+#min_table01 table.min_bord {width:100%;border-bottom:1px solid #C0E8CC;	border-top:2px solid #C0E8CC;font-size:11px;}
+#min_table01 table.min_bord th {
+	border-right:1px solid #E8E8E8;
+	height:20px;
+	color:#519C68; 
+	border-bottom:1px solid #E8E8E8;
+	background:#F5F5F5;
+	text-align:left;
+	padding-top:3px;
+	padding-left:15px;
+	padding-bottom:3px;
+	}
+#min_table01 table.min_bord th.in_img{border-left:1px solid #E8E8E8;}
+#min_table01 table.min_bord td {border-bottom:1px solid #E8E8E8;color:#636363;padding:3px 3px 3px 8px;line-height:18px;letter-spacing:-1px;}
+#min_table01 table.min_bord td.tblue {color:#5085BD;}
+#min_table01 table.min_bord td img {padding-top:2px;}
+#min_table01 table.min_bord th span.tred {color:#FF8A00;font-weight:normal;}
+#min_table01 table.min_bord td span.input_txt{margin-bottom:4px;}
+#min_table01 input.min_title {width:250px;border:1px solid #D5D5D5;height:16px; }
+#min_table01 input.min_name {width:130px;border:1px solid #D5D5D5;height:16px; }
+#min_table01 input.min_phon {width:34px;border:1px solid #D5D5D5;height:16px; }
+#min_table01 input.min_phon_s {width:40px;border:1px solid #D5D5D5;height:16px; }
+#min_table01 input.min_email {width:80px;border:1px solid #D5D5D5;height:17px; }
+#min_table01 input.min_radio {margin-left:8px;}
+#min_table01 select.min_email1 {border:1px solid #D5D5D5;height:18px; }
+#min_table01 select.phon {width:50px;border:1px solid #D5D5D5;height:18px;}
+#min_table01 textarea.min_in {width:520px;border:1px solid #D5D5D5;height:200px;} 
+#min_table01 p.me_btn01 {padding-top:30px;text-align:center;}
+#min_table01 p.me_btn01 a {padding-right:10px;}	
+
+input.bor1ddd{height:16px;padding-top:2px;border:1px solid #ddd;vertical-align:middle;}

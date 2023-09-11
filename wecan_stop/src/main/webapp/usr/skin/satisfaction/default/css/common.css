@@ -1,0 +1,68 @@
+@charset "utf-8";
+
+/* CSS Document */
+/* Hello World in CSS */
+* { margin:0; padding:0;}
+body,h1,h2,h3,h4,div,ol,ul,li,dl,dt,dd,p,form,input,select,textarea {margin:0;padding:0;font:11px '돋움';}
+select{padding-top:1px;}
+html {height:100%;width:100%;margin:0;padding:0;}
+body {height:100%;width:100%;margin:0px;padding:0px;}
+div, p, span {margin:0px;padding:0px;}
+dl, dt, dd {margin:0px;padding:0px;}
+ul, ol, li {margin:0px;padding:0px; list-style:none;}
+h1, h2, h3, h4, h5, h6 {margin:0px;padding:0px;}
+table, th, td {margin:0px;border:0px;border-collapse:collapse;}
+img,fieldset,iframe{border:0 none; vertical-align:top; }
+a {text-decoration:none; border:0px;}
+a:hover{text-decoration:underline; border:0px;}
+hr, caption, legend {display:none;}
+.png24{tmp:expression(setPng24(this));}
+.bold {font-weight:bold;}
+.invisible {display:none}
+fieldset {border:0px;padding:0px; margin:0px;}
+h2#hd{display:none;}
+caption {display:none;}
+label{display:none;}
+label.visible_label{display:inline;}
+.img_hidden {display:none;}
+input.bor_none {border:none;}
+legend {display:none;}
+.untitle {display:none;}
+.clear {clear:both;}
+.bd {border:1px solid #000;}
+
+
+/** font **/
+.fts10{font-size:10px;}
+.fts11{font-size:11px;}
+.fts12{font-size:12px;}
+.fts13{font-size:13px;}
+.fts14{font-size:14px;}
+.fts15{font-size:15px;}
+.fts16{font-size:16px;}
+.bold {font-weight:bold;}
+.normal_weight{font-weight:normal}
+.fcr {color:#ff0000;}
+.fco {color:#fd5503;}
+.fcoo {color:#FC6704;}
+.fcb {color:#2282C5;}
+.fcbb {color:#2282C5;font-weight:bold;}
+.ftwg{font-weight:bold;color:#4A7703;}
+.ftwgg{font-weight:bold;color:#50A816;}
+.center {margin: 0 auto;}
+.clear {clear:both}
+.tal{text-align:left !important}
+.tar{text-align:right !important}
+.dpno {display:none;}
+.posrel {position:relative;}
+.posabs {position:absolute;}
+
+#skip_navi {display:none;} 
+#skip_navi a {display:block; height:1px; width:1px; margin-bottom:-1px; overflow:hidden; text-align:center; color:#000; white-space:nowrap; font-size:12px;} 
+#skip_navi a:focus {height:auto; width:90%;} 
+#skip_navi a:active {height:auto; width:90%;} 
+/*기본 css  끝*/
+
+/*전체 페이지 관련*/
+div#wrap {width:100%;}
+

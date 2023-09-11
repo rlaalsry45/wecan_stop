@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap	namespace="ZAuthority">
+	<typeAlias alias="ZAuthHierachyVO" type="com.z5.zcms.admsys.authority.domain.ZAuthHierachyVO" />
+	<resultMap id="ZAuthHierachyVO" class="com.z5.zcms.admsys.authority.domain.ZAuthHierachyVO"/>
+	<typeAlias alias="ZAuthoritiesVO" type="com.z5.zcms.admsys.authority.domain.ZAuthoritiesVO" />
+	<resultMap id="ZAuthoritiesVO" class="com.z5.zcms.admsys.authority.domain.ZAuthoritiesVO"/>
+
+
+	<select id="ZAuthority.getList"  parameterClass="ZAuthHierachyVO" resultClass="ZAuthHierachyVO">
+		<![CDATA[
+			select *
+			from   zauthhierachy
+			order by authorder
+		]]>
+	</select>
+	<select id="ZAuthority.getAuthoritiesByUserid"  parameterClass="ZAuthoritiesVO" resultClass="ZAuthoritiesVO">
+		<![CDATA[
+			select *
+			from   zauthorities
+			where userid = #userid#
+		]]>
+	</select>
+	<delete id="ZAuthority.deleteAuthorites">
+		delete 
+		from zauthorities
+		where userid = #userid#
+	</delete>
+	
+	<delete id="ZAuthority.deleteAuth_emp" parameterClass="java.util.List">
+		delete 
+		from zauth_emp
+		where emp_no in
+        <iterate open="(" close=")" conjunction=",">
+            #arrDeleteNo[]#
+        </iterate>
+	</delete>
+	
+	<insert id="ZAuthority.addAuthories">
+		<![CDATA[
+ 			insert into zauthorities(
+ 				userid
+ 				,authority
+ 				
+ 			) values(
+ 				#userid#
+ 				,#authority#
+ 			)
+		]]>
+	</insert>
+	
+	<insert id="addZuth_emp">
+		<![CDATA[
+ 			insert into zauth_emp(
+ 				emp_no
+ 				,emp_nm
+ 				,emp_id
+ 				,hq_cd
+ 				,dept_cd
+ 				,holoff_cls 
+ 			) values(
+ 				(select userno from zuser where userid = #userid# and userauth != '5')
+ 				,#username#
+ 				,#userid#
+ 				,#work_grade#
+ 				,#workplace#
+ 				,0
+ 			)
+		]]>
+	</insert>
+	
+	<insert id="addZauthorities">
+		<![CDATA[
+ 			insert into zauthorities(
+ 				userid 
+				,authority
+ 			) values(
+ 				#userid# 
+ 				,'ROLE_ADMIN'
+ 			)
+		]]>
+	</insert>
+	
+	<!-- <insert id="write">
+		<![CDATA[
+ 			insert into zuser(
+ 				userno,
+ 				userid, 
+				userpasswd,
+				username,
+				username2,
+				useremail,
+				usersocialno,
+				parentname,
+				userdatereg,
+				usertype,
+				enabled,
+				newsletter1
+ 			) values(
+ 				zuser_no_seq.nextval,
+ 				#userid#, 
+				#userpasswd#,
+				#username#,
+				#username2#,
+				#useremail#,
+				#usersocialno#,
+				#parentname#,
+				now(),
+				#usertype#,
+				0,
+				#newsletter1#
+ 			)
+		]]>
+	</insert>
+	<insert id="ZUser.insertAuth">
+		<![CDATA[
+ 			insert into zauthorities(
+ 				id,
+ 				userid, 
+				authority
+ 			) values(
+ 				ZAUTHORITIES_ID_SEQ.nextval,
+ 				#userid#, 
+ 				#authority# 
+ 			)
+		]]>
+	</insert>
+
+
+	<select id="ZUser.total" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+		select
+			count(1) total
+		from
+			zuser
+		where
+			userauth = #userauth#
+		<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[ $cond1$ >= #sdate# and $cond1$ <= #edate# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+		</isNotEmpty>
+	</select>
+	
+	<select id="ZUser.getInfo" parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+			select *
+			from zuser
+			where userid=#userid#
+		]]>
+	</select>
+	
+	<select id="ZUser.listCount" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				zuser
+			where 1 = 1
+		]]>
+			<isNotEmpty property="cond5">
+		    	and b.authority =#cond5#
+		    </isNotEmpty>
+	   		
+			<isEqual property="authority" compareValue="ROLE_ADMIN">		
+		    	and userauth = '1'
+		    </isEqual> 
+		    
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[  
+						date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d") 
+					and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d") 
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[ 
+					upper(a.$cond2$) like concat('%',upper(#keyword#),'%') 
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond3">
+				<![CDATA[ upper(a.$cond3$) =#enabled# ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond4">
+				<![CDATA[ a.$cond4$ =#sitedivision# ]]>
+			</isNotEmpty>
+	</select>
+	
+	<select id="ZUser.getList" parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+			SELECT
+				*
+			from 
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        a.*
+				    	   from
+						        zuser a
+						   where 1 = 1
+			]]>
+							<isNotEmpty property="cond5">
+						    	and b.authority =#cond5#
+						    </isNotEmpty>
+					   		
+							<isEqual property="authority" compareValue="ROLE_ADMIN">		
+						    	and userauth = '1'
+						    </isEqual> 
+						    
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[  
+										date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d") 
+									and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d") 
+								]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ 
+									upper(a.$cond2$) like concat('%',upper(#keyword#),'%') 
+								]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond3">
+								<![CDATA[ upper(a.$cond3$) =#enabled# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond4">
+								<![CDATA[ a.$cond4$ =#sitedivision# ]]>
+							</isNotEmpty>
+			<![CDATA[
+							order by userno desc
+					 	) row_
+					where
+						@rownum < (#n#+#m#)
+				)
+			where
+				rownum_ > #m#
+			]]> 
+	</select>
+	
+	<select id="ZUser.getList" parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+			SELECT
+				*
+			from 
+		        zuser
+		    where userid in (select userid from zauthorities where authority not in ('ROLE_ADMIN'))
+		   ]]>
+		   		<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[  
+							date_format($cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d") 
+						and date_format($cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d") 
+					]]>
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="cond2">
+					<![CDATA[ 
+						upper($cond2$) like concat('%',upper(#keyword#),'%') 
+					]]>
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="cond3">
+					<![CDATA[ upper($cond3$) =#userstatus# ]]>
+				</isNotEmpty>
+		   <![CDATA[  			
+			ORDER BY userno desc 
+			LIMIT #m#, #n#	
+			]]>
+	</select>
+	
+	
+	<select id="ZUser.getSameUserIdCount"  resultClass="java.lang.Integer">
+		<![CDATA[
+			select count(*) cnt 
+			from   zuser 
+			where userid=#userid#
+		]]>
+	</select>
+	
+	<select id="ZUser.getSameUseremailCount"  resultClass="java.lang.Integer">
+		<![CDATA[
+			select count(*) cnt 
+			from   zuser 
+			where useremail=#useremail#
+		]]>
+	</select>
+	
+	<select id="ZUser.isUserInEpms"  resultClass="java.lang.String">
+		<![CDATA[
+			select  epms.F_USR_PSWD_CHECK(#userid#,#userpasswd#) from db_root
+		]]>
+	</select>
+	
+	<update id="ZUser.updateEnabledToOne">
+		<![CDATA[
+		update zuser
+		set enabled = 1
+		where userid =#userid#
+		]]>
+	</update>
+	<update id="ZUser.updateIsTmpPasswdFlagY">
+		<![CDATA[
+		update zuser
+		set istmppasswd = 'Y'
+		where userid =#userid#
+		]]>
+	</update>
+	<update id="ZUser.updateIsTmpPasswdFlagN">
+		<![CDATA[
+		update zuser
+		set istmppasswd = 'N'
+		where userid =#userid#
+		]]>
+	</update>
+	<update id="ZUser.updateUserPasswd">
+		<![CDATA[
+		update zuser
+		set 
+			userpasswd = #userpasswd#
+			,istmppasswd = 'N'
+		where userid =#userid#
+		]]>
+	</update>
+	
+	<select id="ZUser.login"  parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+			select *
+			from   zuser 
+			where userid=#userid#
+			  and userpasswd = #userpasswd#
+		]]>
+	</select>
+	<update id="ZUser.update">
+		<![CDATA[
+			update zuser
+			SET 
+		]]>
+		<isNotEmpty property="userpasswd"> 
+				userpasswd   = #userpasswd#,
+		</isNotEmpty>
+		<![CDATA[
+				 newsletter1 = #newsletter1#
+			WHERE userid=#userid#
+		]]>
+	</update>
+	
+	<delete id="ZUser.deleteOneUser">
+		delete 
+		from zuser
+		where userid = #userid#
+	</delete>
+	<delete id="ZUser.deleteOneAuth">
+		delete 
+		from zauthorities
+		where userid = #userid#
+	</delete>
+	
+	<delete id="ZUser.delete" parameterClass="java.util.List">
+		delete 
+		from zuser
+		where userno in
+        <iterate open="(" close=")" conjunction=",">
+            #arrDeleteNo[]#
+        </iterate>
+	</delete>
+	
+	<delete id="ZUser.deleteAuth" parameterClass="java.util.List">
+		delete 
+		from zauthorities
+		where userid in (select userid from zuser where userno in 
+        <iterate open="(" close=")" conjunction=",">
+            #arrDeleteNo[]#
+        </iterate>
+        )
+	</delete>
+	<select id="ZUser.selectbypk"  parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+			select 
+				*
+			from zuser 
+			where userno=#userno#
+		]]>
+	</select>
+	 -->
+</sqlMap>

@@ -1,0 +1,897 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="w_counselor">
+    <typeAlias alias="WCounselorVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.WCounselorVo" />
+	<resultMap id="WCounselorVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.WCounselorVo"/>
+	<typeAlias alias="WOrganizationVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.WOrganizationVo" />
+	<resultMap id="WOrganizationVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.WOrganizationVo"/>
+	<typeAlias alias="GovInfoVo" type="com.z5.zcms.frontsys.front.domain.GovInfoVo" />
+	<resultMap id="GovInfoVo" class="com.z5.zcms.frontsys.front.domain.GovInfoVo"/>
+	<typeAlias alias="WOrgCultureDigMngVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.WOrgCultureDigMngVo" />
+	<resultMap id="WOrgCultureDigMngVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.WOrgCultureDigMngVo"/>
+	<typeAlias alias="WConsultingActionOldApplicationVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.WConsultingActionOldApplicationVo"/>
+	<resultMap id="WConsultingActionOldApplicationVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.WConsultingActionOldApplicationVo"/>
+	<typeAlias alias="WConsultingActionOldDeclarationVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.WConsultingActionOldDeclarationVo"/>
+	<resultMap id="WConsultingActionOldDeclarationVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.WConsultingActionOldDeclarationVo"/>
+	
+    <select id="w_counselor.listCount" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                w_counselor a
+            where 1=1
+            and delYn != 'Q'
+
+        ]]>
+        	<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				startDt between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>     
+			       
+			<isNotEmpty prepend="AND" property="keyword">
+			<isEqual property="cond2" compareValue="counselName">
+			<![CDATA[			
+				counselName LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>
+			<isEqual property="cond2" compareValue="org">
+			<![CDATA[			
+				org LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>        	
+			</isNotEmpty>
+
+    </select>
+
+    <select id="w_counselor.getList" parameterClass="WCounselorVo" resultClass="WCounselorVo">
+        <![CDATA[
+        
+            select
+				counselNum,
+				counselName,
+				org,
+				region,
+				startDt,
+				actYn,
+				phoneNum,
+				concat(zu.USERNAME,'(',regUser,')') regUser,
+				regDt                
+            from
+                w_counselor
+            left join zuser zu
+            on regUser = zu.userid
+            where 1=1
+            and delYn != 'Q'
+            
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				startDt between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>     
+			       
+			<isNotEmpty prepend="AND" property="keyword">
+			<isEqual property="cond2" compareValue="counselName">
+			<![CDATA[			
+				counselName LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>
+			<isEqual property="cond2" compareValue="org">
+			<![CDATA[			
+				org LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>        	
+			</isNotEmpty>            
+            
+            ORDER BY
+                counselNum desc
+            LIMIT #m#, #n#
+
+    </select>
+    
+    <insert id="w_counselor.actionRegistration" parameterClass="WCounselorVo">
+        <![CDATA[
+        
+            insert into w_counselor
+            (
+				counselName,
+				org,
+				region,
+				startDt,
+				actYn,
+				phoneNum,
+				regUser,
+				regDt,
+				delYn
+			)
+			values
+			(
+			#counselName#,
+			#org#,
+			#region#,
+			#startDt#,
+			#actYn#,
+			#phoneNum#,
+			#regUser#,
+			now(),
+			'N'
+			)
+				                
+        ]]>
+        
+        <selectKey keyProperty="counselNum" resultClass="Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+
+    </insert>    
+    
+    <select id="w_counselor.view" parameterClass="WCounselorVo" resultClass="WCounselorVo">
+        <![CDATA[
+        
+            select
+				counselNum,
+				counselName,
+				org,
+				region,
+				DATE_FORMAT(startDt, '%Y-%m-%d') AS startDt,
+				actYn,
+				phoneNum,
+				regUser,
+				regDt
+				                
+            from
+                w_counselor
+            where counselNum = #counselNum#
+            
+        ]]>
+
+    </select>    
+    
+    <update id="w_counselor.actionUpdate" parameterClass="WCounselorVo">
+        <![CDATA[
+        
+            update w_counselor
+            set
+				counselName = #counselName#,
+				org = #org#,
+				region = #region#,
+				startDt = #startDt#,
+				actYn = #actYn#,
+				phoneNum = #phoneNum#,
+				regUser = #regUser#,
+				regDt = now()
+            where counselNum = #counselNum#
+				                
+        ]]>
+
+    </update>    
+
+    <update id="w_counselor.delete" parameterClass="WCounselorVo">
+        <![CDATA[
+        
+            update w_counselor
+            set
+				regUser = #regUser#,
+				regDt = now(),
+				delYn = 'Q'
+            where counselNum IN
+		]]>
+		<iterate property="delList" open="(" close=")" conjunction=",">
+			#delList[]#
+		</iterate>				                
+
+    </update>     
+    
+    <select id="w_organization.orgListCount" parameterClass="WOrganizationVo" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+				w_organization a
+				left outer join
+				zuser b 
+				on
+				a.ORGANIZATION_ID  = b.CHARGEORGID 
+            where 1=1 
+        	]]>
+		   	<isNotEmpty prepend="and" property="cond1">
+		   		<isNotEmpty property="sdate">
+           		<isNotEmpty property="edate">
+				<![CDATA[ date_format(a.$cond1$,'%Y%m%d') between #sdate# and #edate# ]]>
+				</isNotEmpty>
+				</isNotEmpty>
+			</isNotEmpty>
+           	<isNotEmpty prepend="and" property="cond2">
+           		<isNotEmpty property="keyword">
+				<![CDATA[ UPPER(a.$cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+				</isNotEmpty>
+			</isNotEmpty>
+
+    </select>
+
+    <select id="w_organization.getOrgList" parameterClass="WOrganizationVo" resultClass="WOrganizationVo">
+        <![CDATA[
+        
+            select
+				a.organization_no organizationNo,
+				a.organization_id organizationId,
+				a.organization_name organizationName,
+				a.organization_chargename organizationChargename,
+				a.organization_email organizationEmail,
+				a.organization_telnum organizationTelnum,
+				a.use_yn useYn,
+				a.reg_date regDate,
+				a.upd_date updDate,
+				a.ORGANIZATION_CODE organizationCode,
+				a.org_type,
+				b.USERID,
+				b.USERNAME,
+				b.USERMOBILE, 
+				b.USEREMAIL 
+			from
+				w_organization a
+				left outer join
+				zuser b 
+				on
+				a.ORGANIZATION_ID  = b.CHARGEORGID 
+           where 1=1
+           ]]>
+           	<isNotEmpty prepend="and" property="cond1">
+		   		<isNotEmpty property="sdate">
+           		<isNotEmpty property="edate">
+				<![CDATA[ date_format(a.$cond1$,'%Y%m%d') between #sdate# and #edate# ]]>
+				</isNotEmpty>
+				</isNotEmpty>
+			</isNotEmpty>
+           	<isNotEmpty prepend="and" property="cond2">
+           		<isNotEmpty property="keyword">
+				<![CDATA[ upper(a.$cond2$) like concat('%',upper(#keyword#),'%') ]]>
+				</isNotEmpty>
+			</isNotEmpty>
+            ORDER BY
+                a.organization_id desc
+            LIMIT #m#, #n#
+
+    </select>
+    
+    <select id="w_organization.getOrgCodeList" parameterClass="WOrganizationVo" resultClass="WOrganizationVo">
+        <![CDATA[
+        
+            select
+				a.organization_id organizationId,
+				a.organization_name organizationName,
+				CONCAT(a.organization_id,' | ',a.organization_name)organizationFullName
+			from
+				w_organization a
+				left outer join
+				zuser b 
+				on
+				a.ORGANIZATION_ID  = b.CHARGEORGID 
+           where 1=1
+           ]]>
+           	<isNotEmpty prepend="AND" property="keyword">
+				<![CDATA[(a.organization_id LIKE CONCAT('%',#keyword#,'%') or a.organization_name LIKE CONCAT('%',#keyword#,'%'))]]>
+			</isNotEmpty>
+            ORDER BY
+                a.organization_id desc
+            LIMIT #m#, #n#
+
+    </select>
+    
+    <insert id="w_organization.orgRegistration" parameterClass="WOrganizationVo">
+        <![CDATA[
+
+            insert into w_organization
+             (
+ 				organization_id, 
+ 				organization_name, 
+ 				organization_chargename, 
+				organization_email, 
+ 				organization_telnum, 
+ 				use_yn, 
+ 				reg_date, 
+ 				reg_id,
+ 				org_type,
+ 				organization_code 				
+ 			  ) 
+ 			values
+ 			(
+ 				#organizationId#, 
+ 				#organizationName#,
+ 				#organizationChargename#, 
+ 				#organizationEmail#, 
+ 				#organizationTelnum#, 
+ 				#useYn#, 
+ 				now(), 
+ 				#regId#,
+ 				#org_type#,
+ 		]]>		
+ 				<isNotEmpty property="org_type">
+					<isEqual property="org_type" compareValue="gov">
+						#organizationCode#
+					</isEqual>
+					<isEqual property="org_type" compareValue="priv">
+						FN_PRIVATE_GOV_NO()
+					</isEqual>
+				</isNotEmpty>
+ 				
+        <![CDATA[
+ 			)				                
+         ]]>
+     </insert>
+     
+     <update id="w_organization.orgUpdUse" parameterClass="WOrganizationVo">
+		<![CDATA[
+			update w_organization
+			   set use_yn = #useYn#,
+			   	   upd_date = now(),
+			   	   upd_id = #updId#	
+			 where organization_id = #organizationId#
+			
+		]]>
+	 </update>
+	 
+	 <select id="w_organization.getOrgIdSeq" resultClass="java.lang.String">
+        <![CDATA[
+            select
+                concat('G', date_format(now(),'%Y'),lpad(ifnull(max(cast(substring(organization_id,6,8) as unsigned)),0)+1,3,'0')) AS organizationIdSeq
+            from
+                w_organization
+            where organization_id like concat('G', date_format(now(),'%Y'), '%')
+        	]]>
+    </select>
+    
+    <update id="w_organization.orgUpdate" parameterClass="WOrganizationVo">
+		<![CDATA[
+			update w_organization
+			   set 
+			]]>
+				<isNotEmpty property="organizationName">
+				<![CDATA[
+					organization_name = #organizationName#,
+				]]>
+				</isNotEmpty>
+				<isNotEmpty property="organizationChargename">
+				<![CDATA[
+					organization_chargename = #organizationChargename#,
+				]]>
+				</isNotEmpty>
+				<isNotEmpty property="organizationEmail">
+				<![CDATA[
+					 organization_email = #organizationEmail#,
+				]]>
+				</isNotEmpty>
+				<isNotEmpty property="organizationTelnum">
+				<![CDATA[
+					organization_telnum = #organizationTelnum#,
+				]]>
+				</isNotEmpty>
+				<isNotEmpty property="useYn">
+				<![CDATA[
+					use_yn = #useYn#,
+				]]>
+				</isNotEmpty>
+				<isNotEmpty property="organizationCode">
+				<![CDATA[
+					organization_code = #organizationCode#,
+				]]>
+				</isNotEmpty>
+				<isNotEmpty property="org_type">
+				<![CDATA[
+					org_type = #org_type#,
+				]]>
+				</isNotEmpty>
+		<![CDATA[
+			   	   upd_date = now(),
+			   	   upd_id = #updId#	
+			 where organization_id = #organizationId#
+			]]>
+
+	 </update>
+	 
+	 <select id="w_organization.orgView" parameterClass="WOrganizationVo" resultClass="WOrganizationVo">
+		<![CDATA[
+			select
+				a.organization_id organizationId,
+				a.organization_name organizationName,
+				a.organization_chargename organizationChargename,
+				a.organization_email organizationEmail,
+				a.organization_telnum organizationTelnum,
+				a.use_yn useYn,
+				a.reg_date regDate,
+				a.organization_code organizationCode,
+				a.org_type,
+				b.USERID,
+				b.USERNAME,
+				b.USERMOBILE, 
+				b.USEREMAIL 
+			 from 				
+			 	w_organization a
+				left outer join
+				zuser b 
+				on
+				a.ORGANIZATION_ID  = b.CHARGEORGID
+			where 
+				a.organization_id = #organizationId#
+		]]>
+				<isNotEmpty property="userid">
+					and b.userid=#userid#
+				</isNotEmpty>
+
+	</select>
+	
+	<select id="linkPopCount" parameterClass="WCounselorVo" resultClass="java.lang.Integer">
+        <![CDATA[
+			select
+					count(*)
+			from 
+				w_counselor c
+				left outer join 
+				w_consulting_action_rel_commissioner a
+				on
+				a.counselNum = c.counselNum
+				left outer join 
+				w_consulting_action_master b
+				on
+					a.consulting_action_no = b.consulting_action_no
+				,   (SELECT @rownum := 0) R
+			WHERE 1=1
+		]]>
+		<isNotEmpty property="counselNum">
+			AND	a.counselNum = #counselNum#
+		</isNotEmpty>
+        
+
+    </select>
+
+    <select id="linkPopIndex" parameterClass="WCounselorVo" resultClass="WCounselorVo">
+        <![CDATA[
+			SELECT 
+						count(*) over ( partition by counselNum) as groupCnt
+					,	rank() over( partition by counselNum order by no desc) as seq
+					,	c.*
+			FROM
+				(
+					SELECT row_.*,
+							@rownum := @rownum + 1 AS rownum_
+					FROM (
+							select
+									a.`NO` 
+								,	c.counselNum
+								,	c.counselName 
+								,	c.org
+								,	c.region
+								,	c.actYn
+								,	c.phoneNum
+								,	b.consulting_action_no 
+								,	b.client_belong
+								,	DATE_FORMAT(a.ac_com_date_from, '%Y-%m-%d') as ac_com_date_from  
+								,	DATE_FORMAT(a.ac_com_date_to, '%Y-%m-%d') as ac_com_date_to
+							from 
+								w_counselor c
+								left outer join 
+								w_consulting_action_rel_commissioner a
+								on
+								a.counselNum = c.counselNum
+								left outer join 
+								w_consulting_action_master b
+								on
+								a.consulting_action_no = b.consulting_action_no
+								,   (SELECT @rownum := #m#) R
+							WHERE 1=1
+		]]>
+		<isNotEmpty property="counselNum">
+			AND a.counselNum = #counselNum#
+		</isNotEmpty>
+		        <![CDATA[
+		   					order by	c.counselNum desc, c.counselName, 
+										a.no desc,	a.ac_com_date_from desc
+							LIMIT #m#, #n#
+						) row_
+					WHERE @rownum < (#n#+#m#)
+				) c
+			order by rownum_
+        ]]>     
+    </select>
+    
+    <insert id="w_organization.privOrgRegistration" parameterClass="GovInfoVo">
+        <![CDATA[
+            insert into w_org_info_list
+             (
+ 				org_code, 
+ 				org_name, 
+ 				second_upper_org_code, 
+				upper_org_code, 
+ 				delegate_org_code, 
+ 				exists_yn	
+ 			  ) 
+ 			values
+ 			(			
+ 				#org_code#,
+ 				#org_name#,
+ 				#second_upper_org_code#,
+				#upper_org_code#,
+ 				#delegate_org_code#,
+ 				#exists_yn#
+ 			)				                
+ 		]]>
+     </insert>
+     
+     <select id="w_organization.getOrgPrivSeq" resultClass="String">
+     	SELECT FN_PRIVATE_GOV_NO()
+     </select>
+     
+     <select id="w_organization.srchGovIdList" parameterClass="WOrganizationVo" resultClass="WOrganizationVo">
+		<![CDATA[
+			SELECT
+					ORGANIZATION_ID AS organizationId
+  				,	ORGANIZATION_NAME AS organizationName
+			FROM
+				w_organization
+			WHERE 1=1
+			]]>
+			<isNotEmpty prepend="AND" property="organizationName">
+				<![CDATA[ORGANIZATION_NAME LIKE CONCAT('%',#organizationName#,'%')]]>
+			</isNotEmpty>
+		
+	</select>
+	
+	<select id="w_organization.srchConsultingList" parameterClass="WOrgCultureDigMngVo" resultClass="WOrgCultureDigMngVo">
+		<![CDATA[
+			SELECT
+					a.consulting_action_no
+  				,	a.manager
+  				,   (	CASE WHEN ccnt > 1 THEN concat(b.username,'외 ',ccnt-1,'인 ') 
+						ELSE b.username END 
+					)	AS manager_name
+			FROM
+				w_consulting_action_master a
+				JOIN
+				zuser b
+				on
+				a.manager = b.userid
+				LEFT OUTER JOIN
+				(
+					SELECT consulting_action_no, COUNT(*) AS ccnt
+					FROM 
+						w_consulting_action_rel_managesr
+					GROUP BY consulting_action_no										
+				) c
+				ON
+				a.consulting_action_no = c.consulting_action_no
+			WHERE 1=1
+			]]>
+			<isNotEmpty prepend="AND" property="manager_name">
+				<![CDATA[b.username LIKE CONCAT('%',#manager_name#,'%')]]>
+			</isNotEmpty>
+
+	</select>
+	
+	<select id="w_consultingActionOldApplication.listCount" parameterClass="WConsultingActionOldApplicationVo" resultClass="Integer">
+		<![CDATA[
+			SELECT
+				count(*) AS total
+			FROM
+				w_consulting_action_master_old_application
+			WHERE 1=1
+		]]>
+		<isNotEmpty prepend="AND" property="keyword">
+		<isEqual property="cond2" compareValue="consulting_action_no">
+		<![CDATA[			
+			consulting_action_no LIKE CONCAT('%',UPPER(#keyword#),'%')
+       	]]>				
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="org_name">
+       	<![CDATA[
+       		org_name LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="manager">
+       	<![CDATA[
+       		manager LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="consulting_type">
+       	<![CDATA[
+       		consulting_type LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual> 
+       	<isEqual property="cond2" compareValue="org_type_gov_detail">
+       	<![CDATA[
+       		org_type_gov_detail LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>      	
+		</isNotEmpty>
+		
+	</select>
+	
+	<select id="w_consultingActionOldApplication.list" parameterClass="WConsultingActionOldApplicationVo" resultClass="WConsultingActionOldApplicationVo">
+		<![CDATA[
+		SELECT NO, 
+				consulting_action_no, 
+				org_name, 
+				selection_status, 
+				unselected_standby, 
+				application_date, 
+				application_cancel, 
+				consulting_schedule, 
+				visit_schedule, 
+				visit_complete, 
+				manager, 
+				manager_2, 
+				contact_point, 
+				upper_org_name, 
+				consultant_1, 
+				consultant_2, 
+				consultant_3, 
+				consulting_status, 
+				time_of_dispatch, 
+				consulting_type, 
+				org_type_gov_detail, 
+				org_type_gov_detail_national, 
+				org_type_gov_detail_local, 
+				org_type_gov_detail_public, 
+				org_type_gov_detail_school, 
+				org_type_gov_detail_university, 
+				org_type_gov_detail_priv, 
+				org_type_gov_detail_etc, 
+				org_type_gov_detail_school_gubun, 
+				org_type_gov_detail_public_gubun, 
+				application_org_member, 
+				accident_status, 
+				accident, 
+				accident_not, 
+				accident_informal_processing, 
+				accident_not_listed, 
+				accident_date, 
+				receipt_date, 
+				harm_type_verbals, 
+				harm_type_body, 
+				harm_type_visual, 
+				harm_type_second, 
+				harm_type_etc, 
+				harm_type_not_listed, 
+				accident_step_1, 
+				accident_step_2, 
+				accident_step_3, 
+				accident_step_4, 
+				application_etc_txt, 
+				application_reason
+			FROM w_consulting_action_master_old_application
+			WHERE 1=1
+		]]>
+		<isNotEmpty prepend="AND" property="keyword">
+		<isEqual property="cond2" compareValue="consulting_action_no">
+		<![CDATA[			
+			consulting_action_no LIKE CONCAT('%',UPPER(#keyword#),'%')
+       	]]>				
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="org_name">
+       	<![CDATA[
+       		org_name LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="manager">
+       	<![CDATA[
+       		manager LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="consulting_type">
+       	<![CDATA[
+       		consulting_type LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual> 
+       	<isEqual property="cond2" compareValue="org_type_gov_detail">
+       	<![CDATA[
+       		org_type_gov_detail LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>      	
+		</isNotEmpty>
+			
+		<![CDATA[
+				order by NO desc
+				LIMIT #m#, #n#
+		]]>
+	</select>
+	
+	<select id="w_consultingActionOldDeclaration.listCount" parameterClass="WConsultingActionOldDeclarationVo" resultClass="Integer">
+		<![CDATA[
+			SELECT
+				count(*) AS total
+			FROM
+				w_consulting_action_master_old_declaration
+			WHERE 1=1
+		]]>
+		<isNotEmpty prepend="AND" property="keyword">
+		<isEqual property="cond2" compareValue="consulting_action_no">
+		<![CDATA[			
+			consulting_action_no LIKE CONCAT('%',UPPER(#keyword#),'%')
+       	]]>				
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="org_name">
+       	<![CDATA[
+       		org_name LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="org_type">
+       	<![CDATA[
+       		org_type LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="org_type_gov_detail">
+       	<![CDATA[
+       		org_type_gov_detail LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual> 
+       	<isEqual property="cond2" compareValue="manager">
+       	<![CDATA[
+       		manager LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>      	
+		</isNotEmpty>
+		
+	</select>
+	
+	<select id="w_consultingActionOldDeclaration.list" parameterClass="WConsultingActionOldDeclarationVo" resultClass="WConsultingActionOldDeclarationVo">
+		<![CDATA[
+			SELECT NO, 
+					consulting_action_no, 
+					org_name, 
+					upper_org_name, 
+					org_type, 
+					org_type_gov, 
+					org_type_priv, 
+					org_type_etc, 
+					org_type_gov_detail, 
+					org_type_gov_detail_national, 
+					org_type_gov_detail_local, 
+					org_type_gov_detail_public, 
+					org_type_gov_detail_school, 
+					org_type_gov_detail_priv, 
+					org_type_gov_detail_etc, 
+					consulting_desired, 
+					action_type_cont_review_wait, 
+					action_type_cont_move, 
+					action_type_cont_con, 
+					action_type_cont_cancel, 
+					action_type_cont_giveup, 
+					action_type_cont_simple_end, 
+					action_type_cont_confirm_need, 
+					official_letter_expect, 
+					official_letter_complete, 
+					consulting_expect, 
+					consulting_complete, 
+					action_result_receive_1, 
+					action_result_receive_2, 
+					manager, 
+					org_women, 
+					month_1, 
+					month_2, 
+					month_3, 
+					month_4, 
+					month_5, 
+					month_6, 
+					month_7, 
+					month_8, 
+					month_9, 
+					month_10, 
+					month_11, 
+					month_12, 
+					accident_receive, 
+					official_letter_send, 
+					consulting, 
+					action_result_submission, 
+					end, 
+					month, 
+					sixmonth, 
+					consulting_medical_law, 
+					sexual_violence_consultation_center, 
+					sunflower_center_1366, 
+					legal_support_servie_rel, 
+					women_worker_association, 
+					labor_law_advice, 
+					psychiatric_care_servie_rel, 
+					org, 
+					org_upper, 
+					org_investigation, 
+					org_scourt, 
+					org_labor, 
+					org_nirc, 
+					org_education, 
+					org_human, 
+					org_epeople_cheongwadae_petition, 
+					org_etc, 
+					first_occurence, 
+					later_occurrence, 
+					empty_items1_1, 
+					empty_items1_2, 
+					empty_items1_3, 
+					empty_items1_4, 
+					sayings_and_doings, 
+					physical_linguistic, 
+					rape_sexual_harass, 
+					text_image, 
+					violent_verbal_abuse, 
+					threatened_rumors_private_disadvantages, 
+					isolation_status, 
+					complaint_consultation, 
+					official_reporting_procedure, 
+					empty_items2_1, 
+					police_prosecutor_accusation_charge, 
+					civil_and_criminal_proceedings, 
+					empty_items2_2, 
+					empty_items2_3, 
+					empty_items2_4, 
+					empty_items2_5, 
+					empty_items2_6, 
+					offender, 
+					victim, 
+					empty_items3_1, 
+					women_1, 
+					man_1, 
+					unknown_1, 
+					empty_items3_2, 
+					me, 
+					agent, 
+					third_party, 
+					empty_items4_1, 
+					women_2, 
+					man_2, 
+					unknown_2, 
+					empty_items4_2, 
+					empty_items5_1, 
+					man_3, 
+					women_3, 
+					unknown_3, 
+					state_run_organization, 
+					empty_items5_2, 
+					tel_no_1, 
+					email_1, 
+					tel_no_2, 
+					email_2, 
+					region
+			FROM w_consulting_action_master_old_declaration
+			WHERE 1=1
+		]]>
+		<isNotEmpty prepend="AND" property="keyword">
+		<isEqual property="cond2" compareValue="consulting_action_no">
+		<![CDATA[			
+			consulting_action_no LIKE CONCAT('%',UPPER(#keyword#),'%')
+       	]]>				
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="org_name">
+       	<![CDATA[
+       		org_name LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="org_type">
+       	<![CDATA[
+       		org_type LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>
+       	<isEqual property="cond2" compareValue="org_type_gov_detail">
+       	<![CDATA[
+       		org_type_gov_detail LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual> 
+       	<isEqual property="cond2" compareValue="manager">
+       	<![CDATA[
+       		manager LIKE CONCAT('%',#keyword#,'%')
+       	]]>
+       	</isEqual>      	
+		</isNotEmpty>
+				
+		<![CDATA[
+				order by NO desc
+				LIMIT #m#, #n#
+		]]>
+	</select>
+	
+</sqlMap>

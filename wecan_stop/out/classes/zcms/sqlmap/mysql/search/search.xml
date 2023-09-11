@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="frontSearch">
+     
+	<typeAlias  alias="frontSearchVO" type="com.z5.zcms.frontsys.search.domain.FrontSearchVO" />
+	
+	
+	<select id="listCount"  resultClass="java.lang.Integer" parameterClass="frontSearchVO" >
+		<![CDATA[
+			SELECT
+				count(*)
+			FROM KPA_JOURNAL
+			WHERE 
+				(1=1)
+		]]>
+		<isNotEmpty prepend="and" property="keyword">
+			<![CDATA[
+				$cond1$ LIKE  '%$keyword$%'
+				OR $cond2$ LIKE  '%$keyword$%'
+   				OR $cond3$ LIKE  '%$keyword$%'
+			]]>
+		</isNotEmpty>	
+     
+	</select>
+	
+	<!-- 검색 리스트 -->  
+	<select id="searchList" parameterClass="frontSearchVO" resultClass="frontSearchVO">
+		<![CDATA[
+			SELECT
+				*
+			from 
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        *
+						       
+				    	   from
+						        KPA_JOURNAL,   (SELECT @rownum := #m#) R
+						   where 1 = 1
+			]]>
+							
+					    <isNotEmpty prepend="and" property="keyword">
+							<![CDATA[
+								$cond1$ LIKE  '%$keyword$%'
+								OR $cond2$ LIKE  '%$keyword$%'
+				   				OR $cond3$ LIKE  '%$keyword$%'
+							]]>
+						</isNotEmpty>		
+			<![CDATA[
+							order by ISU_ID desc
+					 	) row_
+					where
+						@rownum < (#n#+#m#)
+				)t
+		
+			]]> 
+	</select>
+	
+	
+	<select id="listSearch" resultClass="frontSearchVO">
+		<![CDATA[
+				SELECT  _row.*
+				FROM 
+				(
+				SELECT
+					row_number() over (ORDER BY COUNT(*) desc) as rowno,
+					keyword,
+					COUNT(*) as [count]
+				FROM
+					zsearch
+				GROUP BY keyword
+				)_row
+				WHERE rowno <= 10;
+		]]>
+	</select>
+		
+	<insert id="insertSearch">
+		<![CDATA[
+			INSERT INTO zsearch
+			(
+				seq,
+				keyword,
+				datereg
+			)
+			VALUES
+			(
+				(SELECT zsearch_seq.nextval FROM db_root),
+				#keyword#,
+				now()
+			)
+		]]>
+	</insert>	
+		
+</sqlMap>

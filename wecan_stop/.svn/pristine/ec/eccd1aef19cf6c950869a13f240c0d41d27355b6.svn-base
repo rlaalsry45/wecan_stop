@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZUser">
+    <typeAlias alias="ZUser" type="com.z5.zcms.admsys.user.domain.ZUser"/>
+    <typeAlias alias="ZUserVo" type="com.z5.zcms.admsys.user.domain.ZUserVo"/>
+    <resultMap id="ZUser" class="com.z5.zcms.admsys.user.domain.ZUser"/>
+    <resultMap id="ZUserVo" class="com.z5.zcms.admsys.user.domain.ZUserVo"/>
+
+    <insert id="ZUserLog.insertLog">
+        <![CDATA[
+             insert into zuserlog(
+                 userno,
+                 userid,
+                 logdate,
+                 logip,
+                 device
+             ) values(
+                 #userno#,
+                 #userid#,
+                 now(),
+                 #useripreg#,
+                 #device#
+             )
+        ]]>
+    </insert>
+
+    <update id="ZUserLog.updateUserMemo">
+        <![CDATA[
+        update zuser
+           set usermemo = now(),
+               logincount = ''
+         where userid =#userid#
+        ]]>
+    </update>
+
+    <select id="ZUserLog.selectUserid" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+        <![CDATA[
+        select count(userid) cnt
+          from zuser
+         where userid =#userid#
+        ]]>
+    </select>
+
+    <select id="ZUserLog.selectLoginCount" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+        <![CDATA[
+        select IFNULL(logincount, 0)
+          from zuser
+         where userid =#userid#
+        ]]>
+    </select>
+
+    <select id="ZUserLog.selectLog" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+        SELECT * FROM zuserlog
+            WHERE userid=#userid#
+            ORDER BY logdate desc
+        ]]>
+    </select>
+
+    <update id="ZUserLog.updateCnt">
+        <![CDATA[
+        update zuser
+           set logincount = #cnt#
+         where userid =#userid#
+        ]]>
+    </update>
+
+    <select id="ZUserLog.selectVisitLog" remapResults="true" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+        select
+        ]]>
+        <isEmpty property="cond1">
+            <![CDATA[
+                 vlseq, count
+            ]]>
+        </isEmpty>
+        <isNotEmpty property="cond1">
+            <isEqual property="cond1" compareValue="todayMonth">
+                <![CDATA[
+                    ifnull(sum(count), 0) as count
+                 ]]>
+            </isEqual>
+            <isEqual property="cond1" compareValue="monthCount">
+                <![CDATA[
+                    ifnull(sum(count), 0) as count
+                 ]]>
+            </isEqual>
+            <isEqual property="cond1" compareValue="maxToday">
+                <![CDATA[
+                    ifnull(max(count),0) as count
+                 ]]>
+            </isEqual>
+            <isEqual property="cond1" compareValue="year">
+                <![CDATA[
+                    DATE_FORMAT(visitdate,'%Y') as visitdate, ifnull(sum(count), 0) as count
+                 ]]>
+            </isEqual>
+            <isEqual property="cond1" compareValue="month">
+                <![CDATA[
+                    DATE_FORMAT(visitdate,'%m') as visitdate, ifnull(sum(count), 0) as count
+                 ]]>
+            </isEqual>
+            <isEqual property="cond1" compareValue="day">
+                <![CDATA[
+                    DATE_FORMAT(visitdate,'%d') as visitdate, ifnull(sum(count), 0) as count
+                 ]]>
+            </isEqual>
+        </isNotEmpty>
+        <![CDATA[
+          from tbl_visitlog
+          where 1=1
+          ]]>
+        <isNotEmpty property="siteno">
+		and siteno = #siteno#	        
+        </isNotEmpty>
+        <isNotEqual property="menuno" compareValue="0" prepend="and"> 
+		menuno = #menuno#	        
+       </isNotEqual>
+        <isEmpty property="cond1">
+            <![CDATA[
+                and DATE_FORMAT(visitdate,'%Y%m%d') = DATE_FORMAT(now(),'%Y%m%d')
+            ]]>
+        </isEmpty>
+        <isNotEmpty property="cond1">
+            <isEqual property="cond1" compareValue="todayMonth">
+                <![CDATA[
+                    and DATE_FORMAT(visitdate,'%Y%m') = DATE_FORMAT(now(),'%Y%m')
+                 ]]>
+            </isEqual>
+            <isEqual property="cond1" compareValue="monthCount">
+                <![CDATA[
+                    and DATE_FORMAT(visitdate,'%Y%m') = #visitdate#
+                 ]]>
+            </isEqual>
+            <isEqual property="cond1" compareValue="year">
+                <![CDATA[
+                    GROUP BY DATE_FORMAT(visitdate,'%Y')
+                    order by VISITDATE desc
+                 ]]>
+            </isEqual>
+            <isEqual property="cond1" compareValue="month">
+                <![CDATA[
+                    and DATE_FORMAT(visitdate,'%Y') = #visitdate#
+                    GROUP BY DATE_FORMAT(visitdate,'%m')
+                 ]]>
+            </isEqual>
+            <isEqual property="cond1" compareValue="day">
+                <![CDATA[
+                    and DATE_FORMAT(visitdate,'%Y%m') = #visitdate#
+                    GROUP BY DATE_FORMAT(visitdate,'%d')
+                 ]]> 
+            </isEqual>
+        </isNotEmpty>
+    </select>
+
+    <update id="ZUserLog.updateVisitLog">
+        <![CDATA[
+        update tbl_visitlog
+           set count = #count#
+         where vlseq =#vlseq#
+        ]]>
+    </update>
+
+    <insert id="ZUserLog.insertVisitLog">
+        <![CDATA[
+             insert into tbl_visitlog(
+                 count,
+                 visitdate,
+                 menuno,
+                 siteno
+             ) values(
+                 '1',
+                 now(),
+                 #menuno#,
+                 #siteno#
+             )
+        ]]>
+    </insert>
+    
+    <select id="ZUserLog.getlist" parameterClass="zmenuVo" resultClass="zmenuVo">
+     <![CDATA[
+		SELECT 
+			  a.menuno
+			, a.menutopno
+			, a.menulevel
+			, a.menustep
+			, a.menuparentno
+			, a.siteno
+			, a.menutitle
+			, a.menudatereg
+			, a.menudatemod
+			, a.menutype
+			, a.menustatus
+			, a.menutags
+			, a.archv_no
+			, a.menuscore
+			, (select count(*)+1 from ZMENU where siteno=a.siteno and menuparentno = a.menuno) cnt
+			, IFNULL((select sum(count) from tbl_visitlog where menuno=a.menuno and siteno=a.siteno
+		]]>
+				<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[
+							DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')
+						and DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')
+					]]>
+				</isNotEmpty>
+		<![CDATA[
+				),0) as satis_cnt 
+			FROM zmenu a 
+			WHERE a.siteno=#siteno#
+			ORDER BY menutopno, menustep, menulevel, menuno
+		]]>
+	</select>
+	
+	<select id="ZUserLog.listWorkCount" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select count(*) as total 
+			FROM zuserlog a
+			LEFT JOIN zuser b ON a.userid = b.userid
+		    where 1 = 1
+		]]>
+			<isNotEmpty prepend="" property="cond1">
+				<isNotEmpty prepend="and" property="sdate">
+					<![CDATA[DATE_FORMAT(a.$cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')]]>
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="edate">
+					<![CDATA[DATE_FORMAT(a.$cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')]]>
+				</isNotEmpty>
+			</isNotEmpty>
+			<isEqual prepend="and" property="work_grade" compareValue="0">
+				<![CDATA[
+					b.userid in (select userid from ZAUTHORITIES where authority IN ('ROLE_ADMIN','ROLE_SUPER'))
+				]]>
+			</isEqual>
+			<isNotEqual property="work_grade" compareValue="0">
+				<isNotEmpty prepend="and" property="work_grade">
+					<![CDATA[ b.work_grade = #work_grade# and b.userid not in (select userid from ZAUTHORITIES where authority IN ('ROLE_ADMIN','ROLE_SUPER'))]]>
+				</isNotEmpty>
+			</isNotEqual>
+			<isNotEmpty prepend="and" property="cond2">
+				<isNotEqual prepend="" property="cond2" compareValue="username">
+	            	<![CDATA[ upper(a.$cond2$) like concat('%',UPPER(#keyword#),'%') ]]>
+	            </isNotEqual>
+				<isEqual prepend="" property="cond2" compareValue="username">
+	            	<![CDATA[ b.$cond2$ like concat('%',UPPER(#keyword#),'%') ]]>
+	            </isEqual>
+	        </isNotEmpty>
+			<isEmpty prepend="and" property="cond2">
+				<isNotEmpty prepend="" property="keyword">
+	            	<![CDATA[
+	            	(
+	            		UPPER(a.userid) like concat('%',UPPER(#keyword#),'%')
+	            		OR
+	            		UPPER(a.logip) like concat('%',UPPER(#keyword#),'%')
+	            		OR
+	            		UPPER(a.device) like concat('%',UPPER(#keyword#),'%')
+	            		OR
+	            		UPPER(b.username) like concat('%',UPPER(#keyword#),'%')
+	            	)
+	            	]]>
+	            </isNotEmpty>
+	        </isEmpty>
+	</select>
+	
+	<select id="ZUserLog.selectWorkLog" parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+				select
+					row_.*
+					, @rownum := @rownum + 1 AS rownum_
+				from
+					(
+						select a.*,b.username 
+						FROM zuserlog a
+						LEFT JOIN zuser b ON a.userid = b.userid,
+						(SELECT @rownum := #m#) R
+					    where 1 = 1
+		]]>
+			<isNotEmpty prepend="" property="cond1">
+				<isNotEmpty prepend="and" property="sdate">
+					<![CDATA[DATE_FORMAT(a.$cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')]]>
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="edate">
+					<![CDATA[DATE_FORMAT(a.$cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')]]>
+				</isNotEmpty>
+			</isNotEmpty>
+			<isEqual prepend="and" property="work_grade" compareValue="0">
+				<![CDATA[
+					b.userid in (select userid from ZAUTHORITIES where authority IN ('ROLE_ADMIN','ROLE_SUPER'))
+				]]>
+			</isEqual>
+			<isNotEqual property="work_grade" compareValue="0">
+				<isNotEmpty prepend="and" property="work_grade">
+					<![CDATA[ b.work_grade = #work_grade# and b.userid not in (select userid from ZAUTHORITIES where authority IN ('ROLE_ADMIN','ROLE_SUPER'))]]>
+				</isNotEmpty>
+			</isNotEqual>
+			<isNotEmpty prepend="and" property="cond2">
+				<isNotEqual prepend="" property="cond2" compareValue="username">
+	            	<![CDATA[ upper(a.$cond2$) like concat('%',UPPER(#keyword#),'%') ]]>
+	            </isNotEqual>
+				<isEqual prepend="" property="cond2" compareValue="username">
+	            	<![CDATA[ b.$cond2$ like concat('%',UPPER(#keyword#),'%') ]]>
+	            </isEqual>
+	        </isNotEmpty>
+			<isEmpty prepend="and" property="cond2">
+				<isNotEmpty prepend="" property="keyword">
+	            	<![CDATA[
+	            	(
+	            		UPPER(a.userid) like concat('%',UPPER(#keyword#),'%')
+	            		OR
+	            		UPPER(a.logip) like concat('%',UPPER(#keyword#),'%')
+	            		OR
+	            		UPPER(a.device) like concat('%',UPPER(#keyword#),'%')
+	            		OR
+	            		UPPER(b.username) like concat('%',UPPER(#keyword#),'%')
+	            	)
+	            	]]>
+	            </isNotEmpty>
+	        </isEmpty>
+		<![CDATA[
+						order by LOGDATE desc
+				 	) row_
+				where
+					@rownum <= (#n#+#m#)
+				LIMIT #m#, #n#
+		]]> 
+	</select>
+	
+	
+	<select id="ZUserLog.listExcelWork" parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+			select *
+			FROM zuserlog a
+			LEFT JOIN zuser b ON a.userid = b.userid
+		    where 1 = 1
+		]]>
+			<isNotEmpty prepend="" property="cond1">
+				<isNotEmpty prepend="and" property="sdate">
+					<![CDATA[DATE_FORMAT(a.$cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')]]>
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="edate">
+					<![CDATA[DATE_FORMAT(a.$cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')]]>
+				</isNotEmpty>
+			</isNotEmpty>
+			<isEqual prepend="and" property="work_grade" compareValue="0">
+				<![CDATA[
+					b.userid in (select userid from ZAUTHORITIES where authority IN ('ROLE_ADMIN','ROLE_SUPER'))
+				]]>
+			</isEqual>
+			<isNotEqual property="work_grade" compareValue="0">
+				<isNotEmpty prepend="and" property="work_grade">
+					<![CDATA[ b.work_grade = #work_grade# and b.userid not in (select userid from ZAUTHORITIES where authority IN ('ROLE_ADMIN','ROLE_SUPER'))]]>
+				</isNotEmpty>
+			</isNotEqual>
+			<isNotEmpty prepend="and" property="cond2">
+				<isNotEqual prepend="" property="cond2" compareValue="username">
+	            	<![CDATA[ upper(a.$cond2$) like concat('%',UPPER(#keyword#),'%') ]]>
+	            </isNotEqual>
+				<isEqual prepend="" property="cond2" compareValue="username">
+	            	<![CDATA[ upper(b.username) like concat('%',UPPER(#keyword#),'%') ]]>
+	            </isEqual>
+	        </isNotEmpty>
+			<isEmpty prepend="and" property="cond2">
+				<isNotEmpty prepend="" property="keyword">
+	            	<![CDATA[
+	            	(
+	            		UPPER(a.userid) like concat('%',UPPER(#keyword#),'%')
+	            		OR
+	            		UPPER(a.logip) like concat('%',UPPER(#keyword#),'%')
+	            		OR
+	            		UPPER(a.device) like concat('%',UPPER(#keyword#),'%')
+	            		OR
+	            		UPPER(b.username) like concat('%',UPPER(#keyword#),'%')
+	            	)
+	            	]]>
+	            </isNotEmpty>
+	        </isEmpty>
+	</select>
+	
+	<select id="ZUserLog.listCustCount" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select count(*) as total 
+			FROM zcustlog
+		    where 1 = 1
+		]]>
+		<isNotEmpty prepend="" property="cond1">
+			<isNotEmpty prepend="and" property="sdate">
+				<![CDATA[DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="edate">
+				<![CDATA[DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+           	<![CDATA[ UPPER($cond2$) like concat('%',UPPER(#keyword#),'%')]]>
+         </isNotEmpty>
+		<isEmpty prepend="and" property="cond2">
+			<isNotEmpty prepend="" property="keyword">
+	           	<![CDATA[
+	           	(
+	           		UPPER(logname) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(logip) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(device) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(logact) like concat('%',UPPER(#keyword#),'%')
+	           	)
+	           	]]>
+			</isNotEmpty>
+		</isEmpty>
+	</select>
+	
+	<select id="ZUserLog.selectCustLog" parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+		select
+			row_.*
+			, @rownum := @rownum + 1 AS rownum_
+		from
+			(
+			select
+				*
+			FROM zcustlog, (SELECT @rownum := #m#) R
+		    where 1 = 1
+		]]>
+		<isNotEmpty prepend="" property="cond1">
+			<isNotEmpty prepend="and" property="sdate">
+				<![CDATA[DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="edate">
+				<![CDATA[DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+           	<![CDATA[ UPPER($cond2$) like concat('%',UPPER(#keyword#),'%')]]>
+		</isNotEmpty>
+		<isEmpty prepend="and" property="cond2">
+			<isNotEmpty prepend="" property="keyword">
+	           	<![CDATA[
+	           	(
+	           		UPPER(logname) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(logip) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(device) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(logact) like concat('%',UPPER(#keyword#),'%')
+	           	)
+	           	]]>
+			</isNotEmpty>
+		</isEmpty>
+		<![CDATA[
+				order by LOGDATE desc
+			) row_
+		where @rownum <= (#n#+#m#)
+		LIMIT #m#, #n#
+		]]> 
+	</select>
+	
+	
+	<select id="ZUserLog.listExcelCust" parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+			select
+				*
+				, @rownum := @rownum + 1 AS rownum_
+			FROM zcustlog, (SELECT @rownum := #m#) R
+		    where 1 = 1
+		]]>
+		<isNotEmpty prepend="" property="cond1">
+			<isNotEmpty prepend="and" property="sdate">
+				<![CDATA[DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="edate">
+				<![CDATA[DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+           	<![CDATA[ UPPER($cond2$) like concat('%',UPPER(#keyword#),'%')]]>
+		</isNotEmpty>
+		<isEmpty prepend="and" property="cond2">
+			<isNotEmpty prepend="" property="keyword">
+	           	<![CDATA[
+	           	(
+	           		UPPER(logname) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(logip) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(device) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(logact) like concat('%',UPPER(#keyword#),'%')
+	           	)
+	           	]]>
+			</isNotEmpty>
+		</isEmpty>
+		<![CDATA[
+			order by LOGDATE desc
+		]]> 
+	</select>
+
+    <insert id="ZUserLog.insertCustLog" parameterClass="ZUserVo">
+	    <![CDATA[
+	         insert into zcustlog(
+	               siteno
+	             , logboardno
+	             , logbbsno
+	             , logname
+	             , logip
+	             , device
+	             , logact
+	         ) values(
+	               #siteno#
+	             , #logboardno#
+	             , #logbbsno#
+	             , #logname#
+	             , #logip#
+	             , #device#
+	             , #logact#
+	         )
+	    ]]>
+    </insert>
+
+	<delete id="ZUserLog.delete" parameterClass="ZUserVo">
+		<![CDATA[
+        DELETE 
+    		FROM $tablePrefix$ 
+  			WHERE seq IN
+  		]]>
+        <iterate open="(" close=")" conjunction="," property="arrDeleteNo">
+            #arrDeleteNo[]#
+        </iterate>
+	</delete>
+
+	<update id="ZUserLog.batchDel" parameterClass="ZUserVo">
+		<![CDATA[
+        	TRUNCATE TABLE $tablePrefix$
+  		]]>
+	</update>
+
+    <insert id="ZUserLog.downLog" parameterClass="ZUserVo">
+        <![CDATA[
+             insert into zcustdownlog(
+                 downid,
+                 downname,
+                 downip,
+                 device,
+                 downmenu,
+                 downdetail,
+                 downreason
+             ) values(
+                 #downid#,
+                 #downname#,
+                 #downip#,
+                 #device#,
+                 #downmenu#,
+                 #downdetail#,
+                 #downreason#
+             )
+        ]]>
+    </insert>
+	
+	<select id="ZUserLog.listDownCount" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select count(*) as total 
+			FROM zcustdownlog
+		    where 1 = 1
+		]]>
+		<isNotEmpty prepend="" property="cond1">
+			<isNotEmpty prepend="and" property="sdate">
+				<![CDATA[DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="edate">
+				<![CDATA[DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+           	<![CDATA[ UPPER($cond2$) like concat('%',UPPER(#keyword#),'%')]]>
+         </isNotEmpty>
+		<isEmpty prepend="and" property="cond2">
+			<isNotEmpty prepend="" property="keyword">
+	           	<![CDATA[
+	           	(
+	           		UPPER(downid) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(downname) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(downip) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(device) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(downmenu) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(downdetail) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(downreason) like concat('%',UPPER(#keyword#),'%')
+	           	)
+	           	]]>
+			</isNotEmpty>
+		</isEmpty>
+	</select>
+	
+	<select id="ZUserLog.selectDownLog" parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+		select
+			row_.*
+			, @rownum := @rownum + 1 AS rownum_
+		from
+			(
+			select
+				*
+			FROM zcustdownlog, (SELECT @rownum := #m#) R
+		    where 1 = 1
+		]]>
+		<isNotEmpty prepend="" property="cond1">
+			<isNotEmpty prepend="and" property="sdate">
+				<![CDATA[DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="edate">
+				<![CDATA[DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+           	<![CDATA[ UPPER($cond2$) like concat('%',UPPER(#keyword#),'%')]]>
+		</isNotEmpty>
+		<isEmpty prepend="and" property="cond2">
+			<isNotEmpty prepend="" property="keyword">
+	           	<![CDATA[
+	           	(
+	           		UPPER(downid) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(downname) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(downip) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(device) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(downmenu) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(downdetail) like concat('%',UPPER(#keyword#),'%')
+	           		OR
+	           		UPPER(downreason) like concat('%',UPPER(#keyword#),'%')
+	           	)
+	           	]]>
+			</isNotEmpty>
+		</isEmpty>
+		<![CDATA[
+				order by downdate desc
+			) row_
+		where @rownum <= (#n#+#m#)
+		LIMIT #m#, #n#
+		]]> 
+	</select>
+</sqlMap>

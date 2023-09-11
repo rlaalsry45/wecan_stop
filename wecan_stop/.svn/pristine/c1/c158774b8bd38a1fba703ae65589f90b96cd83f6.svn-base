@@ -1,0 +1,1161 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="java.util.*, java.text.*"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../lnb.jsp" flush="true" />
+
+<!-- 필수, SheetJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js"></script>
+<!--필수, FileSaver savaAs 이용 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+
+            <div id="contents">
+                <form:form modelAttribute="ZStatisticsMngVo" name="frm" method="post">
+                    <div class="contents_top">
+                        <div class="location">
+                            <a href="/admsys/statisticsmng/">HOME</a> <a href="/admsys/statisticsmng/index.html">통계관리</a> <strong>설문조사</strong>
+                        </div>
+                        <%--<div class="TopSearch">
+                            <span>SEARCH AREA</span>
+                            <select style="height:27px;" name="cond1">
+                                <option value="term" <c:if test="${input.cond1=='term'}"><c:out value='selected' /></c:if>>기간</option>
+                            </select>
+                              <input id="d4311" name="sdate" class="Wdate" type="text" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'d4312\')}'})" value="<c:out value='${input.sdate}' />" style="width:128px;"/>
+                                        ~
+                              <input id="d4312" name="edate" class="Wdate" type="text" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'d4311\')}'})" value="<c:out value='${input.edate}' />" style="width:128px;"/>
+                            <input class="bt01" type="submit" value="검색" onclick="/admsys/statisticsmng/index.html" />
+                        </div> --%>
+                    </div>
+                    <div id="content">
+                        <ul class="homepagebbs">
+                            <li class="bg"><h3 class="sub">설문조사</h3></li> 
+                            <li>
+                                <div class="main_table">
+                                	<div style="width:600px;height:300px;border:1px solid;margin-left:100px;">
+                                		<p style="margin-top:20px;">기간 : 
+                                		<fmt:parseDate value="${input.sdate}" pattern="yyyy-MM-dd" var="isd" />
+										<fmt:parseDate value="${input.edate}" pattern="yyyy-MM-dd" var="ied" />
+										<input type="date" id="d4311" name="sdate" value="<fmt:formatDate type="both" value="${isd}" pattern="yyyy-MM-dd" />" min="1970-01-01" max="2030-12-31" placeholder="년/월/일" style="width: 160px;">~
+										<input type="date" id="d4312" name="edate" value="<fmt:formatDate type="both" value="${ied}" pattern="yyyy-MM-dd" />" min="1970-01-01" max="2030-12-31" placeholder="년/월/일" style="width: 160px;">
+										</p>
+										<p style="margin-top:20px;">기관 :
+											<input type="checkbox" id="org1" name="org1" value="gov" <c:if test="${input.org1 eq 'gov'}">checked</c:if>><label class="on" for="org1">공공</label>
+											<input type="checkbox" id="org2" name="org2" value="priv" <c:if test="${input.org2 eq 'priv'}">checked</c:if>><label class="on" for="org2">민간</label>
+										</p>
+										<p style="margin-top:20px;">유형 :
+											<input type="checkbox" id="type1" name="type1" value="A" <c:if test="${input.type1 eq 'A'}">checked</c:if>><label class="on" for="type1">여성가족부신고사건(A)</label>
+											<input type="checkbox" id="type2" name="type2" value="B" <c:if test="${input.type2 eq 'B'}">checked</c:if>><label class="on" for="type2">기관신청건(B)</label>
+											<input type="checkbox" id="type3" name="type3" value="C" <c:if test="${input.type3 eq 'C'}">checked</c:if>><label class="on" for="type3">여가부선정/타부처이관(C)</label>
+											<input type="checkbox" id="type4" name="type4" value="D" <c:if test="${input.type4 eq 'D'}">checked</c:if>><label class="on" for="type4">현장점검(D)</label>
+										</p>
+										<p style="margin-top:20px;">기관코드 :
+											<input type="text" id="orgId" name="orgId" value="${input.orgId}">
+										</p>
+										<p style="margin-top:20px;">진단일지번호(사건번호) :
+											<input type="text" id="consulting_application_no" name="consulting_application_no" value="${input.consulting_application_no}">
+										</p>
+										<br>
+										<p style="float:right;margin-right:20px;">
+											<a class="btmore05" href="javascript:search();">조회</a>
+										</p>
+                                	</div>
+                                    <!--게시판 영역-->
+                                    <table id="main_table1" class="main_table1" summary="구분, 설문조사 항목">
+                                        <caption>설문조사 1번항목</caption>
+                                        <colgroup>
+                                            <col />
+                                            <col width="30%" />
+                                            <col width="10%" />
+                                            <col width="10%" />
+                                         
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">질문</th>
+                                                <th rowspan="2">답</th>
+                                                <th colspan="2">유형</th>
+                                            </tr>
+                                            <tr>
+                                                <th>A</th>
+                                                <th>B</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        	<tr>
+                                             	<td rowspan="2" style="text-align:left;">선문1. 귀하가 속한 기관 내 직위가 어떻게 되십니까?</td>
+                                                <td>1.임원 또는 관리자</td>
+                                                <td>${getSurvey0.surveyCnt01A}</td>
+                                                <td>${getSurvey0.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.일반 직원</td>
+                                                <td>${getSurvey0.surveyCnt02A}</td>
+                                                <td>${getSurvey0.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                            	<td colspan="4">성희롱 방지 및 대응체계 진단</td>
+                                            </tr>
+                                            <tr>
+                                            	<td colspan="4">귀하가 속한 기관의 성희롱･성폭력 근절 노력에 관한 질문입니다. 귀하의 생각에 가장 가까운 보기를 선택해 주십시오.</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">1-1. 우리 기관장은 성희롱 근절을 강조하고, 구성원들에게 주의를 당부한다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey1_1.surveyCnt01A}</td>
+                                                <td>${getSurvey1_1.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey1_1.surveyCnt02A}</td>
+                                                <td>${getSurvey1_1.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey1_1.surveyCnt03A}</td>
+                                                <td>${getSurvey1_1.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey1_1.surveyCnt04A}</td>
+                                                <td>${getSurvey1_1.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">1-2. 우리 기관은 성희롱 방지 조치를 전 기관 차원에서 중점을 두어 실시한다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey1_2.surveyCnt01A}</td>
+                                                <td>${getSurvey1_2.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey1_2.surveyCnt02A}</td>
+                                                <td>${getSurvey1_2.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey1_2.surveyCnt03A}</td>
+                                                <td>${getSurvey1_2.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey1_2.surveyCnt04A}</td>
+                                                <td>${getSurvey1_2.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">1-3. 우리 기관은 아무리 영향력 있는 사람이어도 성희롱 행위 시 단호하게 조치할 것이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey1_3.surveyCnt01A}</td>
+                                                <td>${getSurvey1_3.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey1_3.surveyCnt02A}</td>
+                                                <td>${getSurvey1_3.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey1_3.surveyCnt03A}</td>
+                                                <td>${getSurvey1_3.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey1_3.surveyCnt04A}</td>
+                                                <td>${getSurvey1_3.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">1-4. 우리 기관은 성희롱 방지 및 인권 보호를 조직이 지향하는 가치로 삼고 있다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey1_4.surveyCnt01A}</td>
+                                                <td>${getSurvey1_4.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey1_4.surveyCnt02A}</td>
+                                                <td>${getSurvey1_4.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey1_4.surveyCnt03A}</td>
+                                                <td>${getSurvey1_4.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey1_4.surveyCnt04A}</td>
+                                                <td>${getSurvey1_4.surveyCnt04B}</td>
+                                            </tr>   
+                                            <tr>
+                                            	<td colspan="4">귀하가 속한 기관의 성희롱･성폭력 대응 절차에 관한 질문입니다. 귀하의 생각에 가장 가까운 보기를 선택해 주십시오.</td>
+                                            </tr>        
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">2-1. 나는 우리 기관의 성고충상담원이 누구인지 잘 알고 있다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey2_1.surveyCnt01A}</td>
+                                                <td>${getSurvey2_1.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey2_1.surveyCnt02A}</td>
+                                                <td>${getSurvey2_1.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey2_1.surveyCnt03A}</td>
+                                                <td>${getSurvey2_1.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey2_1.surveyCnt04A}</td>
+                                                <td>${getSurvey2_1.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">2-2. 나는 우리 기관의 사이버(온라인) 성희롱 상담창구를 잘 알고 있다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey2_2.surveyCnt01A}</td>
+                                                <td>${getSurvey2_2.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey2_2.surveyCnt02A}</td>
+                                                <td>${getSurvey2_2.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey2_2.surveyCnt03A}</td>
+                                                <td>${getSurvey2_2.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey2_2.surveyCnt04A}</td>
+                                                <td>${getSurvey2_2.surveyCnt04B}</td>
+                                            </tr> 	
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">2-3. 나는 우리 기관 내 성희롱 사건 발생 시 사건처리 절차를 잘 알고 있다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey2_3.surveyCnt01A}</td>
+                                                <td>${getSurvey2_3.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey2_3.surveyCnt02A}</td>
+                                                <td>${getSurvey2_3.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey2_3.surveyCnt03A}</td>
+                                                <td>${getSurvey2_3.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey2_3.surveyCnt04A}</td>
+                                                <td>${getSurvey2_3.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">2-4. 우리 기관은 성희롱 방지 및 인권 보호를 조직이 지향하는 가치로 삼고 있다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey2_4.surveyCnt01A}</td>
+                                                <td>${getSurvey2_4.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey2_4.surveyCnt02A}</td>
+                                                <td>${getSurvey2_4.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey2_4.surveyCnt03A}</td>
+                                                <td>${getSurvey2_4.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey2_4.surveyCnt04A}</td>
+                                                <td>${getSurvey2_4.surveyCnt04B}</td>
+                                            </tr>  
+                                            <tr>
+                                            	<td colspan="4">귀하가 속한 기관에서 성희롱 발생 시 다음의 조치가 적절히 이루어질 거라고 생각하십니까? 귀하의 생각에 가장 가까운 보기를 선택해 주십시오.</td>
+                                            </tr> 
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">3-1. 성희롱 사건에 대한 조사가 공정하게 진행될 것이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey3_1.surveyCnt01A}</td>
+                                                <td>${getSurvey3_1.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey3_1.surveyCnt02A}</td>
+                                                <td>${getSurvey3_1.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey3_1.surveyCnt03A}</td>
+                                                <td>${getSurvey3_1.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey3_1.surveyCnt04A}</td>
+                                                <td>${getSurvey3_1.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">3-2. 피해자의 신변이 보호되고 비밀이 철저히 보장될 것이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey3_2.surveyCnt01A}</td>
+                                                <td>${getSurvey3_2.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey3_2.surveyCnt02A}</td>
+                                                <td>${getSurvey3_2.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey3_2.surveyCnt03A}</td>
+                                                <td>${getSurvey3_2.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey3_2.surveyCnt04A}</td>
+                                                <td>${getSurvey3_2.surveyCnt04B}</td>
+                                            </tr>       	
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">3-3. 성희롱 행위자와 피해자의 분리가 제대로 이루어질 것이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey3_3.surveyCnt01A}</td>
+                                                <td>${getSurvey3_3.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey3_3.surveyCnt02A}</td>
+                                                <td>${getSurvey3_3.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey3_3.surveyCnt03A}</td>
+                                                <td>${getSurvey3_3.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey3_3.surveyCnt04A}</td>
+                                                <td>${getSurvey3_3.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">3-4. 성희롱 행위자에 대해 적절한 징계가 이루어질 것이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey3_4.surveyCnt01A}</td>
+                                                <td>${getSurvey3_4.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey3_4.surveyCnt02A}</td>
+                                                <td>${getSurvey3_4.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey3_4.surveyCnt03A}</td>
+                                                <td>${getSurvey3_4.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey3_4.surveyCnt04A}</td>
+                                                <td>${getSurvey3_4.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">3-5. 성희롱 피해자를 비난하거나 따돌리는 경우는 없을 것이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey3_5.surveyCnt01A}</td>
+                                                <td>${getSurvey3_5.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey3_5.surveyCnt02A}</td>
+                                                <td>${getSurvey3_5.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey3_5.surveyCnt03A}</td>
+                                                <td>${getSurvey3_5.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey3_5.surveyCnt04A}</td>
+                                                <td>${getSurvey3_5.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                            	<td colspan="4">귀하가 속한 기관에서 실시하는 성희롱･성폭력 예방활동에 관한 질문입니다. 귀하의 생각에 가장 가까운 보기를 선택해 주십시오.</td>
+                                            </tr> 
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">4-1. 우리 기관의 성희롱 예방교육은 기관이나 대상자 특성을 적절히 반영하여 시행되고 있다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey4_1.surveyCnt01A}</td>
+                                                <td>${getSurvey4_1.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey4_1.surveyCnt02A}</td>
+                                                <td>${getSurvey4_1.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey4_1.surveyCnt03A}</td>
+                                                <td>${getSurvey4_1.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey4_1.surveyCnt04A}</td>
+                                                <td>${getSurvey4_1.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">4-2. 우리 기관은 성희롱 예방교육이 꼭 필요한 대상자가 반드시 참여하도록 조치한다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey4_2.surveyCnt01A}</td>
+                                                <td>${getSurvey4_2.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey4_2.surveyCnt02A}</td>
+                                                <td>${getSurvey4_2.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey4_2.surveyCnt03A}</td>
+                                                <td>${getSurvey4_2.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey4_2.surveyCnt04A}</td>
+                                                <td>${getSurvey4_2.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">4-3. 우리 기관은 성희롱 예방을 위한 홍보･캠페인을 적극적으로 실시한다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey4_3.surveyCnt01A}</td>
+                                                <td>${getSurvey4_3.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey4_3.surveyCnt02A}</td>
+                                                <td>${getSurvey4_3.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey4_3.surveyCnt03A}</td>
+                                                <td>${getSurvey4_3.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey4_3.surveyCnt04A}</td>
+                                                <td>${getSurvey4_3.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">4-4. 성희롱 예방교육과 홍보･캠페인이 조직 내 성희롱 방지에 도움이 됐다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey4_4.surveyCnt01A}</td>
+                                                <td>${getSurvey4_4.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey4_4.surveyCnt02A}</td>
+                                                <td>${getSurvey4_4.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey4_4.surveyCnt03A}</td>
+                                                <td>${getSurvey4_4.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey4_4.surveyCnt04A}</td>
+                                                <td>${getSurvey4_4.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                            	<td colspan="4">성희롱 발생의 조직적 맥락</td>
+                                            </tr> 
+                                            <tr>
+                                            	<td colspan="4">성희롱･성폭력 문제에 관한 질문입니다. 귀하의 생각에 가장 가까운 보기를 선택해 주십시오.</td>
+                                            </tr> 
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">5-1. 성희롱은 피해자가 싫다는 의사 표시를 제대로 하지 않아서 발생한다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey5_1.surveyCnt01A}</td>
+                                                <td>${getSurvey5_1.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey5_1.surveyCnt02A}</td>
+                                                <td>${getSurvey5_1.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey5_1.surveyCnt03A}</td>
+                                                <td>${getSurvey5_1.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey5_1.surveyCnt04A}</td>
+                                                <td>${getSurvey5_1.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">5-2. 성희롱은 피해자가 오해 살 만한 행동을 했기 때문에 발생한다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey5_2.surveyCnt01A}</td>
+                                                <td>${getSurvey5_2.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey5_2.surveyCnt02A}</td>
+                                                <td>${getSurvey5_2.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey5_2.surveyCnt03A}</td>
+                                                <td>${getSurvey5_2.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey5_2.surveyCnt04A}</td>
+                                                <td>${getSurvey5_2.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">5-3. 뭔가 다른 의도가 있어서 성희롱 피해를 제기하는 사람도 있다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey5_3.surveyCnt01A}</td>
+                                                <td>${getSurvey5_3.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey5_3.surveyCnt02A}</td>
+                                                <td>${getSurvey5_3.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey5_3.surveyCnt03A}</td>
+                                                <td>${getSurvey5_3.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey5_3.surveyCnt04A}</td>
+                                                <td>${getSurvey5_3.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">5-4. 사소한 성적 언동까지 성희롱으로 문제를 제기하는 것은 조직문화를 경직되게 한다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey5_4.surveyCnt01A}</td>
+                                                <td>${getSurvey5_4.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey5_4.surveyCnt02A}</td>
+                                                <td>${getSurvey5_4.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey5_4.surveyCnt03A}</td>
+                                                <td>${getSurvey5_4.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey5_4.surveyCnt04A}</td>
+                                                <td>${getSurvey5_4.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">5-5. 성희롱 문제를 공론화하는 것은 조직에 피해 혹은 부담을 준다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey5_5.surveyCnt01A}</td>
+                                                <td>${getSurvey5_5.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey5_5.surveyCnt02A}</td>
+                                                <td>${getSurvey5_5.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey5_5.surveyCnt03A}</td>
+                                                <td>${getSurvey5_5.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey5_5.surveyCnt04A}</td>
+                                                <td>${getSurvey5_5.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                            	<td colspan="4">귀하가 속한 기관의 조직문화에 관한 질문입니다. 귀하의 생각에 가장 가까운 보기를 선택해 주십시오.</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">6-1. 우리 기관 구성원들은 연애, 결혼 등 사생활에 관해 묻는데 거리낌이 없는 편이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey6_1.surveyCnt01A}</td>
+                                                <td>${getSurvey6_1.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey6_1.surveyCnt02A}</td>
+                                                <td>${getSurvey6_1.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey6_1.surveyCnt03A}</td>
+                                                <td>${getSurvey6_1.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey6_1.surveyCnt04A}</td>
+                                                <td>${getSurvey6_1.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">6-2. 우리 기관에서는 학연･지연 등 연고가 있는 사람들끼리 유대가 강한 편이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey6_2.surveyCnt01A}</td>
+                                                <td>${getSurvey6_2.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey6_2.surveyCnt02A}</td>
+                                                <td>${getSurvey6_2.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey6_2.surveyCnt03A}</td>
+                                                <td>${getSurvey6_2.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey6_2.surveyCnt04A}</td>
+                                                <td>${getSurvey6_2.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">6-3. 우리 기관은 회식 등 업무시간 외의 모임에 꼭 참석해야 하는 분위기이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey6_3.surveyCnt01A}</td>
+                                                <td>${getSurvey6_3.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey6_3.surveyCnt02A}</td>
+                                                <td>${getSurvey6_3.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey6_3.surveyCnt03A}</td>
+                                                <td>${getSurvey6_3.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey6_3.surveyCnt04A}</td>
+                                                <td>${getSurvey6_3.surveyCnt04B}</td>
+                                            </tr>
+                                        	 <tr>
+                                             	<td rowspan="4" style="text-align:left;">6-4. 우리 기관에서는 하급자가 상급자에게 고충이나 불만을 스스럼없이 이야기하는 분위기이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey6_4.surveyCnt01A}</td>
+                                                <td>${getSurvey6_4.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey6_4.surveyCnt02A}</td>
+                                                <td>${getSurvey6_4.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey6_4.surveyCnt03A}</td>
+                                                <td>${getSurvey6_4.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey6_4.surveyCnt04A}</td>
+                                                <td>${getSurvey6_4.surveyCnt04B}</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="4" style="text-align:left;">6-5. 우리 기관에서는 상급자가 하급자에게 큰 소리를 내거나 폭언을 자주 하는 편이다</td>
+                                                <td>1.전혀 그렇지 않다</td>
+                                                <td>${getSurvey6_5.surveyCnt01A}</td>
+                                                <td>${getSurvey6_5.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.별로 그렇지 않다</td>
+                                                <td>${getSurvey6_5.surveyCnt02A}</td>
+                                                <td>${getSurvey6_5.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.약간 그렇다</td>
+                                                <td>${getSurvey6_5.surveyCnt03A}</td>
+                                                <td>${getSurvey6_5.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.매우 그렇다</td>
+                                                <td>${getSurvey6_5.surveyCnt04A}</td>
+                                                <td>${getSurvey6_5.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                            	<td colspan="4">성희롱 발생 양상</td>
+                                            </tr>
+                                        	<tr>
+                                             	<td rowspan="8" style="text-align:left;">7. 귀하가 속한 기관에서 최근 3년 동안 다음과 같은 행위를 직접 경험하거나 목격한 적이 있습니까?</td>
+                                                <td>1.언어적 성희롱 (예: 외모에 대한 성적 비유나 평가, 음담패설 및 성적 농담, 성적 소문 유포)</td>
+                                                <td>${getSurvey7.surveyCnt01A}</td>
+                                                <td>${getSurvey7.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.신체적 성희롱 (예: 포옹, 손잡기, 신체 밀착, 안마, 입맞춤 등의 신체 접촉(또는 강요), 특정 신체 부위를 만지도록 강요하는 행위)</td>
+                                                <td>${getSurvey7.surveyCnt02A}</td>
+                                                <td>${getSurvey7.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.시각적 성희롱 (예: SNS로 성적인 사진 등 전송, 가슴 등 특정 신체 부위를 쳐다보는 행위, 자신의 특정 신체 부위를 만지거나 노출하는 행위)</td>
+                                                <td>${getSurvey7.surveyCnt03A}</td>
+                                                <td>${getSurvey7.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.원치 않는 사적 만남을 강요하는 행위</td>
+                                                <td>${getSurvey7.surveyCnt04A}</td>
+                                                <td>${getSurvey7.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>5.원치 않는 성적 관계를 요구하는 행위</td>
+                                                <td>${getSurvey7.surveyCnt05A}</td>
+                                                <td>${getSurvey7.surveyCnt05B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>6.회식, 워크숍 등에서 술을 따르거나 옆에 앉도록 강요하는 행위</td>
+                                                <td>${getSurvey7.surveyCnt06A}</td>
+                                                <td>${getSurvey7.surveyCnt06B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>7.기타</td>
+                                                <td>${getSurvey7.surveyCnt07A}</td>
+                                                <td>${getSurvey7.surveyCnt07B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>8.위 행위를 직접 목격하거나 경험한 것 없음</td>
+                                                <td>${getSurvey7.surveyCnt08A}</td>
+                                                <td>${getSurvey7.surveyCnt08B}</td>
+                                            </tr>
+                                            <c:forEach var="each" items="${getSurvey7OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno7opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                        	<tr>
+                                             	<td rowspan="6" style="text-align:left;">7-1. 당시 성희롱 행위자는 누구였습니까?</td>
+                                                <td>1.피해자의 하급자</td>
+                                                <td>${getSurvey7_1_1.surveyCnt01A}</td>
+                                                <td>${getSurvey7_1_1.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.피해자의 동급자</td>
+                                                <td>${getSurvey7_1_1.surveyCnt02A}</td>
+                                                <td>${getSurvey7_1_1.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.피해자의 상급자(기관장, 사업주 제외)</td>
+                                                <td>${getSurvey7_1_1.surveyCnt03A}</td>
+                                                <td>${getSurvey7_1_1.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.기관장, 사업주</td>
+                                                <td>${getSurvey7_1_1.surveyCnt04A}</td>
+                                                <td>${getSurvey7_1_1.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>5.외부인(고객, 민원인, 거래처 직원 등)</td>
+                                                <td>${getSurvey7_1_1.surveyCnt05A}</td>
+                                                <td>${getSurvey7_1_1.surveyCnt05B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>6.기타</td>
+                                                <td>${getSurvey7_1_1.surveyCnt06A}</td>
+                                                <td>${getSurvey7_1_1.surveyCnt06B}</td>
+                                            </tr>
+                                            <c:forEach var="each" items="${getSurvey7_1_1OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno7_1_1opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                            <tr>
+                                             	<td rowspan="7" style="text-align:left;">7-2. 당시 성희롱 발생 장소는 어디였습니까?</td>
+                                                <td>1.사무실 내</td>
+                                                <td>${getSurvey7_2_1.surveyCnt01A}</td>
+                                                <td>${getSurvey7_2_1.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.출장, 외부 미팅 등 사무실 외 장소</td>
+                                                <td>${getSurvey7_2_1.surveyCnt02A}</td>
+                                                <td>${getSurvey7_2_1.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.야유회, 워크샵 등 기관이 주관하는 행사 장소</td>
+                                                <td>${getSurvey7_2_1.surveyCnt03A}</td>
+                                                <td>${getSurvey7_2_1.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.회식 장소</td>
+                                                <td>${getSurvey7_2_1.surveyCnt04A}</td>
+                                                <td>${getSurvey7_2_1.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>5.회식 후 귀가 도중</td>
+                                                <td>${getSurvey7_2_1.surveyCnt05A}</td>
+                                                <td>${getSurvey7_2_1.surveyCnt05B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>6.온라인(단톡방, SNS, 메신저 등)</td>
+                                                <td>${getSurvey7_2_1.surveyCnt06A}</td>
+                                                <td>${getSurvey7_2_1.surveyCnt06B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>7.기타</td>
+                                                <td>${getSurvey7_2_1.surveyCnt07A}</td>
+                                                <td>${getSurvey7_2_1.surveyCnt07B}</td>
+                                            </tr>
+                                            <c:forEach var="each" items="${getSurvey7_2_1OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno7_2_1opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                            <tr>
+                                            	<td colspan="4">대처역량</td>
+                                            </tr>
+                                            <tr>
+                                            	<td colspan="4">귀하와 같은 부서에서 일하는 A가 사무실에서 다른 동료들에게 자주 성적 농담이나 외모･옷차림에 대해 성적인 언급을 함.</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="5" style="text-align:left;">8. 만약 귀하가 위 상황을 목격한다면 어떻게 행동하시겠습니까?</td>
+                                                <td>1.A에게 바로 중단을 요구할 것 같다</td>
+                                                <td>${getSurvey8.surveyCnt01A}</td>
+                                                <td>${getSurvey8.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.화제를 돌리거나 피해자가 그 자리를 피하게 할 것 같다</td>
+                                                <td>${getSurvey8.surveyCnt02A}</td>
+                                                <td>${getSurvey8.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.그냥 못 들은 것처럼 행동할 것 같다</td>
+                                                <td>${getSurvey8.surveyCnt03A}</td>
+                                                <td>${getSurvey8.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.A에게 적당히 호응해 주고 넘어갈 것 같다</td>
+                                                <td>${getSurvey8.surveyCnt04A}</td>
+                                                <td>${getSurvey8.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>5.잘 모르겠다</td>
+                                                <td>${getSurvey8.surveyCnt05A}</td>
+                                                <td>${getSurvey8.surveyCnt05B}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="6" style="text-align:left;">9. 만약 A로부터 성희롱 피해를 입은 동료 또는 하급자(본인이 관리자인 경우)가 귀하에게 힘들다는 고민을 털어놓는다면 어떻게 대처하시겠습니까?</td>
+                                                <td>1.피해자를 생각해서 웬만하면 참고 넘어가라고 조언할 것이다</td>
+                                                <td>${getSurvey9.surveyCnt01A}</td>
+                                                <td>${getSurvey9.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.A에게 직접 항의하고 중단을 요구할 것이다</td>
+                                                <td>${getSurvey9.surveyCnt02A}</td>
+                                                <td>${getSurvey9.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.고충처리 절차에 따라 기관에 신고하라고 조언할 것이다</td>
+                                                <td>${getSurvey9.surveyCnt03A}</td>
+                                                <td>${getSurvey9.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.피해자를 대신해서 고충상담원에게 직접 상담해 볼 것이다</td>
+                                                <td>${getSurvey9.surveyCnt04A}</td>
+                                                <td>${getSurvey9.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>5.상급자에게 보고하여 조치를 취해달라고 할 것이다</td>
+                                                <td>${getSurvey9.surveyCnt05A}</td>
+                                                <td>${getSurvey9.surveyCnt05B}</td>
+                                            </tr>
+                                             <tr>
+                                                <td>6.잘 모르겠다</td>
+                                                <td>${getSurvey9.surveyCnt06A}</td>
+                                                <td>${getSurvey9.surveyCnt06B}</td>
+                                            </tr>
+                                           <tr>
+                                             	<td rowspan="8" style="text-align:left;">10. 만약 귀하가 위와 같은 성희롱을 직접 경험한다면 어떻게 대처하시겠습니까?</td>
+                                                <td>1.여성가족부, 성희롱･성폭력 신고센터, 경찰, 국가인권위원회 등 외부기관에 신고할 것이다</td>
+                                                <td>${getSurvey10.surveyCnt01A}</td>
+                                                <td>${getSurvey10.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.상담소, 변호사 등 외부 단체･전문가에게 상담할 것이다</td>
+                                                <td>${getSurvey10.surveyCnt02A}</td>
+                                                <td>${getSurvey10.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.고충처리 절차에 따라 기관에 신고할 것이다</td>
+                                                <td>${getSurvey10.surveyCnt03A}</td>
+                                                <td>${getSurvey10.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.부서 관리자에게 알리고 의논할 것이다</td>
+                                                <td>${getSurvey10.surveyCnt04A}</td>
+                                                <td>${getSurvey10.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>5.주변 동료에게 알리고 의논할 것이다</td>
+                                                <td>${getSurvey10.surveyCnt05A}</td>
+                                                <td>${getSurvey10.surveyCnt05B}</td>
+                                            </tr>
+                                             <tr>
+                                                <td>6.성희롱 행위자에게 직접 사과를 요구할 것이다</td>
+                                                <td>${getSurvey10.surveyCnt06A}</td>
+                                                <td>${getSurvey10.surveyCnt06B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>7.기타</td>
+                                                <td>${getSurvey10.surveyCnt07A}</td>
+                                                <td>${getSurvey10.surveyCnt07B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>8.위의 어떤 대응도 하지 않을 것이다</td>
+                                                <td>${getSurvey10.surveyCnt08A}</td>
+                                                <td>${getSurvey10.surveyCnt08B}</td>
+                                            </tr>
+                                            <c:forEach var="each" items="${getSurvey10OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno10opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                           <tr>
+                                             	<td rowspan="6" style="text-align:left;">11. 귀하가 속한 기관에서 성희롱 발생 시 가장 중요한 사항을 무엇이라고 생각하십니까?</td>
+                                                <td>1.신속한 대응 및 절차 진행</td>
+                                                <td>${getSurvey11.surveyCnt01A}</td>
+                                                <td>${getSurvey11.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.행위자에 대한 강력한 조치</td>
+                                                <td>${getSurvey11.surveyCnt02A}</td>
+                                                <td>${getSurvey11.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.피해자 보호 조치 (예: 공간분리, 유급휴가, 치료비 지원 등)</td>
+                                                <td>${getSurvey11.surveyCnt03A}</td>
+                                                <td>${getSurvey11.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.소문, 집단 따돌림, 불이익 조치 등 2차 피해 방지</td>
+                                                <td>${getSurvey11.surveyCnt04A}</td>
+                                                <td>${getSurvey11.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>5.기관장의 의지 및 관리자의 성인지 역량</td>
+                                                <td>${getSurvey11.surveyCnt05A}</td>
+                                                <td>${getSurvey11.surveyCnt05B}</td>
+                                            </tr>
+                                             <tr>
+                                                <td>6.기타</td>
+                                                <td>${getSurvey11.surveyCnt06A}</td>
+                                                <td>${getSurvey11.surveyCnt06B}</td>
+                                            </tr>
+                                            <c:forEach var="each" items="${getSurvey11OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno11opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                            <tr>
+                                             	<td rowspan="5" style="text-align:left;">12. 귀하가 속한 기관에서 성희롱 예방을 위해 가장 필요한 것은 무엇이라고 생각하십니까?</td>
+                                                <td>1.기관 내부업무망에 고충상담원 지정 현황, 사건처리 절차 등의 정보 게시</td>
+                                                <td>${getSurvey12.surveyCnt01A}</td>
+                                                <td>${getSurvey12.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.직급별 소규모 예방교육 등 프로그램 실시</td>
+                                                <td>${getSurvey12.surveyCnt02A}</td>
+                                                <td>${getSurvey12.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.기관장의 성희롱･성폭력 근절 의지 표명</td>
+                                                <td>${getSurvey12.surveyCnt03A}</td>
+                                                <td>${getSurvey12.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.전 직원 대상 조직문화 개선 실태조사 정례화</td>
+                                                <td>${getSurvey12.surveyCnt04A}</td>
+                                                <td>${getSurvey12.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>5.기타</td>
+                                                <td>${getSurvey12.surveyCnt05A}</td>
+                                                <td>${getSurvey12.surveyCnt05B}</td>
+                                            </tr>
+                                            <c:forEach var="each" items="${getSurvey12OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno12opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+			                                <tr>
+                                             	<td style="text-align:left;">13. 성희롱 예방 및 근절을 위해 기관에 제안하고 싶은 사항, 예방교육 등 실시하고 있는 사업에 대한 개선 의견 등을 자유롭게 적어 주십시오.</td>
+                                            </tr>
+                                            <c:forEach var="each" items="${getSurvey13OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno13opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                            <tr>
+                                            	<td colspan="4">응답자 특성</td>
+                                            </tr>
+                                   			<tr>
+                                             	<td rowspan="2" style="text-align:left;">배문1. 귀하의 성별은 무엇입니까?</td>
+                                                <td>1.남성</td>
+                                                <td>${getSurvey14.surveyCnt01A}</td>
+                                                <td>${getSurvey14.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.여성</td>
+                                                <td>${getSurvey14.surveyCnt02A}</td>
+                                                <td>${getSurvey14.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="4" style="text-align:left;">배문2. 귀하의 연령대는 어떻게 되십니까?</td>
+                                                <td>1.29세 이하</td>
+                                                <td>${getSurvey15.surveyCnt01A}</td>
+                                                <td>${getSurvey15.surveyCnt01B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.30세~39세</td>
+                                                <td>${getSurvey15.surveyCnt02A}</td>
+                                                <td>${getSurvey15.surveyCnt02B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.40세~49세</td>
+                                                <td>${getSurvey15.surveyCnt03A}</td>
+                                                <td>${getSurvey15.surveyCnt03B}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.50세 이상</td>
+                                                <td>${getSurvey15.surveyCnt04A}</td>
+                                                <td>${getSurvey15.surveyCnt04B}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td rowspan="5" style="text-align:left;">배문3. 귀하의 직종은 어떻게 되십니까?</td>
+                                                <td>1.일반직 공무원</td>
+                                                <td>${getSurvey16.surveyCnt01A}</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2.특정직 공무원</td>
+                                                <td>${getSurvey16.surveyCnt02A}</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>3.별정직･정무직 공무원</td>
+                                                <td>${getSurvey16.surveyCnt03A}</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>4.공무직</td>
+                                                <td>${getSurvey16.surveyCnt04A}</td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>5.그외 기간제 등</td>
+                                                <td>${getSurvey16.surveyCnt05A}</td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+<%--                                     <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}' /> --%>
+                                    <!--/게시판 영역-->
+									<!--설명-->
+									<!--<p class="notification_right01">
+										<img src="/cms/image/excla.gif" alt="!">
+										1. [홈페이지 목록/등록] 메뉴에서 [홈페이지등록]을 클릭한 후 관련 정보를 입력 합니다. <br />
+										<img src="/cms/image/excla.gif" alt="!">
+										2. 생성된 홈페이지 목록 우측의  [환경설정]버튼을 클릭하여 홈페이지 제작에 필요한 가장 기본적인 정보를 셑팅합니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										3. [홈페이지 목록/등록] &gt; [홈페이지등록]메뉴에서 홈페이지를 등록하시면 [메뉴/콘텐츠 관리]에서 자동으로 카테고리를 관리할 수 있는 홈페이지 목록이 생성 됩니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										4. 원하시는 홈페이지를 셑팅하기 위해서는 미리 코딩해둔 메인페이지 Html 및 css파일, js파일을 각각 [메인페이지 관리], [CSS관리], [JS관리]에 미리 등록해 두어야 합니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										5. 따로 [메인페이지 관리]에서 메인페이지를 등록하시지 않아도 [메뉴/콘텐츠 관리]메뉴의  메인페이지 역할을 하는 페이지를 생성하여 메뉴리다이렉트 기능을 이용하셔도 무방합니다.
+										</p>-->
+									<!--/설명-->
+                                </div>
+                                <!--/main_table-->
+                                
+                                <div class="top_bt">
+				                    <a class="btmore05" href="javascript:excelDownload();">엑셀 다운로드</a>
+				                </div>	
+                            </li>
+                        </ul>
+                        <script type="text/javascript">
+							function search(){
+								$("#ZStatisticsMngVo").attr("action","/admsys/statisticsmng/surveyrsrch.html");
+								$("#ZStatisticsMngVo").submit();
+							}
+                        
+							function excelDownload(){ 
+	                        	  // step 1. workbook 생성
+	                        	  var wb = XLSX.utils.book_new();
+	                        	  
+	                        	  var org = '';
+	                        	  if('${input.org1}' == 'gov'){
+	                        		  org = '공공';
+	                        	  }else if('${input.org2}' == 'priv'){
+	                        		  org = '민간';
+	                        	  }
+	                        	  
+	                        	  var type = '';
+	                        	  if('${input.type1}' == 'A'){
+	                        		  type = '여성가족부신고사건(A)'
+	                        	  }else if('${input.type2}' == 'B'){
+	                        		  type = '기관신청건(B)';
+	                        	  }else if('${input.type3}' == 'C'){
+	                        		  type = '여가부선정/타부처이관(C)';
+	                        	  }else if('${input.type4}' == 'D'){
+	                        		  type = '현장점검(D)';
+	                        	  }
+	 							  var wsData = [['검색'],
+	 								  			['기간:'+'<fmt:formatDate type="both" value="${isd}" pattern="yyyy-MM-dd" />'+'~'+'<fmt:formatDate type="both" value="${ied}" pattern="yyyy-MM-dd" />'],
+	 								  			['기관:'+org],
+	 								  			['유형:'+type],
+	 								  			['기관코드:'+'${input.orgId}'],
+	 								  			['진단일지번호(사건번호):'+'${input.consulting_application_no}']];
+	                        	  
+	                        	  const ws = XLSX.utils.aoa_to_sheet(wsData);
+	                        	  
+	                        	  XLSX.utils.book_append_sheet(wb, ws, "검색조건");
+
+	                        	  // step 2. 시트 만들기 
+	                        	  var newWorksheet = excelHandler.getWorksheet();
+
+	                        	  // step 3. workbook에 새로만든 워크시트에 이름을 주고 붙인다.  
+	                        	  XLSX.utils.book_append_sheet(wb, newWorksheet, excelHandler.getSheetName());
+
+	                        	  // step 4. 엑셀 파일 만들기 
+	                        	  var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+
+	                        	  // step 5. 엑셀 파일 내보내기 
+	                        	  saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), excelHandler.getExcelFileName());
+	                        	}
+
+	                        	var excelHandler = {
+	                        	    getExcelFileName : function(){
+	                        	        return '설문조사_통계.xlsx';	//파일명
+	                        	    },
+	                        	    getSheetName : function(){
+	                        	        return '설문조사';	//시트명
+	                        	    },
+	                        	    getExcelData : function(){
+	                        	        return document.getElementById('main_table1'); 	//TABLE id
+	                        	    },
+	                        	    getWorksheet : function(){
+	                        	        return XLSX.utils.table_to_sheet(this.getExcelData());
+	                        	    }
+	                        	}
+
+	                        	function s2ab(s) { 
+	                        	  var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+	                        	  var view = new Uint8Array(buf);  //create uint8array as viewer
+	                        	  for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+	                        	  return buf;    
+	                        	}
+						</script>
+                    </div>
+                    <!--/content-->
+                </form:form>
+            </div>
+            <!--/contents-->
+<jsp:include page="../end.jsp" flush="false" />

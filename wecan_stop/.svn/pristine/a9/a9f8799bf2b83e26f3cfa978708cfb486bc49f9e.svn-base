@@ -1,0 +1,143 @@
+#-----------------------------------------------------------------------
+#   globals.properties
+#-----------------------------------------------------------------------
+
+Globals.os.type                 = linux
+
+#MySql
+Globals.db.type                 = mysql
+Globals.db.driver               = com.mysql.jdbc.Driver
+Globals.db.url                  = jdbc:mysql://10.62.80.112:3306/stop?autoReconnect=true
+Globals.db.username             = stopsup
+Globals.db.password             = forsup!@
+
+# Oracle second database
+#Globals.db2.type                = oracle
+#Globals.db2.driver              = oracle.jdbc.OracleDriver
+#Globals.db2.url                 = jdbc:oracle:thin:@192.168.1.223:1521:archive
+#Globals.db2.username            = nime
+#Globals.db2.password            = nime
+
+# Mail
+Globals.mail.admin              = idcheck@stop.or.kr
+Globals.mail.admin.name         = wecan_stop
+Globals.mail.admin.password		= 
+Globals.mail.declaration        = idcheck@stop.or.kr
+Globals.post.key                = 32151a546153a7fe21450849638266
+
+# Mail smtp
+Globals.mail.smtp.host			= mail.stop.or.kr
+Globals.mail.smtp.port			= 25
+
+Globals.server.name             = wecan.stop.or.kr
+Globals.server.admin.name       = inportal.stop.or.kr
+Globals.cms.license             = /cms/license.txt
+
+Globals.skin.board              = /WEB-INF/jsp/skin/board/
+Globals.skin.member             = /WEB-INF/jsp/skin/member/
+Globals.skin.login              = /WEB-INF/jsp/skin/login/
+Globals.skin.popup              = /WEB-INF/jsp/skin/popup/
+Globals.skin.layer.popup        = /WEB-INF/jsp/skin/layerpopup/
+Globals.skin.event              = /WEB-INF/jsp/skin/event/
+Globals.skin.banner             = /WEB-INF/jsp/skin/banner/
+Globals.skin.form.mail          = /WEB-INF/jsp/skin/formmail/
+Globals.skin.survey             = /WEB-INF/jsp/skin/survey/
+Globals.skin.eval               = /WEB-INF/jsp/skin/eval/
+Globals.skin.manager            = /WEB-INF/jsp/skin/manager/
+
+Globals.upload                  = /usr/upload/
+Globals.upload.editor           = /usr/upload/editor/
+Globals.upload.tmp              = /usr/upload/tmp/
+Globals.upload.popup            = /usr/upload/popup/
+Globals.upload.layer.popup      = /usr/upload/layerpopup/
+Globals.upload.banner           = /usr/upload/banner/
+Globals.upload.board            = /usr/upload/board/
+Globals.upload.main.banner      = /usr/upload/zmainbanner/
+
+Globals.common.css              = /cms/gen/css/
+Globals.common.js               = /cms/gen/js/
+Globals.template.main           = /WEB-INF/jsp/template/main
+Globals.template.tpl            = /WEB-INF/jsp/template/tpl
+Globals.template.menu           = /WEB-INF/jsp/template/menu
+
+Globals.file.path               = /usr/file/
+
+# Conference
+Globals.conference.upload       = /usr/upload/conference/paper/
+Globals.conference.list.count   = 10
+
+Globals.upload.project          = /usr/upload/project/
+Globals.upload.paper            = /usr/upload/paper/
+Globals.upload.journal          = /usr/upload/journal/
+Globals.upload.reviewapp        = /usr/upload/reviewapp/
+Globals.upload.events           = /usr/upload/events/
+Globals.upload.board_thumb      = /usr/upload/board_thumb/
+Globals.upload.repository       = /usr/upload/repository/
+Globals.upload.repo.fair        = /usr/upload/repository/fair/
+Globals.upload.repo.nime        = /usr/upload/repository/nime/
+Globals.upload.aseanrok       	= /usr/upload/aseanrok/
+
+Globals.archive                 = /usr/upload/archv/
+Globals.archive.image.org       = /usr/upload/archv/images/org/
+Globals.archive.image.thumbnail = /usr/upload/archv/images/thbnail/
+Globals.archive.image.thumbnail_x     = 162
+Globals.archive.image.thumbnail_y     = 123
+Globals.archive.image.detail   = /usr/upload/archv/images/detail/
+Globals.archive.image.detail_x        = 647
+Globals.archive.image.detail_y        = 431
+Globals.archive.docs            = /usr/upload/archv/docs/
+Globals.archive.image.watermark = watermark.gif
+Globals.archive.menuno          = 476
+
+Globals.newpost.orgCode         = 233
+Globals.newpost.orgNm           = \uD55C\uAD6D\uC7AC\uC815\uC815\uBCF4\uC6D0
+
+Globals.list.count              = 10
+
+# ginue_disregard (for rules)
+Globals.auth.disregard          = jhlee55\u00D0453\u00C6jyh\u00D0220
+
+# IPIN
+Globals.ipin.sSiteCode          = AC29
+Globals.ipin.sSitePassword      = Kocca201
+Globals.ipin.returnURL          = http://127.0.0.1/skin/ipin/ipin_return.html
+
+#NICE\uBCF8\uC778\uC778\uC99D
+Globals.niceself.sSiteCode      = AB392
+Globals.niceself.sSitePassword  = n2PZMrj2bt1L
+Globals.niceself.returnURL      = http://127.0.0.1/usr/skin/nice_self/NiceID_return.html
+
+Globals.ssl.use                 = N
+
+# XSS antisamy xml path
+Globals.antisamy                = /WEB-INF/config/zcms/validator/antisamy-tinymce-1.4.4.xml
+
+#Use in board attach for prevent to upload file
+Globals.forbidden.extension     = jsp,asp,php,html,htm,jspx
+
+#\uD30C\uC77C \uB9E4
+Globals.default.groupno         = 1
+
+Globals.fileManager             = /var/filemanager/
+
+# ckeditor
+Globals.cafe                    = /usr/upload/cafe/
+
+# FTP
+Globals.ftp                     = /usr/upload/ftp/
+
+# Menu Upload
+Globals.menu.file.location		=	/usr/upload/menu/
+# EXCEL Temp
+Globals.excel.file.location		=	/usr/upload/tmp/
+
+# chat
+Globals.chat.port				= 3000
+Globals.chat.token				= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb29taWQiOiJ0ZXN0Iiwicm9vbW5hbWUiOiLthYzsiqTtirgiLCJ1c2VyaWQiOiJlZGR5Iiwibmlja25hbWUiOiLsl5DrlJQiLCJ1c2VydHlwZSI6IjAiLCJ0YXJnZXRpZCI6IiIsImltZ3VybCI6IiIsIm1lc3NhZ2UiOiLsg5jtlIzsnoXri4jri6QuIiwiaWF0IjoxNjM3MDQ5NzM5LCJleHAiOjE2Mzc5MTM3MzksImlzcyI6ImRvbmdsZWNoYXQifQ.V-WZfVbQnud6mYy0yWmJrkBRlHCvGm8tBtLEBkoaFc4
+Globals.chat.token.local		= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb29taWQiOiJnZmMwMSIsInJvb21uYW1lIjoiZ2ZjIiwidXNlcmlkIjoiZ2ZjMDEiLCJuaWNrbmFtZSI6ImdmYyIsInVzZXJ0eXBlIjoiIiwidGFyZ2V0aWQiOiIiLCJpbWd1cmwiOiIiLCJtZXNzYWdlIjoiIiwiaWF0IjoxNjM3Mjk3NjczLCJleHAiOjE2MzgxNjE2NzMsImlzcyI6ImRvbmdsZWNoYXQifQ.rOW7YPLMG3rKa6Q8LAD209435qbiEIF5mOQsk0_gFA8
+
+# captcha
+Globals.captcha.clientId 		= ySb0WJsRqLgJ4eGWT8ub
+Globals.captcha.clientSecret	= iNEXIb_rxX
+Globals.captcha.upload.image	= /usr/upload/captcha/image
+Globals.captcha.upload.sound	= /usr/upload/captcha/sound

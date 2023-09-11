@@ -1,0 +1,20 @@
+/*Z5 css 버튼 */
+ .btn-style {
+  padding:5px 10px 7px 10px;
+  color: #ffffff;
+  background-color: #d23552;
+  border-color: #e53a5a;
+  font-weight:600;
+}
+h3.tit {font:bold 16px/18px '돋움','Dotum';color:#3f3f3f;}
+.btn_type1 {display:inline-block;}
+.btn_type1 a {display:inline-block; padding:7px 15px;color:#4a4a4a;font:15px/18px '돋움','Dotum';font-weight:800;border:2px solid #e5e5e5;text-decoration:none;background:#ffffff;}
+
+.btn_type2 {display:inline-block; }
+.btn_type2 a {display:inline-block;padding:7px 10px;color:#ffffff;font:12px/15px '돋움','Dotum';font-weight:800;border:2px solid #3c3c3c;text-decoration:none;background:#524c4c;}
+.btn_type2 a:hover {text-decoration:none;}
+.btn_type3 {display:inline-block;}
+.btn_type3 a {display:inline-block; padding:5px 10px;color:#ffffff;font:12px/12px '돋움','Dotum';font-weight:800;border:2px solid #6e6e6e;text-decoration:none;background:#747474;}
+
+.btn_type4 {display:inline-block;}
+.btn_type4 a {display:inline-block;padding:5px 10px;color:#5a5a5a;font:12px/12px '돋움','Dotum';font-weight:800;border:2px solid #e5e5e5;text-decoration:none;background:#f7f5f6;}

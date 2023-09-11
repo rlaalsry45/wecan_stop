@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZCate">
+	<typeAlias alias="zCateVo" type="com.z5.zcms.admsys.board.domain.ZCateVo"/>
+	<resultMap id="zCateVo" class="zCateVo"/>
+	
+	<select id="boardCateList" parameterClass="java.lang.Integer" resultClass="zCateVo">
+		<![CDATA[
+			SELECT *
+			FROM zbbscate
+			WHERE boardno = #boardno#
+			ORDER BY ctopno, cstep
+		]]>
+	</select>
+	
+	<update id="boardCateUpdate" parameterClass="zCateVo">
+		<![CDATA[
+			UPDATE zbbscate a, (select * from zbbscate where cno = #cno#) b
+			SET
+			a.cname = #cname#,
+			a.cstatus= #cstatus#,
+			a.datemod = date_format(now(),'%Y%m%d%H%i%s'),
+			a.userid = #userid#,
+			a.confirmyn = 1
+			where a.cno =#cno#
+		]]>
+	</update>
+	
+	
+	<!-- <update id="boardCateUpdate" parameterClass="zCateVo">
+		<![CDATA[
+			UPDATE zbbscate a
+			SET
+			(
+				cname,
+				cstatus,
+				datemod,
+				userid,
+				confirmyn
+			)
+			=
+			(
+			SELECT
+				cname,
+				cstatus,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				userid,
+				1
+			FROM
+		]]>
+		<iterate open="(" close=") b" conjunction="UNION ALL" property="zCatevoList">
+		<![CDATA[
+			SELECT 
+				#zCatevoList[].boardno# AS boardno,
+				#zCatevoList[].cno# AS cno,
+				#zCatevoList[].cname# AS cname,
+				#zCatevoList[].cstatus# AS cstatus,
+				#zCatevoList[].userid# AS userid
+			FROM db_root
+		]]>
+		</iterate>
+		<![CDATA[
+			WHERE b.boardno = a.boardno
+			AND b.cno = a.cno
+			)
+			where a.boardno =#boardno#
+		]]>
+	</update> -->
+
+	<parameterMap id="zCateVoMap" class="zCateVo">
+		<parameter property="boardno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="cno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="cname" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="userid" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="maxno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+	</parameterMap>
+	
+	<!-- <procedure id="boardCateWrite" parameterMap="zCateVoMap">
+		<![CDATA[{call pro_cate_insert(?,?,?,?,?)}]]>
+	</procedure> -->
+
+	<select id="boardCateWrite1" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[ SELECT clevel+1 as clevel, ctopno, cstep FROM zbbscate WHERE cno=#cno# AND boardno=#boardno# ]]>
+	</select>
+	
+	<select id="boardCateWrite2" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[ 
+		SELECT MAX(cstep)+1 as cstep FROM zbbscate WHERE boardno=#boardno# 
+		and (cno = #cno# or cparentno = #cno#)
+		]]>
+	</select>
+	
+	<update id="boardCateWrite3" parameterClass="zCateVo">
+		<![CDATA[
+			UPDATE zbbscate 
+			SET cstep = cstep + 1 
+			WHERE boardno=#boardno#
+			AND ctopno=#ctopno# 
+			AND cstep>=#cstep#
+		]]>
+	</update>
+	
+	<insert id="boardCateWrite4" parameterClass="zCateVo">
+		<![CDATA[
+			INSERT INTO zbbscate 
+			(
+			cname
+			,cstatus
+			,ctopno
+			,clevel
+			,cstep
+			,cparentno
+			,userid
+			,datereg
+			,confirmyn
+			,boardno) 
+			VALUES 
+			(
+			#cname#
+			,#cstatus#
+			,#ctopno#
+			,#clevel#
+			,#cstep#
+			,#cparentno#
+			,#userid#
+			,date_format(now(),'%Y%m%d%H%i%s')
+			,0
+			,#boardno#)
+		]]>
+		<selectKey resultClass="java.lang.Integer" keyProperty="cno">
+		<![CDATA[
+			SELECT LAST_INSERT_ID()
+		]]>
+		</selectKey>
+	</insert>
+	
+	<select id="boardCateWrite5" resultClass="java.lang.Integer">
+		<![CDATA[ SELECT ZBBSCATE_SEQ.currval FROM db_root ]]>
+	</select>
+	
+	<update id="boardCateWrite6" parameterClass="zCateVo">
+		<![CDATA[ 
+		UPDATE ZBBSCATE 
+		SET ctopno =#maxno#
+		WHERE ctopno=#ctopno# AND boardno=#boardno# 
+		]]>
+	</update>
+	
+	
+	<statement id="boardTableSeq2" parameterClass="java.lang.String">
+		<![CDATA[ CREATE serial $seqName$
+                 START WITH 1
+                 MAXVALUE 999999999999999999999999999
+                 MINVALUE 1
+                 NOCYCLE
+                 NOCACHE
+        ]]>
+	</statement>
+	
+	<select id="boardTableSeq3" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		<![CDATA[ SELECT $seqName$.nextval FROM db_root ]]>
+	</select>
+
+
+	<!-- <procedure id="boardCateDelete" parameterClass="java.util.Map">
+		<![CDATA[{call pro_cate_delete(#cnos#,#boardno#)}]]>
+	</procedure> -->
+	
+	<select id="boardCateDelete1" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT cno 
+			FROM zbbscate 
+			WHERE boardno=#boardno# 
+			AND (cno IN
+		]]> 
+			<iterate property="cnos" open="(" close=")" conjunction=",">
+				<![CDATA[#cnos[]#]]>
+			</iterate>
+			OR cparentno in 
+			<iterate property="cnos" open="(" close=")" conjunction=",">
+				<![CDATA[#cnos[]#]]>
+			</iterate>
+			)
+	</select>
+	
+	<delete id="boardCateDelete2" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM zbbscate WHERE cno IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+
+	<delete id="boardCateClear" parameterClass="java.lang.Integer">
+		<![CDATA[
+			DELETE FROM 
+				zbbscate
+			WHERE
+				boardno = #boardno#
+			AND confirmyn = '0'
+		]]>
+	</delete>
+
+	<!-- <procedure id="boardCateOrder" parameterClass="java.util.Map">
+		<![CDATA[{call pro_cate_order(#cno#,#boardno#,#act#)}]]>
+	</procedure> -->
+	
+	
+	<select id="adminCOrder1" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT ctopno, clevel, cstep, cparentno 
+			FROM zbbscate 
+			WHERE cno=#cno#
+		]]>
+	</select>
+	
+	<select id="adminCOrder2" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT IFNULL(MIN(cstep), 0) cstepmax1 
+			FROM zbbscate 
+			WHERE ctopno=#ctopno# 
+			AND cparentno=#cparentno# 
+			AND clevel=#clevel# 
+			AND cstep>#csteporg#
+		]]>
+	</select>
+	
+	<select id="adminCOrder3" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT IFNULL(MIN(cstep), 0) cstepmax2 
+			FROM zbbscate 
+			WHERE ctopno=#ctopno# 
+			AND clevel=#clevel# 
+			AND cstep>#cstepmax1#
+		]]>
+	</select>
+	
+	<select id="adminCOrder4" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT cno 
+			FROM zbbscate 
+			WHERE ctopno=#ctopno# 
+			AND clevel>=#clevel# 
+			AND (cstep>=#csteporg# AND cstep<#cstepmax1#) 
+			order by cstep
+		]]>
+	</select>
+	
+	<select id="adminCOrder15" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT cno 
+			FROM zbbscate 
+			WHERE ctopno=#ctopno# 
+			AND clevel>=#clevel# 
+			AND (cstep>=#cstepmax1# AND cstep<#cstepmax2#) 
+			order by cstep
+		]]>
+	</select>
+	
+	<select id="adminCOrder5" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT cno 
+			FROM zbbscate 
+			WHERE ctopno=#ctopno# 
+			AND clevel>=#clevel# 
+			AND cstep>=#cstepmax1# 
+			order by cstep
+		]]>
+	</select>
+	
+	<update id="adminCOrder6" parameterClass="zCateVo">
+		<![CDATA[
+			UPDATE zbbscate 
+			SET cstep=#step# 
+			WHERE cno=#mno#
+		]]>
+	</update>
+	
+	<select id="adminCOrder7" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT IFNULL(MAX(cstep), 0) cstepmin1 
+			FROM zbbscate 
+			WHERE ctopno=#ctopno# 
+			AND cparentno=#cparentno# 
+			AND clevel=#clevel# 
+			AND cstep<#csteporg#
+		]]>
+	</select>
+	
+	<select id="adminCOrder8" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT IFNULL(MIN(cstep), 0) cstepmin2 
+			FROM zbbscate 
+			WHERE ctopno=#ctopno# 
+			AND clevel=#clevel# 
+			AND cstep>#csteporg#
+		]]>
+	</select>
+	
+	<select id="adminCOrder9" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT cno 
+			FROM zbbscate 
+			WHERE ctopno=#ctopno# 
+			AND clevel>=#clevel# 
+			AND (cstep>=#cstepmin1# AND cstep<#csteporg#) 
+			order by cstep
+		]]>
+	</select>
+	
+	<select id="adminCOrder16" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT cno 
+			FROM zbbscate 
+			WHERE ctopno=#ctopno# 
+			AND clevel>=#clevel# 
+			AND (cstep>=#csteporg# AND cstep<#cstepmin2#) 
+			order by cstep
+		]]>
+	</select>
+	
+	<select id="adminCOrder10" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT cno 
+			FROM zbbscate 
+			WHERE ctopno=#ctopno# 
+			AND clevel>=#clevel# 
+			AND cstep>=#csteporg# 
+			order by cstep
+		]]>
+	</select>
+	
+	<select id="adminCOrder11" parameterClass="zCateVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT IFNULL($type$(cno), 0) cnonew FROM zbbscate WHERE cno$mark$#cnoorg# AND clevel=0 AND cstep=0
+		]]>
+	</select>
+	
+	<update id="adminCOrder12" parameterClass="zCateVo">
+		<![CDATA[
+			UPDATE zbbscate SET ctopno=(power(10,10)-1) WHERE ctopno=#cnoorg#
+		]]>
+	</update>
+	
+	<update id="adminCOrder13" parameterClass="zCateVo">
+		<![CDATA[
+			UPDATE zbbscate SET ctopno=#cnoorg# WHERE ctopno=#cnonew#
+		]]>
+	</update>
+	
+	<update id="adminCOrder14" parameterClass="zCateVo">
+		<![CDATA[
+			UPDATE zbbscate SET ctopno=#cnonew# WHERE ctopno=(power(10,10)-1)
+		]]>
+	</update>
+
+	<select id="boardCateNameDupChk" resultClass="java.lang.Integer" parameterClass="zCateVo">
+		<![CDATA[
+			SELECT count(*) FROM zbbscate
+			WHERE cname IS NOT NULL
+			AND cname = #cname#
+		]]>
+	</select>
+<!-- 
+	<update id="boardCateUseyn" parameterClass="java.util.Map">
+		<![CDATA[
+			UPDATE zbbscate
+			SET
+				cstatus=#cstatus#,
+				datemod=date_format(now(),'%Y%m%d%H%i%s'),
+				userid=#userid#
+			WHERE boardno=#boardno#
+			AND cno IN
+			(
+				SELECT cno
+				FROM zbbscate
+				WHERE boardno = #boardno#
+				START WITH cno = #cno#
+				CONNECT BY PRIOR cno = cparentno
+			)
+		]]>
+	</update>
+ -->	
+</sqlMap>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="w_clthisOld">
+	<typeAlias alias="WClthisOldVo" type="com.z5.zcms.admsys.consultingmng.domain.WClthisOldVo"/>
+	<resultMap id="WClthisOldVo" class="com.z5.zcms.admsys.consultingmng.domain.WClthisOldVo"/>
+	
+	<select id="clthisOld.listCount" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                clthis_old
+            where 1=1 
+             and wr_is_comment = 0               
+        ]]>                
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				date_format(wr_datetime,'%Y%m%d') between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="keyword">
+			<isEqual property="cond2" compareValue="wr_subject">
+			<![CDATA[			
+				wr_subject LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>        	
+			<isEqual property="cond2" compareValue="wr_name">
+			<![CDATA[			
+				wr_name LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>
+    </select>
+
+    <select id="clthisOld.getlist" parameterClass="WClthisOldVo" resultClass="WClthisOldVo">
+        <![CDATA[
+        
+            select
+            	wr_id,
+				wr_subject, 
+				wr_name, 
+				wr_datetime, 
+				wr_last, 
+				wr_ip, 
+				wr_hit		
+            from
+                clthis_old
+            where 1=1
+              and wr_is_comment = 0
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				date_format(wr_datetime,'%Y%m%d') between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="keyword">
+			<isEqual property="cond2" compareValue="wr_subject">
+			<![CDATA[			
+				wr_subject LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>        	
+			<isEqual property="cond2" compareValue="wr_name">
+			<![CDATA[			
+				wr_name LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>
+            ORDER BY
+                wr_id DESC
+            LIMIT #m#, #n#
+
+    </select> 
+    
+    <select id="clthisOld.view" parameterClass="WClthisOldVo" resultClass="WClthisOldVo">
+        <![CDATA[
+        
+            select
+            	co.wr_id,
+            	co.wr_subject, 
+            	co.wr_content,
+            	co.wr_name,
+            	co.wr_email,
+            	co.wr_datetime,
+            	co.wr_last,
+            	coe.app_name,
+            	coe.app_name_rel,
+            	coe.app_sex,
+            	coe.app_bir,
+            	coe.app_dep,
+            	coe.app_dep2,
+            	coe.app_rel,
+            	coe.app_rel2,
+            	coe.app_dadd,
+            	coe.app_tel,
+            	coe.app_pho,
+            	coe.app_eml,
+            	coe.agree_1,
+            	coe.dec_name,
+            	coe.dec_sex,
+            	coe.dec_bir,
+            	coe.dec_dep,
+            	coe.dec_dep2,
+            	coe.dec_rel,
+            	coe.dec_addr,
+            	coe.dec_tel,
+            	coe.dec_ect,
+            	coe.time_s,
+            	coe.time_r,
+            	coe.time_p,
+            	coe.vic_rel,
+            	coe.hp_dec,
+            	coe.hp_text1,
+            	coe.hp_text2,
+            	coe.act_1,
+            	coe.act_2,
+            	coe.act_3,
+            	coe.act_4,
+            	coe.act_5,
+            	coe.act_6,
+            	coe.act_6_etc,
+            	coe.act_7,
+            	coe.act_8,
+            	coe.act_9,
+            	coe.act_10
+            from
+                clthis_old co
+                left join clthis_old_ext coe
+             on co.wr_id = coe.wr_id
+            where 1=1
+			and co.wr_id = #wr_id#
+        ]]>
+
+    </select>   
+    
+    <select id="clthisOld.getAnwerList" parameterClass="WClthisOldVo" resultClass="WClthisOldVo">
+        <![CDATA[
+        
+            select
+            	wr_content AS wr_answer
+            from
+                clthis_old
+            where 1=1
+            and wr_is_comment = 1
+			and wr_parent = #wr_id#
+        ]]>
+
+    </select> 
+</sqlMap>

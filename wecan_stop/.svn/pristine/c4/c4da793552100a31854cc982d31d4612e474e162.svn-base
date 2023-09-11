@@ -1,0 +1,386 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="java.util.*, java.text.*"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../lnb.jsp" flush="true" />
+            <div id="contents">
+                <form:form modelAttribute="zsiteVo" name="frm" method="post">
+                    <div class="contents_top">
+                        <div class="location">
+                            <a href="/admsys/statisticsmng/">HOME</a> <a href="/admsys/statisticsmng/index.html">통계관리</a> <strong>상담 현황</strong>
+                        </div>
+                        <%--<div class="TopSearch">
+                            <span>SEARCH AREA</span>
+                            <select style="height:27px;" name="cond1">
+                                <option value="term" <c:if test="${input.cond1=='term'}"><c:out value='selected' /></c:if>>기간</option>
+                            </select>
+                              <input id="d4311" name="sdate" class="Wdate" type="text" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'d4312\')}'})" value="<c:out value='${input.sdate}' />" style="width:128px;"/>
+                                        ~
+                              <input id="d4312" name="edate" class="Wdate" type="text" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'d4311\')}'})" value="<c:out value='${input.edate}' />" style="width:128px;"/>
+                            <input class="bt01" type="submit" value="검색" onclick="/admsys/statisticsmng/index.html" />
+                        </div> --%>
+                    </div>
+                    <div id="content">
+                        <ul class="homepagebbs">
+                            <li class="bg"><h3 class="sub">상담통계</h3></li> 
+                            <div class="container">
+						       <div>
+						           <ul>
+						               <li>
+						                   <dl>
+						                       <dt><img src="/cms/image/main/group-3.png"></dt>
+						                       <dd>
+						                           <div id="chart_counsel_year" style="height:300px;"></div>
+							                   </dd>
+							               </dl>
+							           </li>
+							           <li>
+							               <dl>
+							                   <dt><img src="/cms/image/main/group-3.png"></dt>
+							                   <dd>
+							                      <div id="chart_counsel_month" style="height:300px;"></div>
+							                   </dd>
+							               </dl>
+							           </li>
+							        </ul>
+							    </div>
+                            <li>
+                            	<div>1) 월별 상담 실적</div>
+                                <div class="main_table">
+                                    <!--게시판 영역-->
+                                    <table class="main_table1" summary="일자, 월별 상담 실적, 합계">
+                                        <caption>월별 상담 실적</caption>
+                                        <colgroup>
+                                            <col width="8%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="8%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">구분</th>
+                                                <th colspan="13">월별 상담 건수</th>
+                                            </tr>
+                                             <tr>
+                                                <th>1</th>
+                                                <th>2</th>
+                                                <th>3</th>
+                                                <th>4</th>
+                                                <th>5</th>
+                                                <th>6</th>
+                                                <th>7</th>
+                                                <th>8</th>
+                                                <th>9</th>
+                                                <th>10</th>
+                                                <th>11</th>
+                                                <th>12</th>
+                                                <th>합계</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                             <tr>
+                                             	<td>건수</td>
+                                                <td>${monthCounsel.counselCnt01}</td>
+                                                <td>${monthCounsel.counselCnt02}</td>
+                                                <td>${monthCounsel.counselCnt03}</td>
+                                                <td>${monthCounsel.counselCnt04}</td>
+                                                <td>${monthCounsel.counselCnt05}</td>
+                                                <td>${monthCounsel.counselCnt06}</td>
+                                                <td>${monthCounsel.counselCnt07}</td>
+                                                <td>${monthCounsel.counselCnt08}</td>
+                                                <td>${monthCounsel.counselCnt09}</td>
+                                                <td>${monthCounsel.counselCnt10}</td>
+                                                <td>${monthCounsel.counselCnt11}</td>
+                                                <td>${monthCounsel.counselCnt12}</td>
+                                                <td>${monthCounsel.counselCnt01
+                                                +monthCounsel.counselCnt02
+                                                +monthCounsel.counselCnt03
+                                                +monthCounsel.counselCnt04
+                                                +monthCounsel.counselCnt05
+                                                +monthCounsel.counselCnt06
+                                                +monthCounsel.counselCnt07
+                                                +monthCounsel.counselCnt08
+                                                +monthCounsel.counselCnt09
+                                                +monthCounsel.counselCnt10
+                                                +monthCounsel.counselCnt11
+                                                +monthCounsel.counselCnt12}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div>2) 연도별 상담건수</div>
+                                    <table class="main_table1" summary="구분, 연도별 상담건수, 합계">
+                                        <caption>연도별 상담건수</caption>
+                                        <colgroup>
+                                            <col width="15%" />
+                                            <col width="14%" />
+                                            <col width="14%" />
+                                            <col width="14%" />
+                                            <col width="14%" />
+                                            <col width="14%" />
+                                            <col width="15%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>구분</th>
+                                                <th>2018</th>
+                                                <th>2019</th>
+                                                <th>2020</th>
+                                                <th>2021</th>
+                                                <th>2022</th>
+                                                <th>합계</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        	<tr>
+                                        		<td>건수</td>
+                                            	<td>${yearCounsel.counselCnt01}</td>
+                                                <td>${yearCounsel.counselCnt02}</td>
+                                                <td>${yearCounsel.counselCnt03}</td>
+                                                <td>${yearCounsel.counselCnt04}</td>
+                                                <td>${yearCounsel.counselCnt05}</td>
+                                                <td>${yearCounsel.counselCnt01
+  	 												+yearCounsel.counselCnt02                                             
+													+yearCounsel.counselCnt03
+													+yearCounsel.counselCnt04
+													+yearCounsel.counselCnt05}</td>
+                                            </tr>  
+                                        </tbody>
+                                    </table>
+                                    <div>3) 의뢰인(피해자 관계)</div>
+                                    <table class="main_table1" summary="구분, 의뢰인(피해자 관계), 합계">
+                                        <caption>의뢰인(피해자 관계)</caption>
+                                        <colgroup>
+                                            <col width="15%" />
+                                            <col width="14%" />
+                                            <col width="14%" />
+                                            <col width="14%" />
+                                            <col width="14%" />
+                                            <col width="14%" />
+                                            <col width="15%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>구분</th>
+                                                <th>본인</th>
+                                                <th>대리/조력</th>                                            
+												<th>관련<br>담당자</th>
+												<th>행위자 등</th>
+												<th>기타</th>
+                                                <th>합계</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>건수</td>
+                                                <td>${clientVictimRelType.counselCnt01}</td>
+                                                <td>${clientVictimRelType.counselCnt02}</td>                                            
+												<td>${clientVictimRelType.counselCnt03}</td>
+												<td>${clientVictimRelType.counselCnt04}</td>
+												<td>${clientVictimRelType.counselCnt05}</td>
+                                                <td>${clientVictimRelType.counselCnt01
+                                                	+clientVictimRelType.counselCnt02
+                                                	+clientVictimRelType.counselCnt03
+                                                	+clientVictimRelType.counselCnt04
+                                                	+clientVictimRelType.counselCnt05}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>비율</td>
+                                                <td>${clientVictimRelType.counselCnt01*0.01}%</td>
+                                                <td>${clientVictimRelType.counselCnt02*0.01}%</td>                                            
+												<td>${clientVictimRelType.counselCnt03*0.01}%</td>
+												<td>${clientVictimRelType.counselCnt04*0.01}%</td>
+												<td>${clientVictimRelType.counselCnt05*0.01}%</td>
+                                                <td>${clientVictimRelType.counselCnt01*0.01
+                                                	+clientVictimRelType.counselCnt02*0.01
+                                                	+clientVictimRelType.counselCnt03*0.01
+                                                	+clientVictimRelType.counselCnt04*0.01
+                                                	+clientVictimRelType.counselCnt05*0.01}%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div>4) 피해지원기관 연계</div>
+                                    <table class="main_table1" summary="구분, 피해지원기관 연계, 합계">
+                                        <caption>피해지원기관 연계</caption>
+                                        <colgroup>
+                                            <col width="20%" />
+                                            <col width="20%" />
+                                            <col width="20%" />
+                                            <col width="20%" />
+                                            <col width="20%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>구분</th>
+                                                <th>상담</th>
+                                                <th>법률</th>
+                                                <th>의료</th>
+                                                <th>합계</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>지원 건수</td>
+                                                <td>${actionTypeServiceRel.counselCnt01}</td>
+                                                <td>${actionTypeServiceRel.counselCnt02}</td>                                            
+												<td>${actionTypeServiceRel.counselCnt03}</td>
+                                                <td>${actionTypeServiceRel.counselCnt01
+                                                	+actionTypeServiceRel.counselCnt02
+                                                	+actionTypeServiceRel.counselCnt03}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div>5) 연도별 연계건수</div>
+                                    <table class="main_table1" summary="구분, 연도별 연계건수, 합계">
+                                        <caption>연도별 연계건수</caption>
+                                        <colgroup>
+                                            <col width="20%" />
+                                            <col width="20%" />
+                                            <col width="20%" />
+                                            <col width="20%" />
+                                            <col width="20%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>연도</th>
+                                                <th>상담</th>
+                                                <th>법률</th>
+                                                <th>의료</th>
+                                                <th>합계</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>2018</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt01}</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt02}</td>                                            
+												<td>${yearActionTypeServiceRel.counselCnt03}</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt01
+                                                	+yearActionTypeServiceRel.counselCnt02
+                                                	+yearActionTypeServiceRel.counselCnt03}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2019</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt04}</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt05}</td>                                            
+												<td>${yearActionTypeServiceRel.counselCnt06}</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt04
+                                                	+yearActionTypeServiceRel.counselCnt05
+                                                	+yearActionTypeServiceRel.counselCnt06}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2020</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt07}</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt08}</td>                                            
+												<td>${yearActionTypeServiceRel.counselCnt09}</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt07
+                                                	+yearActionTypeServiceRel.counselCnt08
+                                                	+yearActionTypeServiceRel.counselCnt09}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2021</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt10}</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt11}</td>                                            
+												<td>${yearActionTypeServiceRel.counselCnt12}</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt10
+                                                	+yearActionTypeServiceRel.counselCnt11
+                                                	+yearActionTypeServiceRel.counselCnt12}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2022</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt13}</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt14}</td>                                            
+												<td>${yearActionTypeServiceRel.counselCnt15}</td>
+                                                <td>${yearActionTypeServiceRel.counselCnt13
+                                                	+yearActionTypeServiceRel.counselCnt14
+                                                	+yearActionTypeServiceRel.counselCnt15}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    
+<%--                                     <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}' /> --%>
+                                    <!--/게시판 영역-->
+									<!--설명-->
+									<!--<p class="notification_right01">
+										<img src="/cms/image/excla.gif" alt="!">
+										1. [홈페이지 목록/등록] 메뉴에서 [홈페이지등록]을 클릭한 후 관련 정보를 입력 합니다. <br />
+										<img src="/cms/image/excla.gif" alt="!">
+										2. 생성된 홈페이지 목록 우측의  [환경설정]버튼을 클릭하여 홈페이지 제작에 필요한 가장 기본적인 정보를 셑팅합니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										3. [홈페이지 목록/등록] &gt; [홈페이지등록]메뉴에서 홈페이지를 등록하시면 [메뉴/콘텐츠 관리]에서 자동으로 카테고리를 관리할 수 있는 홈페이지 목록이 생성 됩니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										4. 원하시는 홈페이지를 셑팅하기 위해서는 미리 코딩해둔 메인페이지 Html 및 css파일, js파일을 각각 [메인페이지 관리], [CSS관리], [JS관리]에 미리 등록해 두어야 합니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										5. 따로 [메인페이지 관리]에서 메인페이지를 등록하시지 않아도 [메뉴/콘텐츠 관리]메뉴의  메인페이지 역할을 하는 페이지를 생성하여 메뉴리다이렉트 기능을 이용하셔도 무방합니다.
+										</p>-->
+									<!--/설명-->
+                                </div>
+                                <!--/main_table-->
+                            </li>
+                        </ul>
+                        <script type="text/javascript">
+							google.load("visualization", "1", {packages:["corechart"]});
+							google.setOnLoadCallback(drawChart);
+							
+							function drawChart() {
+
+								var data_counsel_month = google.visualization.arrayToDataTable([
+								    
+									['Month', '건수'],
+									['1', <c:out value="${monthCounsel.counselCnt01}"/>],
+								    ['2', <c:out value="${monthCounsel.counselCnt02}"/>],
+								    ['3', <c:out value="${monthCounsel.counselCnt03}"/>],
+								    ['4', <c:out value="${monthCounsel.counselCnt04}"/>],
+								    ['5', <c:out value="${monthCounsel.counselCnt05}"/>],
+								    ['6', <c:out value="${monthCounsel.counselCnt06}"/>],
+								    ['7', <c:out value="${monthCounsel.counselCnt07}"/>],
+								    ['8', <c:out value="${monthCounsel.counselCnt08}"/>],
+								    ['9', <c:out value="${monthCounsel.counselCnt09}"/>],
+								    ['10', <c:out value="${monthCounsel.counselCnt10}"/>],
+								    ['11', <c:out value="${monthCounsel.counselCnt11}"/>],
+								    ['12', <c:out value="${monthCounsel.counselCnt12}"/>],
+								]);
+							
+								var options_counsel_month = {
+							    	title: '월별상담 현황'
+							  	};
+								
+								var chart_counsel_month = new google.visualization.LineChart(document.getElementById('chart_counsel_month'));
+								chart_counsel_month.draw(data_counsel_month,options_counsel_month);
+							
+								var data_counsel_year = google.visualization.arrayToDataTable([
+								    
+									['Year', '건수'],
+									['2018', <c:out value="${yearCounsel.counselCnt01}"/>],
+									['2019', <c:out value="${yearCounsel.counselCnt02}"/>],
+									['2020', <c:out value="${yearCounsel.counselCnt03}"/>],
+									['2021', <c:out value="${yearCounsel.counselCnt04}"/>],
+									['2022', <c:out value="${yearCounsel.counselCnt05}"/>],
+								]);
+							
+								var options_counsel_year = {
+							    	title: '년도별상담 현황'
+							  	};
+								
+								var chart_counsel_year = new google.visualization.LineChart(document.getElementById('chart_counsel_year'));
+								chart_counsel_year.draw(data_counsel_year,options_counsel_year);
+								
+							}
+							
+							
+							</script>
+                    </div>
+                    <!--/content-->
+                </form:form>
+            </div>
+            <!--/contents-->
+<jsp:include page="../end.jsp" flush="false" />

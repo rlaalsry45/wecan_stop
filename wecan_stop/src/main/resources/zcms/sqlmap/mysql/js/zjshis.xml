@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZjsHis">
+	
+	<typeAlias alias="zjsHisVo" type="com.z5.zcms.admsys.js.domain.ZjsHisVo"/>
+	<resultMap id="zjsHisVo" class="com.z5.zcms.admsys.js.domain.ZjsHisVo"/>
+	<resultMap id="zjsVo" class="com.z5.zcms.admsys.js.domain.ZjsVo"/>
+	
+ 	<select id="zjsHisDAO.list" resultClass="zjsHisVo">
+		<![CDATA[
+ 			SELECT	*
+			FROM ZJSHIS
+			WHERE JSNO =#jsno#
+			
+			]]> 
+							
+	</select>	
+
+	
+ 	<select id="zjsHisDAO.selectbypk" parameterClass="zjsHisVo" resultClass="zjsVo">
+		<![CDATA[
+			SELECT 
+					  jshistitle as jstitle
+					, '1' as jsposition
+					, '1' as jstype
+					, '1' as jshis
+					, jshiscontstype as jscontstype
+					, jshisconts as jsconts
+					, jshismemo as jsmemo 
+					, jshisfilesave as jsfilesave
+			FROM ZJSHIS 
+			WHERE jshisno=#jshisno#
+				]]>
+	</select>
+	
+	<insert id="zjsHisDAO.write">
+		<![CDATA[
+			INSERT INTO ZJSHIS 
+				( 
+				 jshistitle
+				, jshisdatereg
+				, jshisdatemod
+				, jshisconts
+				, jshisfileorg
+				, jshisfilesave
+				, jshisuserid
+				, jshissiteno
+				, jshismemo
+				, userid
+				, jshisdate
+				, jsno
+				)
+				 SELECT 
+				 	 jstitle
+				 	, jsdatereg
+				 	, jsdatemod
+				 	, jsconts
+				 	, jsfileorg
+				 	, jsfilesave
+				 	, userid
+				 	, siteno
+				 	, jsmemo
+				 	, #userid#
+				 	, date_format(now(),'%Y%m%d%H%i%s')
+				 	, jsno 
+				 FROM ZJS 
+				 WHERE jsno=#jsno#
+				 
+		]]>
+	</insert>
+	
+	
+	<delete id="zjsHisDAO.delete" parameterClass="zjsHisVo">
+		        DELETE 
+		        FROM ZJSHIS 
+		        WHERE jshisno=#jshisno#
+
+		
+	</delete>	
+</sqlMap>

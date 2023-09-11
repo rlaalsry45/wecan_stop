@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZSatisfactionHis">	
+	<typeAlias alias="zSatisfactionHisVo" type="com.z5.zcms.admsys.module.domain.ZSatisfactionHisVo"/>
+	<typeAlias alias="zSatisfactionVo" type="com.z5.zcms.admsys.module.domain.ZSatisfactionVo"/>
+	<resultMap id="zSatisfactionHisVo" class="zSatisfactionHisVo"/>
+	
+	
+	<select id="ZSatisfactionHis.list" parameterClass="zSatisfactionVo" resultClass="zSatisfactionHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZSATISFACTIONHIS
+			WHERE
+				satisfactionno=#satisfactionno#
+			ORDER BY
+				hisno DESC
+		]]>
+	</select>
+
+	<select id="ZSatisfactionHis.getByPk" parameterClass="zSatisfactionHisVo" resultClass="zSatisfactionHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZSATISFACTIONHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</select>
+	
+	<delete id="ZSatisfactionHis.delete" parameterClass="zSatisfactionHisVo">
+		<![CDATA[
+			DELETE FROM 
+				ZSATISFACTIONHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</delete>
+
+	<delete id="ZSatisfactionHis.deleteMuti" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZSATISFACTIONHIS
+			WHERE
+				satisfactionno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<insert id="ZSatisfactionHis.insert" parameterClass="zSatisfactionVo">
+		<![CDATA[
+			INSERT INTO ZSATISFACTIONHIS
+			(
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				target,
+				contstype,
+				conts,
+				added,
+				memo,
+				datereg,
+				datemod,
+				userid,
+				total,
+				datehis,
+				satisfactionno
+			)
+			SELECT
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				target,
+				contstype,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				added,
+				memo,
+				datereg,
+				datemod,
+				#userid#,
+				total,
+				now(),
+				satisfactionno
+			FROM
+				ZSATISFACTION
+			WHERE
+				satisfactionno=#satisfactionno#
+		]]>
+	</insert>
+
+</sqlMap>

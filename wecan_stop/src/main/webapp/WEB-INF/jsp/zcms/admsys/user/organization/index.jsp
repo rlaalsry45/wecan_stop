@@ -1,0 +1,159 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="java.util.*, java.text.*"  %>
+<%@ page import="com.z5.zcms.admsys.user.domain.ZUserVo"  %>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../../lnb.jsp" flush="true" />
+            <link rel='stylesheet' href='/com/css/jquery-1.10.3-ui.css' />
+            <script src='/com/js/jquery-1.10.3-ui.js'></script>
+            <script type="text/javascript" src="/usr/js/admsys/user/organization.js"></script>
+            <div id="contents">
+                <div class="contants_top">
+                    <div class="location">
+                        <a href="/admsys/dashboard/index.html">HOME</a> <a href="/admsys/user/organization/">회원관리</a> <strong>
+                        <c:if test="${userType eq '1' }">
+                            <c:if test="${input.search eq '1' }">단체회원</c:if>
+                            <c:if test="${input.search eq '2' }">단체회원  회비</c:if>
+                        </c:if>
+                        <c:if test="${userType eq '2' }">기증회원</c:if> 목록</strong>
+                    </div>
+                </div>
+                <!--내용-->
+                <form:form name="frm" method="post">
+                    <input type="hidden" name="act" id="act" />
+                    <input type="hidden" name="chk_userno" id="chk_userno"/>
+                    <input type="hidden" name="totalCnt" id="totalCnt"  value="${input.total }"/>
+                    <input type="hidden" name="excel_val" />
+                    <input type="hidden" name="orgusertype" id="orgusertype" value="${userType }"/>
+                    <input type="hidden" name="search" id="search" value="${input.search }"/>
+
+                    <input type="hidden" name="cond6" id="cond6" value="${input.cond6 }"/> <!-- 검색 -->
+                    <input type="hidden" name="cond7" id="cond7" value="${input.cond7 }"/> <!-- 검색 -->
+                    <input type="hidden" name="cond8" id="cond8" value="${input.cond8 }"/> <!-- 검색 -->
+                    <input type="hidden" name="cond9" id="cond9" value="${input.cond9 }"/> <!-- 검색 -->
+                    <input type="hidden" name="cond10" id="cond10" value="${input.cond10 }"/> <!-- 검색 -->
+                    <input type="hidden" name="keyword" id="keyword" value="${input.keyword}"/> <!-- 정렬 -->
+                    <input type="hidden" name="paytype" id="paytype" value="${input.paytype}"/> <!-- 정렬 -->
+                    <input type="hidden" name="paytype2" id="paytype2" value="${input.paytype2}"/> <!-- 정렬 -->
+                    <input type="hidden" name="andOr" id="andOr" value="${input.andOr}"/> <!-- 정렬 -->
+                    <input type="hidden" name="sdate" id="sdate" value="${input.sdate}"/> <!-- 정렬 -->
+                    <input type="hidden" name="edate" id="edate" value="${input.edate}"/> <!-- 정렬 -->
+                    <input type="hidden" name="st_sec1" id="st_sec1" value="${input.st_sec1}"/> <!-- 정렬 -->
+                    <input type="hidden" name="st_sec2" id="st_sec2" value="${input.st_sec2}"/> <!-- 정렬 -->
+                    <div id="content">
+                        <ul class="homepagebbs">
+                            <li class="bg"><h3 class="sub">
+                                <c:if test="${userType eq '1' }">
+                                    <c:if test="${input.search eq '1' }">단체회원</c:if>
+                                    <c:if test="${input.search eq '2' }">단체회원  회비</c:if>
+                                </c:if>
+                                <c:if test="${userType eq '2' }">기증회원</c:if>검색[${input.total }<c:if test="${input.total eq null}">0</c:if>명]</h3>
+                                <div class="user_btn">
+                                    <a class="btmore01" href="javascript:sendAllMail('${userType }')">검색된회원 전체메일발송</a>
+                                    <a class="btmore01" href="javascript:sendChkMail('${userType }')">체크된회원 메일발송</a>
+                                    <a class="btmore01" href="javascript:excelAll('${userType }')">검색된회원 전체엑셀다운로드</a>
+                                    <a class="btmore01" href="javascript:excelChk('${userType }')">체크된회원 엑셀다운로드</a>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="top_bt">
+                                    <a class="btmore07" href="javascript:checkAll(true,'userno');">전체선택</a>
+                                    <a class="btmore07" href="javascript:checkAll(false,'userno');">전체해제</a>
+                                    <a class="btmore05" href="javascript:del('userno');">삭제</a>
+                                    <select name="pageSize" onChange="this.form.action='?pageIndex=1';this.form.submit()" style="height:28px;">
+                                            <c:forTokens items="10,20,30,40,50" var="each" delims=",">
+                                                <option value="${each}" <c:if test="${input.pageSize==each}">
+                                                    <c:out value='selected' /></c:if>>${each}개 출력
+                                                </option>
+                                            </c:forTokens>
+                                        </select>
+                                </div>
+                                <div class="main_table">
+                                    <!-- 게시판 영역 -->
+                                    <table id="main_table" class="main_table1" summary="체크박스, 회원번호, 아이디, 이름, 직장명, 직책, 연락처, 이메일주소, 유저관리">
+                                        <caption>회원리스트</caption>
+                                        <colgroup>
+                                            <col width="2%" />
+                                            <!-- <col width="5%" /> -->
+                                            <col width="6%" />
+                                            <col width="8%" />
+                                            <col width="" />
+                                            <col width="8%" />
+                                            <c:if test="${userType eq 1}">
+                                            <col width="7%" />
+                                            </c:if>
+                                            <col width="12%" />
+                                            <col width="12%" />
+                                            <col width="15%" />
+                                            <col width="7%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input class="bor_none" id="batch" value="3" type="checkbox" onclick="javascript:checkAll('','userno')" />
+                                                </th>
+                                                <!-- <th>번호</th> -->
+                                                <th>회원번호</th>
+                                                <th>아이디</th>
+                                                <th>
+                                                    <c:if test="${userType eq 1}">회사명</c:if>
+                                                    <c:if test="${userType eq 2}">기관명</c:if>
+                                                </th>
+                                                <th>
+                                                    <c:if test="${userType eq 1}">대표자</c:if>
+                                                    <c:if test="${userType eq 2}">담당자</c:if>
+                                                </th>
+                                                <c:if test="${userType eq 1}">
+                                                <th>담당자</th>
+                                                </c:if>
+                                                <th>부서</th>
+                                                <th>이메일</th>
+                                                <th>전화</th>
+                                                <th>회원관리</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach items="${list}" var="each" varStatus="loop">
+                                                <tr>
+                                                    <td><input class="bor_none" name="userno" value="${each.userno}" type="checkbox" /></td>
+                                                    <%-- <td><c:out value='${input.total-(input.pageIndex-1)*input.pageSize-status.index}' /></td> --%>
+                                                    <td><c:out value='${each.useridx}' /></td>
+                                                    <td><c:out value='${each.userid}' /></td>
+                                                    <td><c:out value='${each.username}' /></td>
+                                                    <td>
+                                                        <c:if test="${userType eq 1}"><c:out value='${each.orgUserDelegate}' /></c:if>
+                                                        <c:if test="${userType eq 2}"><c:out value='${each.orgOfficer}' /></c:if>
+                                                    </td>
+                                                    <c:if test="${userType eq 1}">
+                                                        <td><c:out value='${each.orgUserOfficer}' /></td>
+                                                    </c:if>
+                                                    <td><c:out value='${each.orgUserDept}' /></td>
+                                                    <td><c:out value='${each.orgUserEmail}' /></td>
+                                                    <td><c:out value='${each.orgUserPhone}' /></td>
+                                                    <td>
+                                                        <a href="/admsys/user/organization/update.html?userno=${each.userno}" class="btmore05">수정</a>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                            <c:if test="${input.total==0}">
+                                                <tr>
+                                                    <td colspan="14" style="padding:20;">등록된 정보가 없습니다.</td>
+                                                </tr>
+                                            </c:if>
+                                        </tbody>
+                                    </table>
+                                    <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}' />
+                                    <!---/게시판 영역 -->
+                                </div>
+                                <!--/main_table-->
+                                <%-- <div class="btn-c-B">
+                                    <a class="btmore04" href="insert.html?userType=${userType }">+ 회원 등록</a></li>
+                                </div> --%>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--/content-->
+                </form:form>
+            </div>
+            <!--/contents-->
+<jsp:include page="../../end.jsp" flush="true" />

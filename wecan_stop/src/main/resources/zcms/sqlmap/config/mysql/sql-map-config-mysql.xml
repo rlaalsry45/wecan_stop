@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+  <settings useStatementNamespaces="true" />
+
+  <!-- BANNER SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/zBanner.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zBannerHis.xml" />
+
+  <!-- EVAL SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/zEval.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zEvalHis.xml" />
+
+  <!-- EVENT SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/zEvent.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zEventHis.xml" />
+
+  <!-- FORM-MAIL SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/zFormMail.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zFormMailHis.xml" />
+
+  <!-- MANAGER SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/zManager.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zManagerHis.xml" />
+
+  <!-- MEMBER SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/zMember.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zMemberHis.xml" />
+
+  <!-- POPUP SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/zPopup.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zPopupHis.xml" />
+
+  <!-- LAYER-POPUP SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/zLayerPopup.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zLayerPopupHis.xml" />
+
+  <!-- SURVEY SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/zSurvey.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zSurveyHis.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zSurveyResult.xml" />
+
+  <!-- BOARD SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/board/zBoard.xml" />
+  <!--<sqlMap resource="zcms/sqlmap/mysql/board/zBoardHis.xml" />-->
+  <sqlMap resource="zcms/sqlmap/mysql/board/zBanned.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/board/zBoardGroup.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/board/zBoardRole.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/board/zCate.xml" />
+
+  <!-- TPL SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/tpl/ztpl.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/tpl/ztpluse.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/tpl/ztplhis.xml" />
+
+  <!-- CSS SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/css/zcss.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/css/zcssuse.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/css/zcsshis.xml" />
+
+  <!-- JS SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/js/zjs.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/js/zjsuse.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/js/zjshis.xml" />
+
+  <!-- SITE SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/site/zsite.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/site/zsitecfg.xml" />
+
+  <!-- MAIN SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/main/zmain.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/main/zmainhis.xml" />
+
+  <!-- MENU SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/menu/zmenu.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/menu/zmenuhis.xml" />
+
+  <!-- AUTH SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/auth/auth.xml" />
+
+  <!-- COMMON SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/common/common.xml" />
+
+  <!-- SERVICE SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/service/zservice.xml" />
+
+  <!-- USER SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/user/zUser.xml" />
+  <!-- CLIENT BOARD SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/board/zBoardService.xml" />
+
+  <!-- AUTHORITY SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/authority/zauthority.xml" />
+
+  <!-- AUTHHIERACHY SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/authority/zauthhierachy.xml" />  
+
+  <!-- BANNER SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/banner/zmainbanner.xml" />
+
+  <!-- SSO SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/sso/zsso.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/sso/GinueSSO.xml" />
+
+  <!-- USER SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/user/zUserLog.xml" />
+
+  <!-- SCHEDULE SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/schedule/zschedule.xml" />
+
+  <sqlMap resource="zcms/sqlmap/mysql/lastestboard/lastestboard.xml" />
+
+  <sqlMap resource="zcms/sqlmap/mysql/lastestboardcont/lastestboard.xml" />
+
+  <!-- ADMINIP SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/adminip/adminip.xml" />
+
+  <!-- ARCHV SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/archv/archvcatgry.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/archv/archvopt.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/archv/archv.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/archv/archv_admin.xml" />
+
+  <!-- SEARCH SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/search/search.xml" />
+
+
+  <!-- MAIL SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/mail/mail.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/mail/mailparticipant.xml" />
+
+
+  <!-- Post SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/post/post.xml" />
+  
+  <!-- CHAT SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/chat/chat.xml" />
+  
+  <!-- Women1366 business -->
+  <sqlMap resource="zcms/sqlmap/mysql/orgculturedigmng/orgculturedigmng.xml" />
+  
+  <!-- ZOrgCultureDigMng SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/cultureDigMng/zOrgCultureDigMng.xml" /> 
+  
+  <!-- COUNSEL SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/counsel/counsel.xml" />
+  
+  <!-- BOARD SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/board/board.xml" /> 
+
+  <!-- ADMINISTRATOR SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/administrator/administrator.xml" />
+  
+  <!-- CYBERCOUNSEL SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/cyberCounsel/wCounselReview.xml" />
+   
+  <!-- FAMILYVIOLENCE SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/cyberCounsel/wFamilyViolence.xml" /> 
+  
+  <!-- COUNSELLOG SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/cyberCounsel/wCounselLog.xml" />
+  
+  <!-- COMMON FILE SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/common/commonFile.xml" />
+  
+  <!-- SATISFACTION SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/zSatisfaction.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zSatisfactionHis.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/zSatisfactionResult.xml" />
+  
+  <sqlMap resource="zcms/sqlmap/mysql/module/satisfaction.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/satisfactionHis.xml" />
+  <sqlMap resource="zcms/sqlmap/mysql/module/satisfactionResult.xml" />
+  
+  <!-- BOARDCOUNSEL SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/cyberCounsel/wBoardCounsel.xml" />
+  
+  <!-- CONSULTING HISTORY SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/consultingmng/consultingmng.xml" />
+  
+   <!-- NOTIFY SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/notify/notify.xml" />
+  
+  <!-- APPLICATION -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/wApplication.xml" />
+
+  <!-- GOV LOGIN -->
+  <sqlMap resource="zcms/sqlmap/mysql/module/wCheckGov.xml" />
+  
+  <sqlMap resource="zcms/sqlmap/mysql/statistics/statistics.xml" />
+  
+  <sqlMap resource="zcms/sqlmap/mysql/prequery/prequery.xml" />
+  
+  <!-- ACCESSLOG SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/ftp/accessLog.xml" /> 
+  
+  <!-- DOWNLOADLOG SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/ftp/downloadLog.xml" /> 
+  
+   <!-- ACCESSAUTHORITY SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/ftp/accessAuthority.xml" /> 
+  
+  <!-- WCLTHISOLD SQLMAP LINE -->
+  <sqlMap resource="zcms/sqlmap/mysql/consultingmng/wClthisOld.xml" /> 
+  
+</sqlMapConfig>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap	namespace="Chat">
+	<typeAlias alias="ChatVO" type="com.z5.zcms.admsys.chat.domain.ChatVO" />
+	<resultMap id="ChatVO" class="com.z5.zcms.admsys.chat.domain.ChatVO"/>
+	
+	<insert id="ChatDAO.insertChat">
+		<![CDATA[
+			INSERT INTO CHAT(
+				no,
+				counselNum,
+				gender,
+				nation,
+				relation,
+				age,
+				region,
+				type,
+				chatRoomName,
+				regDt,
+				startDt,
+				regId
+			)VALUES(
+				#chatNo#,
+				#counselNum#,
+				(select code_nm from comtccmmndetailcode where CODE = #chatGender#),
+				(select code_nm from comtccmmndetailcode where CODE = #chatNation#),
+				(select code_nm from comtccmmndetailcode where CODE = #chatRelation#),
+				(select code_nm from comtccmmndetailcode where CODE = #chatAge#),
+				(select code_nm from comtccmmndetailcode where CODE = #chatRegion#),
+				(select code_nm from comtccmmndetailcode where CODE = #chatType#),
+				#counselNum#,
+			 	now(),
+			 	now(),
+			 	#regId#
+			)
+		]]>
+	</insert>
+	
+	<update id="ChatDAO.updateChat">
+		<![CDATA[
+			UPDATE CHAT 
+			   SET telnum = #chatTelnum#,
+			   	   updDt = now(), 
+			   	   updId = #updId#
+			 WHERE no = #chatNo#
+		]]>
+	</update>
+
+</sqlMap>

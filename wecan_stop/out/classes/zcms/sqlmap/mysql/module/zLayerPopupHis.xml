@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZLayerPopupHis">
+	<typeAlias alias="zLayerPopupHisVo" type="com.z5.zcms.admsys.module.domain.ZLayerPopupHisVo"/>
+	<typeAlias alias="zLayerPopupVo" type="com.z5.zcms.admsys.module.domain.ZLayerPopupVo"/>
+	<resultMap id="zLayerPopupHisVo" class="zLayerPopupHisVo"/>
+	
+	<select id="ZLayerPopupHis.list" parameterClass="zLayerPopupVo" resultClass="zLayerPopupHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZLAYERPOPUPHIS
+			WHERE
+				layerpopupno=#layerpopupno#
+			ORDER BY
+				hisno DESC
+		]]>
+	</select>
+
+	<select id="ZLayerPopupHis.getByPk" parameterClass="zLayerPopupHisVo" resultClass="zLayerPopupHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZLAYERPOPUPHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</select>
+
+	<select id="ZLayerPopupHis.attachCount" parameterClass="String" resultClass="int">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS cnt
+			FROM
+				ZLAYERPOPUPHIS
+			WHERE
+				popupimg=#popupimg_org#
+		]]>
+	</select>
+
+	<delete id="ZLayerPopupHis.delete" parameterClass="zLayerPopupHisVo">
+		<![CDATA[
+			DELETE FROM 
+				ZLAYERPOPUPHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</delete>
+
+	<delete id="ZLayerPopupHis.deleteMuti" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZLAYERPOPUPHIS
+			WHERE
+				layerpopupno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<insert id="ZLayerPopupHis.insert" parameterClass="zLayerPopupVo">
+		<![CDATA[
+			INSERT INTO ZLAYERPOPUPHIS
+			(
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				popupsize,
+				popupposition,
+				today,
+				popupimg,
+				contstype,
+				conts,
+				memo,
+				datereg,
+				datemod,
+				userid,
+				datehis,
+				layerpopupno
+			)
+			SELECT
+				title,
+				skin,
+				sdate,
+				edate,
+				popupsize,
+				popupposition,
+				today,
+				popupimg,
+				contstype,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				memo,
+				datereg,
+				datemod,
+				#userid#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				layerpopupno
+			FROM
+				ZLAYERPOPUP
+			WHERE
+				layerpopupno=#layerpopupno#
+		]]>
+	</insert>
+
+</sqlMap>

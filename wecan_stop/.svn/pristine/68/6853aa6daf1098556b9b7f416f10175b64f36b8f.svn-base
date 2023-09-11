@@ -1,0 +1,308 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<script type="text/javascript" src="/com/js/jquery.form.js"></script>
+<script type="text/javascript">
+if("true"=="${args.updatesuccess}"){
+	alert("정상적으로 수정되었습니다.");
+	//location.href='/admsys/site/css/index.html';
+}else if("false"=="${args.updatesuccess}"){
+	alert("수정이 되지 않았습니다. 다시 시도하세요.");
+}
+</script>
+	<div id="container">
+		<jsp:include page="lnb.jsp" flush="true" />
+		<div id="r_side">
+		<div id="contents">
+			<div class="contents_top">
+				<div class="location">
+					<a href="/admsys/site/site/">HOME</a> <a href="/admsys/aseanrok/list.html">업무관리</a> <strong>
+					<c:if test="${args.target eq 'd' }">대표단</c:if>
+					<c:if test="${args.target eq 's' }">주최측인력</c:if>
+					<c:if test="${args.target eq 'm' }">미디어</c:if>
+					<c:if test="${args.target eq 'p' }">부대행사</c:if>
+					 DB추가</strong>
+				</div>
+			</div>
+			<div id="content">
+			<ul class="homepagebbs">
+				<li class="bg"><h3 class="sub">
+				<c:if test="${args.target eq 'd'}">대표단
+					<c:if test="${detail.kind eq 'h' }"> HOD</c:if>
+					<c:if test="${detail.kind eq 'd1' }"> Delegation I</c:if>
+					<c:if test="${detail.kind eq 'd2' }"> Delegation II</c:if>
+					<c:if test="${detail.kind eq 's' }"> Security</c:if>
+				</c:if>
+				<c:if test="${args.target eq 's' }">주최측인력</c:if>
+				<c:if test="${args.target eq 'm' }">미디어</c:if>
+				<c:if test="${args.target eq 'p' }">부대행사</c:if>
+				 DB일괄 업로드</h3></li>
+				<form method="post" name="frm" id="frm" enctype="multipart/form-data">
+				<h4>DB 업로드</h4>
+				<li>
+					<div class="main_table">
+						<!---게시판 영역------------------------->
+						<table class="main_table1 bgneno" summary="CSS명, 입력방법, Import할 파일, 내용, 메모">
+							<caption>수정</caption>
+							<colgroup>
+	                            <col width="10%">
+	                            <col width="40%">
+	                            <col width="10%">
+	                            <col width="40%">
+                            </colgroup>
+							<tr>
+								<th class="Tleft">DB일괄 업로드</th>
+								<td class="Tbod Tbod Tleft"><input type="file" name="db_upload_file" id="db_upload_file_db" data-form="frm" data-type="db" value="업로드"></td>
+								<th class="Tleft">일괄업로드 양식</th>
+								
+								
+								<c:if test="${args.target eq 'd'}"><c:set var="excel_link" value="/usr/file/delegation_sample.xlsx"/></c:if>
+								<c:if test="${args.target eq 's' }"><c:set var="excel_link" value="/usr/file/staff_sample.xlsx"/></c:if>
+								<c:if test="${args.target eq 'm' }"><c:set var="excel_link" value="/usr/file/media_sample.xlsx"/></c:if>
+								<c:if test="${args.target eq 'p' }"><c:set var="excel_link" value="/usr/file/participant_sample.xlsx"/></c:if>
+								<td class="Tbod Tbod Tleft"><a href="${excel_link }">샘플다운</a></td>
+							</tr>
+							<tr>
+								<th class="Tbornone Tleft">미리보기</th>
+								<td class="Tleft" colspan="3">
+								<c:if test="${args.target eq 'd'}">
+								<em style="background: yellow;float:right;">HOD1개이상 등록 오류</em>
+								</c:if>
+								<em style="background: red;float:right;">코드값 오류</em>
+								<br/>
+								
+								<p id="frm_html" style="width:100%;overflow:scroll;">상단 업로드를 하시면 미리보기 및 수정필요 부분을 보실 수 있습니다. 문제가 없으면 아래 '추가' 버튼이 생성됩니다.</p>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<!--/사이트 추가-->
+					<div class="btn-c">
+						<input class="chost_btn_s" type="submit" id="frm_submit" data-form="frm" data-type="db" style="display: none" value="추가"/>
+					</div>
+				</li>
+				</form>
+				
+				<form method="post" name="photoFrm" id="photoFrm" enctype="multipart/form-data">
+				<h4>비표사진 업로드</h4>
+				<li>
+					<div class="main_table">
+						<!---게시판 영역------------------------->
+						<table class="main_table1 bgneno" summary="CSS명, 입력방법, Import할 파일, 내용, 메모">
+							<caption>수정</caption>
+							<colgroup>
+	                            <col width="10%">
+	                            <col width="90%">
+                            </colgroup>
+							<tr>
+								<th class="Tleft">비표사진 업로드</th>
+								<td class="Tbod Tbod Tleft"><input type="file" name="db_upload_file" id="db_upload_file_photo" data-form="photoFrm" data-type="photo" value="업로드"></td>
+							</tr>
+							<tr>
+								<th class="Tbornone Tleft">업로드 기준</th>
+								<td class="Tleft" colspan="3">
+								*zip 파일, 영문명만 가능(예시: test.zip)<br/>
+								*사진 파일명 규칙 : <font color="red">등록번호_First Name.jpg</font>, 영문명만 가능  (예시: STAF0004_Taeyoung.jpg)<br/>
+								*규칙대로 파일명 변경 필수<br/>
+								*문제가 없으면 아래 '추가' 버튼이 생성됩니다.
+								<p id="photoFrm_html" style="overflow:scroll;"></p>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<!--/사이트 추가-->
+					<div class="btn-c">
+						<input class="chost_btn_s" type="submit" id="photoFrm_submit" data-form="photoFrm" data-type="photo" style="display: none" value="추가"/>
+					</div>
+				</li>
+				</form>
+				
+				
+				<c:if test="${args.target eq 'm'}">
+				
+				<form method="post" name="id_cardFrm" id="id_cardFrm" enctype="multipart/form-data">
+				<h4>신분증 업로드</h4>
+				<li>
+					<div class="main_table">
+						<!---게시판 영역------------------------->
+						<table class="main_table1 bgneno" summary="CSS명, 입력방법, Import할 파일, 내용, 메모">
+							<caption>수정</caption>
+							<colgroup>
+	                            <col width="10%">
+	                            <col width="90%">
+                            </colgroup>
+							<tr>
+								<th class="Tleft">신분증 업로드</th>
+								<td class="Tbod Tbod Tleft"><input type="file" name="db_upload_file" id="db_upload_file_id_card" data-form="id_cardFrm" data-type="id_card" value="업로드"></td>
+							</tr>
+							<tr>
+								<th class="Tbornone Tleft">업로드 기준</th>
+								<td class="Tleft" colspan="3">
+								*zip 파일, 영문명만 가능(예시: test.zip)<br/>
+								*사진 파일명 규칙 : <font color="red">ID_등록번호_First Name.jpg</font>, 영문명만 가능  (예시: ID_STAF0004_Taeyoung.jpg)<br/>
+								*규칙대로 파일명 변경 필수<br/>
+								*문제가 없으면 아래 '추가' 버튼이 생성됩니다.
+								<p id="id_cardFrm_html" style="overflow:scroll;"></p>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<!--/사이트 추가-->
+					<div class="btn-c">
+						<input class="chost_btn_s" type="submit" id="id_cardFrm_submit" data-form="id_cardFrm" data-type="id_card" style="display: none" value="추가"/>
+					</div>
+				</li>
+				</form>
+				
+				<form method="post" name="letter_assignFrm" id="letter_assignFrm" enctype="multipart/form-data">
+				<h4>취재인증서 업로드</h4>
+				<li>
+					<div class="main_table">
+						<!---게시판 영역------------------------->
+						<table class="main_table1 bgneno" summary="CSS명, 입력방법, Import할 파일, 내용, 메모">
+							<caption>수정</caption>
+							<colgroup>
+	                            <col width="10%">
+	                            <col width="90%">
+                            </colgroup>
+							<tr>
+								<th class="Tleft">취재인증서 업로드</th>
+								<td class="Tbod Tbod Tleft"><input type="file" name="db_upload_file" id="db_upload_file_letter_assign" data-form="letter_assignFrm" data-type="letter_assign" value="업로드"></td>
+							</tr>
+							<tr>
+								<th class="Tbornone Tleft">업로드 기준</th>
+								<td class="Tleft" colspan="3">
+								*zip 파일, 영문명만 가능(예시: test.zip)<br/>
+								*사진 파일명 규칙 : <font color="red">LC_등록번호_First Name.jpg</font>, 영문명만 가능  (예시: LC_STAF0004_Taeyoung.jpg)<br/>
+								*규칙대로 파일명 변경 필수<br/>
+								*문제가 없으면 아래 '추가' 버튼이 생성됩니다.
+								<p id="letter_assignFrm_html" style="overflow:scroll;"></p>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<!--/사이트 추가-->
+					<div class="btn-c">
+						<input class="chost_btn_s" type="submit" id="letter_assignFrm_submit" data-form="letter_assignFrm" data-type="letter_assign" style="display: none" value="추가"/>
+					</div>
+				</li>
+				</form>
+				
+				</c:if>
+			</ul>
+			</div><!--/content-->
+			
+			
+<jsp:include page="end.jsp" flush="false" />
+<script type="text/javascript">
+$(document).ready(function(){
+	
+	$("[id^='db_upload_file_']").on("change", function(){
+		var value= $(this).val();
+		
+		var form= $(this).attr("data-form");
+		var type= $(this).attr("data-type");
+		
+		
+		
+		if(value != ""){
+			
+			if(type == "photo" || type == "id_card" || type == "letter_assign"){
+				var temp = $(this).val();
+			   	var ext = temp.substring(temp.lastIndexOf(".") + 1).toLowerCase();
+			   	var exts = ['zip'];
+			   	
+			   	if (exts.indexOf(ext) < 0) {
+			   		alert(exts + ' 파일만 첨부가 가능합니다');
+			   		$(this).val('');
+			   		return false;
+			   	}
+				
+			}
+		
+			$("#"+form).ajaxForm({
+	            url : "upload.html?target=${args.target}&type="+type+"&act=review",
+	            enctype : "multipart/form-data",
+	            dataType : "json",
+	            error : function(){
+	                alert("에러");
+	            },
+	            success : function(result){
+	            	
+	            	alert("파일을 검증하였습니다.");
+	            	
+	                $("#"+form+"_html").empty();
+	                $("#"+form+"_html").html(result.html);
+	                
+	                if(result.complete_flag) $("#"+form+"_submit").show();
+	                else $("#"+form+"_submit").hide();	
+	                
+	            }
+	        });
+	 
+	        $("#"+form).submit() ;
+		}
+		
+	});
+	
+	
+	
+	$("input[type='submit']").on("click", function(){
+		
+		var form= $(this).attr("data-form");
+		var type= $(this).attr("data-type");
+		if(confirm("추가하시겠습니까?")){
+			$("#"+form).ajaxForm({
+	            url : "upload.html?target=${args.target}&type="+type+"&act=upload",
+	            enctype : "multipart/form-data",
+	            dataType : "json",
+	            error : function(){
+	                alert("에러");
+	            },
+	            success : function(result){
+	            	
+	            	if(result.result == "upload_fail"){
+	            		alert("업로드중 오류가 발생하였습니다. 오류코드:"+result.err_code);
+	            	}else{
+	            		alert("추가하였습니다.");
+	            		location.href = "list.html?target=${args.target}";	
+	            	}
+	            	
+	            	
+	            }
+	        });
+			return true;
+		}
+		return false;
+	});
+	
+	$("#btn_post").click(function() {
+		new daum.Postcode({
+		    oncomplete: function(data) {
+		        // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분입니다.
+		        // 예제를 참고하여 다양한 활용법을 확인해 보세요.
+		        
+		        //console.log(data.buildingName);
+		        
+		        $("#post").val(data.zonecode);
+		        
+		        if(data.userSelectedType == "R"){
+		        	
+		        	if(data.buildingName != ""){
+		        		$("#address").val(data.roadAddress+' ('+data.buildingName+')');
+		        	}else{
+		        		$("#address").val(data.roadAddress);	
+		        	}
+		        	
+		        		
+		        }else{
+		        	$("#address").val(data.jibunAddress);
+		        }
+		        
+		    }
+		}).open();	
+	});
+});
+
+
+</script>

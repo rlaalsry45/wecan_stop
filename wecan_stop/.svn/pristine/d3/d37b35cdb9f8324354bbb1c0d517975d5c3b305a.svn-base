@@ -1,0 +1,153 @@
+<%@ page contentType="text/html;charset=utf-8" %>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true"/>
+<jsp:include page="../../lnb.jsp" flush="true"/>
+<link rel='stylesheet' href='/com/css/jquery-1.10.3-ui.css'/>
+<script type="text/javascript">
+    function checkdata() {
+
+        if ($("#calendar_name").val() == "" || $("#calendar_name").val() == null) {
+            alert("캘린더 이름을 입력해주세요.");
+            $("#calendar_name").focus();
+            return;
+        }
+
+        if ($("#calendar_lang").val() == "" || $("#calendar_lang").val() == null) {
+            alert("언어를 선택해주세요.");
+            $("#calendar_lang").focus();
+            return;
+        }
+
+        if ($("#use_yn").val() == "" || $("#use_yn").val() == null) {
+            alert("사용여부를 선택해주세요.");
+            $("#use_yn").focus();
+            return;
+        }
+
+        if (confirm("수정하시겠습니까?")) {
+            update.submit();
+        }
+    }
+
+    function fc_chk_byte(aro_name, ari_max) {
+
+        var ls_str     = aro_name.v; // 이벤트가 일어난 컨트롤의 v 값
+        var li_str_len = ls_str.length;  // 전체길이
+
+        // 변수초기화
+        var li_max      = ari_max; // 제한할 글자수 크기
+        var i           = 0;  // for문에 사용
+        var li_byte     = 0;  // 한글일경우는 2 그밗에는 1을 더함
+        var li_len      = 0;  // substring하기 위해서 사용
+        var ls_one_char = ""; // 한글자씩 검사한다
+        var ls_str2     = ""; // 글자수를 초과하면 제한할수 글자전까지만 보여준다.
+
+        for (i = 0; i < li_str_len; i++) {
+            ls_one_char = ls_str.charAt(i);// 한글자추출
+
+            if (escape(ls_one_char).length > 4) {
+                li_byte += 2;// 한글이면 2를 더한다.
+            } else {// 그밗의 경우는 1을 더한다.
+                li_byte++;
+            }
+
+            // 전체 크기가 li_max를 넘지않으면
+            if (li_byte <= li_max) {
+                li_len = i + 1;
+            }
+        }
+
+        // 전체길이를 초과하면
+        if (li_byte > li_max) {
+            ls_str2 = ls_str.substr(0, li_len);
+            alert(li_max + " byte를 초과 입력할수 없습니다. \n 초과된 내용은 자동으로 삭제 됩니다. ");
+            aro_name.v = ls_str2;
+        }
+        aro_name.focus();
+    }
+
+    function onlyNumber() {
+        if ((event.keyCode < 48) || (event.keyCode > 57)) {
+            alert("숫자만 입력할 수 있습니다.");
+            event.returnValue = false;
+        }
+    }
+</script>
+<div id="contents">
+    <div class="cont_top">
+        <div class="contants_top">
+            <div class="location">
+                <a href="/admsys/site/site/">HOME</a> <a href="/admsys/site/site/">홈페이지관리</a> <strong>캘린더설정 수정</strong>
+            </div>
+        </div>
+    </div>
+    <!--/cont_top-->
+    <form:form id="update" name="update" action="/admsys/module/calendar/modify.html" method="post" enctype="multipart/form-data"
+               onSubmit="return insert_submit(this);">
+        <input type="hidden" name="last_updusr_id" value="${userid}">
+        <input type="hidden" name="calendar_no" value="${param.calendar_no}">
+        <div id="content">
+            <ul class="homepagebbs">
+                <li class="bg"><h3 class="sub">캘린더 설정 : <c:out value="${data.calendar_name}"/></h3></li>
+                <li>
+                    <div class="main_table">
+                        <table class="main_table1 bgneno" summary="캘린더 이름, 언어선택, menuno, siteno, 사용여부">
+                            <colgroup>
+                                <col width="10%"/>
+                                <col width="/"/>
+                            </colgroup>
+                            <tr>
+                                <th class="Tleft" scope="row">캘린더 이름</th>
+                                <td class="Tbod Tbod Tleft">
+                                    <input class="bor1ddd" type="text" name="calendar_name" id="calendar_name" value="${data.calendar_name}" size="100"
+                                           onkeyup="fc_chk_byte(this,255);">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="Tbornone Tleft" scope="row">언어선택</th>
+                                <td class="Tleft">
+                                    <select name="calendar_lang" id="calendar_lang" style="height:27px;">
+                                        <option value="" <c:if test="${data.calendar_lang==''}"><c:out value='selected'/></c:if>>언어선택</option>
+                                        <option value="KR" <c:if test="${data.calendar_lang=='KR'}"><c:out value='selected'/></c:if>>KR</option>
+                                        <option value="EN" <c:if test="${data.calendar_lang=='EN'}"><c:out value='selected'/></c:if>>EN</option>
+                                    </select>
+                                </td>
+                            </tr>
+                                <%-- <tr>
+                                    <th class="Tbornone Tleft" scope="row">menuno</th>
+									<td class="Tleft">
+                                        <input class="bor1ddd" type="text" name="menuno" id="menuno" value="${data.menuno}" size="10" onkeypress="onlyNumber();">
+                                    </td>
+                                </tr>
+                                <tr>
+                                   <th class="Tbornone Tleft" scope="row">siteno</th>
+									<td class="Tleft">
+                                        <input class="bor1ddd" type="text" name="siteno" id="siteno" value="${data.siteno}" size="10" onkeypress="onlyNumber();">
+                                    </td>
+                                </tr> --%>
+                            <tr>
+                                <th class="Tbornone Tleft" scope="row">사용여부</th>
+                                <td class="Tleft">
+                                    <select name="use_yn" id="use_yn" style="height:27px;">
+                                        <option value="" <c:if test="${data.use_yn==''}"><c:out value='selected'/></c:if>>사용여부</option>
+                                        <option value="Y" <c:if test="${data.use_yn=='Y'}"><c:out value='selected'/></c:if>>사용</option>
+                                        <option value="N" <c:if test="${data.use_yn=='N'}"><c:out value='selected'/></c:if>>중지</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="btn-c-B">
+                        <a class="btmore04" href="javascript:void(0)" onclick="checkdata()">수정</a>
+                        <a class="btmore09" href="javascript:void(0);"
+                           onclick="if(window.confirm('수정한 내용이 삭제되고 리스트화면으로 이동합니다.\r\n그래도 진행 하시겠습니까?')) this.href='/admsys/module/calendar/index.html'">취소</a>
+                    </div>
+                </li>
+            </ul>
+
+        </div>
+        <!--/content-->
+    </form:form>
+</div>
+<!--/contents-->
+<jsp:include page="../../end.jsp" flush="false"/>

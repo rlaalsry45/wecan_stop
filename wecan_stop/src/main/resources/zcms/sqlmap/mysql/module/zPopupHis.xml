@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZPopupHis">
+	<typeAlias alias="zPopupHisVo" type="com.z5.zcms.admsys.module.domain.ZPopupHisVo"/>
+	<typeAlias alias="zPopupVo" type="com.z5.zcms.admsys.module.domain.ZPopupVo"/>
+	<resultMap id="zPopupHisVo" class="zPopupHisVo"/>
+	
+	<select id="ZPopupHis.list" parameterClass="zPopupVo" resultClass="zPopupHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZPOPUPHIS
+			WHERE
+				popupno=#popupno#
+			ORDER BY
+				hisno DESC
+		]]>
+	</select>
+
+	<select id="ZPopupHis.getByPk" parameterClass="zPopupHisVo" resultClass="zPopupHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZPOPUPHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</select>
+
+	<select id="ZPopupHis.attachCount" parameterClass="String" resultClass="int">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS cnt
+			FROM
+				ZPOPUPHIS
+			WHERE
+				popupimg=#popupimg_org#
+		]]>
+	</select>
+
+	<delete id="ZPopupHis.delete" parameterClass="zPopupHisVo">
+		<![CDATA[
+			DELETE FROM 
+				ZPOPUPHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</delete>
+
+	<delete id="ZPopupHis.deleteMuti" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZPOPUPHIS
+			WHERE
+				popupno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<insert id="ZPopupHis.insert" parameterClass="zPopupVo">
+		<![CDATA[
+			INSERT INTO ZPOPUPHIS
+			(
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				popupsize,
+				popupposition,
+				today,
+				popupimg,
+				contstype,
+				conts,
+				memo,
+				datereg,
+				datemod,
+				userid,
+				datehis,
+				popupno
+			)
+			SELECT
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				popupsize,
+				popupposition,
+				today,
+				popupimg,
+				contstype,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				memo,
+				datereg,
+				datemod,
+				#userid#,
+				now(),
+				popupno
+			FROM
+				ZPOPUP
+			WHERE
+				popupno=#popupno#
+		]]>
+	</insert>
+
+</sqlMap>

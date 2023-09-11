@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="w_counselLog">
+    <typeAlias alias="WCounselLogVo" type="com.z5.zcms.admsys.cyberCounsel.domain.WCounselLogVo" />
+	<resultMap id="WCounselLogVo" class="com.z5.zcms.admsys.cyberCounsel.domain.WCounselLogVo"/>
+
+    <select id="w_counselLog.listCount" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                counselLog
+            where 1=1                
+        ]]>                
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				REG_DATE between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>     
+			       
+			<isNotEmpty prepend="AND" property="keyword">
+			<isEqual property="cond2" compareValue="counselContent">
+			<![CDATA[			
+				COUNSEL_CONTENT LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>        	
+			</isNotEmpty>  
+
+    </select>
+
+    <select id="w_counselLog.getList" parameterClass="WCounselLogVo" resultClass="WCounselLogVo">
+        <![CDATA[
+        
+            select
+				COUNSEL_NO AS counselNo,
+				COUNSEL_CLASSIFICATION,
+				COUNSEL_GENDER,
+				COUNSEL_NATION,
+				COUNSEL_RELATION,
+				COUNSEL_AGE,
+				COUNSEL_REGION,
+				COUNSEL_TYPE,
+				COUNSEL_CONTENT AS counselContent,
+				REG_DATE AS regDate,
+				REG_ID AS regId,
+				UPD_DATE AS updDate,
+				UPD_ID AS updId,
+				
+				COUNSEL_ACRCNUM AS acrcNum,
+				COUNSEL_CLIENTNAME AS counselClientName,
+				COUNSEL_TELNUM AS counselTelNum,
+				COUNSEL_RECEIPTCHANNEL AS counselReceiptChannel,
+				COUNSEL_COUNTINUE AS counselCountinue,
+				COUNSEL_ACTIONCONTENT AS counselActionContent,
+				COUNSEL_ACTIONCONTENTDETAIL AS counselActionContentDetail,
+				
+				b.CODE_NM AS counselClassification, 
+				c.CODE_NM AS counselGender, 
+				d.CODE_NM AS counselNation, 
+				e.CODE_NM AS counselRelation, 
+				f.CODE_NM AS counselAge, 
+				g.CODE_NM AS counselRegion, 
+				h.CODE_NM AS counselType
+
+            from
+                counselLog a
+            left join comtccmmndetailcode b
+            on a.COUNSEL_CLASSIFICATION = b.CODE
+            
+        	left join comtccmmndetailcode c
+            on a.COUNSEL_GENDER = c.CODE
+            
+            left join comtccmmndetailcode d
+            on a.COUNSEL_NATION = d.CODE
+            
+            left join comtccmmndetailcode e
+            on a.COUNSEL_RELATION = e.CODE
+            
+            left join comtccmmndetailcode f
+            on a.COUNSEL_AGE = f.CODE
+            
+        	left join comtccmmndetailcode g
+            on a.COUNSEL_REGION = g.CODE
+            
+            left join comtccmmndetailcode h
+            on a.COUNSEL_TYPE = h.CODE
+            
+            where 1=1
+            and DEL_YN != 'Q'    
+            
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				REG_DATE between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>     
+			       
+			<isNotEmpty prepend="AND" property="keyword">
+			<isEqual property="cond2" compareValue="counselContent">
+			<![CDATA[			
+				COUNSEL_CONTENT LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>        	
+			</isNotEmpty>            
+            
+            ORDER BY
+                REG_DATE desc
+            LIMIT #m#, #n#
+
+    </select>
+    
+    <select id="w_counselLog.searchCounselNum" resultClass="int">
+        <![CDATA[
+            select
+                NO
+            from
+                counselLog
+                ORDER BY NO DESC
+                LIMIT 1;
+        ]]>                
+
+    </select>    
+    
+    <insert id="w_counselLog.actionRegistration" parameterClass="WCounselLogVo">
+        <![CDATA[
+        
+            insert into counselLog
+            (
+				COUNSEL_NO,
+				COUNSEL_CLASSIFICATION,
+				COUNSEL_GENDER,
+				COUNSEL_NATION,
+				COUNSEL_RELATION,
+				COUNSEL_AGE,
+				COUNSEL_REGION_PARENT,
+				COUNSEL_REGION,
+				COUNSEL_TYPE,
+				COUNSEL_CONTENT,
+				DEL_YN,
+				REG_DATE,
+				REG_ID,
+				COUNSEL_ACRCNUM,
+				COUNSEL_CLIENTNAME,
+				COUNSEL_TELNUM,
+				COUNSEL_RECEIPTCHANNEL,
+				COUNSEL_COUNTINUE,
+				COUNSEL_ACTIONCONTENT,
+				COUNSEL_ACTIONCONTENTDETAIL
+			)
+			values
+			(
+			#counselNo#,
+			#counselClassification#,
+			#counselGender#,
+			#counselNation#,
+			#counselRelation#,
+			#counselAge#,
+			(select parent_code from comtccmmndetailcode where code = #counselRegion#),
+			#counselRegion#,
+			#counselType#,
+			#counselContent#,
+			'N',
+			now(),
+			#regUser#,
+			#acrcNum#,
+			#counselClientName#,
+			#counselTelNum#,
+			#counselReceiptChannel#,
+			#counselCountinue#,
+			#counselActionContent#,
+			#counselActionContentDetail#
+			)
+				                
+        ]]>
+
+    </insert>    
+    
+    <select id="w_counselLog.selectboxValueSet" parameterClass="String" resultClass="java.util.HashMap">
+        <![CDATA[
+            select
+                CODE AS code,
+                CODE_NM AS codeNm
+            from
+                comtccmmndetailcode
+            where 1=1
+                and CODE_ID = #param#
+        ]]>                
+
+    </select>      
+    
+    <select id="w_counselLog.view" parameterClass="WCounselLogVo" resultClass="WCounselLogVo">
+        <![CDATA[
+        
+            select
+				COUNSEL_NO AS counselNo,
+				COUNSEL_CLASSIFICATION AS counselClassification,
+				COUNSEL_GENDER AS counselGender,
+				COUNSEL_NATION AS counselNation,
+				COUNSEL_RELATION AS counselRelation,
+				COUNSEL_AGE AS counselAge,
+				COUNSEL_REGION_PARENT AS counselRegionParent,
+				COUNSEL_REGION AS counselRegion,
+				COUNSEL_TYPE AS counselType,
+				COUNSEL_CONTENT AS counselContent,
+				REG_DATE AS regDate,
+				REG_ID AS regId,
+				UPD_DATE AS updDate,
+				UPD_ID AS updId,
+				
+				COUNSEL_ACRCNUM AS acrcNum,
+				COUNSEL_CLIENTNAME AS counselClientName,
+				COUNSEL_TELNUM AS counselTelNum,
+				COUNSEL_RECEIPTCHANNEL AS counselReceiptChannel,
+				COUNSEL_COUNTINUE AS counselCountinue,
+				COUNSEL_ACTIONCONTENT AS counselActionContent,
+				COUNSEL_ACTIONCONTENTDETAIL AS counselActionContentDetail
+
+            from
+                counselLog
+            
+            where 1=1
+            and DEL_YN != 'Q' 
+			and COUNSEL_NO = #counselNo#
+            
+        ]]>
+
+    </select>    
+    
+    <update id="w_counselLog.actionUpdate" parameterClass="WCounselLogVo">
+        <![CDATA[
+        
+            update counselLog
+            set
+				COUNSEL_CLASSIFICATION = #counselClassification#,
+				COUNSEL_GENDER = #counselGender#,
+				COUNSEL_NATION = #counselNation#,
+				COUNSEL_RELATION = #counselRelation#,
+				COUNSEL_AGE = #counselAge#,
+				COUNSEL_REGION_PARENT = #counselRegionParent#,
+				COUNSEL_REGION = #counselRegion#,
+				COUNSEL_TYPE = #counselType#,
+				COUNSEL_CONTENT = #counselContent#,
+				UPD_DATE = now(),
+				UPD_ID = #regUser#,
+				COUNSEL_ACRCNUM = #acrcNum#,
+				COUNSEL_CLIENTNAME = #counselClientName#,
+				COUNSEL_TELNUM = #counselTelNum#,
+				COUNSEL_RECEIPTCHANNEL = #counselReceiptChannel#,
+				COUNSEL_COUNTINUE = #counselCountinue#,
+				COUNSEL_ACTIONCONTENT = #counselActionContent#,
+				COUNSEL_ACTIONCONTENTDETAIL = #counselActionContentDetail#
+            where COUNSEL_NO = #counselNo#
+				                
+        ]]>
+
+    </update>    
+
+    <update id="w_counselLog.delete" parameterClass="WCounselLogVo">
+        <![CDATA[
+        
+            update counselLog
+            set
+				UPD_ID = #regUser#,
+				UPD_DATE = now(),
+				DEL_YN = 'Q'
+            where COUNSEL_NO IN
+		]]>
+		<iterate property="delList" open="(" close=")" conjunction=",">
+			#delList[]#
+		</iterate>				                
+
+    </update>
+    
+    <select id="w_counselLog.getCounselNum" resultClass="String">
+        <![CDATA[
+            select
+                COUNSEL_NO
+            from
+                counselLog
+                ORDER BY REG_DATE DESC
+                LIMIT 1;
+        ]]>                
+
+    </select>      
+ 
+</sqlMap>

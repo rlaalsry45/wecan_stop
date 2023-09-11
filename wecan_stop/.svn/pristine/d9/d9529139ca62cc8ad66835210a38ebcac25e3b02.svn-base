@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZPopup">
+	<typeAlias alias="zPopupVo" type="com.z5.zcms.admsys.module.domain.ZPopupVo"/>
+	<resultMap id="zPopupVo" class="com.z5.zcms.admsys.module.domain.ZPopupVo"/>
+	
+	<insert id="ZPopup.popupWrite">
+		<![CDATA[
+			INSERT INTO ZPOPUP
+			(
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				popupsize,
+				popupposition,
+				today,
+				popupimg,
+				contstype,
+				conts,
+				memo,
+				datereg,
+				userid,
+				popupstatus
+			)
+			VALUES
+			(
+				
+				#title#,
+				#skin#,
+				#sdate#,
+				#edate#,
+				#popupsize#,
+				#popupposition#,
+				#today#,
+				#popupimg#,
+				#contstype#,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				#memo#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#,
+				#popupstatus#
+			)
+		]]>
+	</insert>
+	
+	<select id="ZPopup.list" resultClass="zPopupVo">
+		<![CDATA[
+			SELECT
+				popupno,
+				title,
+				sdate,
+				edate,
+				sitetitle,
+				datereg,
+				skin,
+				popupstatus
+			FROM 
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								a.*
+								,(SELECT GROUP_CONCAT(SITETITLE) FROM ZPOPUPUSE where popupno = a.popupno) AS sitetitle
+								/*, get_sitetitle('ZPOPUPUSE','popupno', a.popupno) as sitetitle*/
+							FROM
+								ZPOPUP a,   (SELECT @rownum := #m#) R
+							WHERE 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							ORDER BY popupno DESC
+							LIMIT #m#, #n#
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+			
+			]]> 
+	</select>
+	
+	<select id="ZPopup.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				ZPOPUP
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# AND $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+	<select id="ZPopup.getDetailInfo" resultClass="zPopupVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				ZPOPUP
+			WHERE
+				popupno=#popupno#
+		]]>
+	</select>
+	
+	<delete id="ZPopup.popupDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZPOPUP
+			WHERE
+				popupno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<delete id="ZPopup.popupUseDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZPOPUPUSE
+			WHERE
+				popupno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<update id="ZPopup.update">
+		<![CDATA[
+		UPDATE
+			ZPOPUP
+		SET
+			title=#title#,
+			skin=#skin#,
+			sdate=#sdate#,
+			edate=#edate#,
+			popupsize=#popupsize#,
+			popupposition=#popupposition#,
+			today=#today#,
+			popupimg=#popupimg#,
+			contstype=#contstype#,
+			conts=
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+			memo=#memo#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#,
+			popupstatus=#popupstatus#
+		WHERE
+			popupno=#popupno#
+		]]>
+	</update>
+
+	<update id="ZPopup.updateAttach">
+		<![CDATA[
+		UPDATE
+			ZPOPUP
+		SET
+			popupimg='',
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#
+		WHERE
+			popupno=#popupno#
+		]]>
+	</update>
+
+</sqlMap>

@@ -1,0 +1,1642 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Auth">
+	<typeAlias alias="authVo" type="com.z5.zcms.admsys.auth.domain.AuthVo"/>
+	<resultMap id="authVo" class="com.z5.zcms.admsys.auth.domain.AuthVo"/>
+	<typeAlias alias="auth" type="com.z5.zcms.admsys.auth.domain.Auth"/>
+	<resultMap id="auth" class="com.z5.zcms.admsys.auth.domain.Auth"/>
+	<typeAlias alias="authEmp" type="com.z5.zcms.admsys.auth.domain.AuthEmp"/>
+	<resultMap id="authEmp" class="com.z5.zcms.admsys.auth.domain.AuthEmp"/>
+	<typeAlias alias="gAuthVo" type="com.z5.zcms.admsys.auth.domain.GAuthVo"/>
+	<resultMap id="gAuthVo" class="com.z5.zcms.admsys.auth.domain.GAuthVo"/>
+	<typeAlias alias="gAuth" type="com.z5.zcms.admsys.auth.domain.GAuth"/>
+	<resultMap id="gAuth" class="com.z5.zcms.admsys.auth.domain.GAuth"/>
+	<typeAlias alias="gAuthEmp" type="com.z5.zcms.admsys.auth.domain.GAuthEmp"/>
+	<resultMap id="gAuthEmp" class="com.z5.zcms.admsys.auth.domain.GAuthEmp"/>
+	<typeAlias alias="authAdminVo" type="com.z5.zcms.admsys.auth.domain.AuthAdminVo"/>
+	<resultMap id="authAdminVo" class="com.z5.zcms.admsys.auth.domain.AuthAdminVo"/>
+	<typeAlias alias="menuAuthVo" type="com.z5.zcms.admsys.auth.domain.MenuAuthVo"/>
+	<resultMap id="menuAuthVo" class="com.z5.zcms.admsys.auth.domain.MenuAuthVo"/>
+	<typeAlias alias="userOtpVo" type="com.z5.zcms.admsys.auth.domain.UserOtpVo"/>
+	<resultMap id="functionPerMenuVo" class="com.z5.zcms.admsys.auth.domain.FunctionPerMenuVo"/>
+	<typeAlias alias="functionPerMenuVo" type="com.z5.zcms.admsys.auth.domain.FunctionPerMenuVo"/>
+	<resultMap id="functionPerMenuPermissionVo" class="com.z5.zcms.admsys.auth.domain.FunctionPerMenuPermissionVo"/>
+	<typeAlias alias="functionPerMenuPermissionVo" type="com.z5.zcms.admsys.auth.domain.FunctionPerMenuPermissionVo"/>
+	<resultMap id="functionPerMenuPermissionInfoListVo" class="com.z5.zcms.admsys.auth.domain.FunctionPerMenuPermissionInfoListVo"/>
+	<typeAlias alias="functionPerMenuPermissionInfoListVo" type="com.z5.zcms.admsys.auth.domain.FunctionPerMenuPermissionInfoListVo"/>
+	<typeAlias alias="zUserVo" type="com.z5.zcms.admsys.user.domain.ZUserVo"/>
+	<resultMap id="zUserVo" class="com.z5.zcms.admsys.user.domain.ZUserVo"/>
+	
+	<select id="empList" parameterClass="gAuthEmp" resultClass="gAuthEmp">
+		<![CDATA[
+			SELECT *
+			FROM ZAUTH_EMP
+			WHERE holoff_cls = 0
+		]]>
+		<isNotEmpty prepend="AND" property="hq_cd">
+		<![CDATA[ hq_cd = #hq_cd# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="dept_cd">
+		<![CDATA[ dept_cd = #dept_cd# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="emp_nm">
+		<![CDATA[ emp_nm LIKE CONCAT('%',#emp_nm#,'%') ]]>
+		</isNotEmpty>
+		<![CDATA[
+			ORDER BY hq_cd, dept_cd
+		]]>
+	</select>
+
+	<resultMap id="authVoList" class="authVo" >
+		<result column="menuno" property="menuno"/>
+		<result column="menutopno" property="menutopno"/>
+		<result column="menulevel" property="menulevel"/>
+		<result column="menustep" property="menustep"/>
+		<result column="menuparentno" property="menuparentno"/>
+		<result column="siteno" property="siteno"/>
+		<result column="menutitle" property="menutitle"/>
+		<result column="menustatus" property="menustatus"/>
+		<result column="cnt" property="cnt"/>
+		<result column="{menuno=menuno,siteno=siteno}" property="authemp" select="Auth.authList2" />
+	</resultMap>
+
+	<select id="authList" parameterClass="authVo" resultMap="authVoList">
+		<![CDATA[
+			SELECT
+				a.menuno
+				, a.menutopno
+				, a.menulevel
+				, a.menustep
+				, a.menuparentno
+				, a.siteno
+				, a.menutitle
+				, a.menustatus
+				, (SELECT COUNT(*) FROM ZMENU START WITH menuno=a.menuno CONNECT BY menuparentno = PRIOR menuno) cnt
+			FROM ZMENU a
+			WHERE a.siteno=#siteno#
+			START WITH a.menuparentno=0
+			CONNECT BY PRIOR a.menuno=a.menuparentno
+			ORDER BY menutopno, menustep
+		]]>
+	</select>
+
+	<select id="authList2" parameterClass="authVo" resultClass="authEmp">
+		<![CDATA[
+			SELECT * FROM (
+				SELECT  a.emp_no,a.emp_nm,a.hq_nm,a.dept_nm,a.tel_offc,0 groupno,'' groupnm,b.no,1 as orderd FROM ZAUTH_EMP a
+				LEFT JOIN ZAUTH_MENU b
+				ON a.emp_no = b.auth_no
+				WHERE b.menuno=#menuno# AND b.siteno=#siteno#
+				UNION ALL
+				SELECT '' emp_no,'' emp_nm,'' hq_nm,'' dept_nm,'' tel_offc,a.groupno,a.groupnm,b.no,3 as orderd FROM ZAUTH_GROUP a
+				LEFT JOIN ZAUTH_MENU b
+				ON a.groupno = b.groupno
+				WHERE b.menuno=#menuno# AND b.siteno=#siteno#
+			)t
+			ORDER BY no,orderd
+		]]>
+	</select>
+
+	<insert id="authListSel" parameterClass="auth">
+		<![CDATA[
+		INSERT into ZAUTH_MENU(
+				menuno,
+				siteno,
+				groupno,
+				userid,
+				datereg
+			)
+ 			VALUES(
+				#menuno#,
+				#siteno#,
+				#groupno#,
+				#userid#,
+				now()
+			)
+			ON DUPLICATE KEY
+			UPDATE
+				userid = #userid#,
+				datereg = now()
+		]]>
+		<!-- <![CDATA[
+			MERGE INTO ZAUTH_MENU a
+			USING (
+				SELECT (SELECT no FROM ZAUTH_MENU WHERE siteno=#siteno# AND menuno=#menuno# AND auth_no=#auth_no#) no FROM db_root
+			) b
+			ON (a.no = b.no)
+			WHEN MATCHED THEN
+			UPDATE SET
+				a.menuno = #menuno#,
+				a.siteno = #siteno#,
+				a.auth_no= #auth_no#,
+				a.userid = #userid#,
+				a.datereg = now()
+			WHEN NOT MATCHED THEN
+			INSERT
+			(
+				a.no,
+				a.menuno,
+				a.siteno,
+				a.auth_no,
+				a.userid,
+				a.datereg
+			)
+			VALUES
+			(
+				ZAUTH_MENU_SEQ.nextval,
+				#menuno#,
+				#siteno#,
+				#auth_no#,
+				#userid#,
+				now()
+			)
+		]]> -->
+	</insert>
+
+	<insert id="authAdminListSel" parameterClass="auth">
+		<![CDATA[
+		INSERT into ZAUTH_ADMIN_URL(
+				urlno,
+				auth_no,
+				userid,
+				datereg
+			)
+ 			VALUES(
+				#urlno#,
+				#auth_no#,
+				#userid#,
+				now()
+			)
+			ON DUPLICATE KEY
+			UPDATE
+				userid = #userid#,
+				datereg = now()
+		]]>
+		<!-- <![CDATA[
+			MERGE INTO ZAUTH_ADMIN_URL a
+			USING (
+				SELECT (SELECT no FROM ZAUTH_ADMIN_URL WHERE urlno=#urlno# AND auth_no=#auth_no#) no FROM db_root
+			) b
+			ON (a.no = b.no)
+			WHEN MATCHED THEN
+			UPDATE SET
+				a.urlno = #urlno#,
+				a.auth_no = #auth_no#,
+				a.userid = #userid#,
+				a.datereg = now()
+			WHEN NOT MATCHED THEN
+			INSERT
+			(
+				a.no,
+				a.urlno,
+				a.auth_no,
+				a.userid,
+				a.datereg
+			)
+			VALUES
+			(
+				ZAUTH_ADMIN_URL_SEQ.nextval,
+				#urlno#,
+				#auth_no#,
+				#userid#,
+				now()
+			)
+		]]> -->
+	</insert>
+
+	<delete id="authDelete" parameterClass="auth">
+		<![CDATA[
+			DELETE FROM
+				ZAUTH_MENU
+			WHERE
+				no = #no#
+		]]>
+	</delete>
+
+	<delete id="authAdminDelete" parameterClass="auth">
+		<![CDATA[
+			DELETE FROM
+				ZAUTH_ADMIN_URL
+			WHERE
+				no = #no#
+		]]>
+	</delete>
+
+	<delete id="authMutiDelete" parameterClass="auth">
+		<![CDATA[
+			DELETE FROM
+				ZAUTH_MENU
+			WHERE
+				menuno = #menuno#
+			AND siteno = #siteno#
+		]]>
+		<isNotEqual prepend="AND" property="groupno" compareValue="0">
+			<![CDATA[ groupno = #groupno# ]]>
+		</isNotEqual>
+		<isNotEmpty prepend="AND" property="auth_no">
+			<![CDATA[ auth_no = #auth_no# ]]>
+		</isNotEmpty>
+	</delete>
+
+	<delete id="authAdminMutiDelete" parameterClass="auth">
+		<![CDATA[
+			DELETE FROM
+				ZAUTH_ADMIN_URL
+			WHERE
+				urlno = #urlno#
+		]]>
+		<isNotEqual prepend="AND"  property="groupno" compareValue="0">
+			<![CDATA[ groupno = #groupno# ]]>
+		</isNotEqual>
+		<isNotEmpty prepend="AND" property="auth_no">
+			<![CDATA[ auth_no = #auth_no# ]]>
+		</isNotEmpty>
+	</delete>
+
+	<insert id="gAuthCreate" parameterClass="gAuthVo">
+		<![CDATA[
+			INSERT INTO ZAUTH_GROUP
+			(
+				groupnm,
+				userid,
+				datereg
+			)
+			VALUES
+			(
+				#groupnm#,
+				#userid#,
+				now()
+			)
+		]]>
+	</insert>
+
+	<resultMap id="gAuthVoList" class="gAuthVo" >
+		<result column="groupno" property="groupno"/>
+		<result column="groupnm" property="groupnm"/>
+		<result column="keyword" property="keyword"/>
+		<result column="cond1" property="cond1"/>
+		<result column="{groupno=groupno,keyword=keyword,cond1=cond1,cond2=cond2}" property="authemp" select="Auth.gAuthList2" />
+	</resultMap>
+
+	<select id="gAuthList" parameterClass="gAuthVo" resultMap="gAuthVoList">
+		<![CDATA[
+			SELECT groupno, groupnm, #keyword# keyword, #cond1# cond1, #cond2# cond2
+			FROM (
+				SELECT a.*
+				FROM ZAUTH_GROUP a
+				LEFT JOIN ZAUTH_GROUP_MEMBER b
+				ON a.groupno = b.groupno
+			)t
+			WHERE 1 = 1
+		]]>
+		<isNotEmpty prepend="AND" property="keyword">
+		<isEqual property="cond1" compareValue="groupnm">
+		<![CDATA[
+			groupnm LIKE CONCAT('%',UPPER(#keyword#),'%')
+		]]>
+		</isEqual>
+		</isNotEmpty>
+		<![CDATA[
+			group by groupno, groupnm
+			order by groupno
+		]]>
+	</select>
+
+	<select id="gAuthList2" parameterClass="authemp" resultClass="authEmp">
+		<![CDATA[
+			SELECT c.* FROM ZAUTH_EMP c
+			JOIN
+			(
+				SELECT a.no, a.auth_no
+				FROM ZAUTH_GROUP_MEMBER a
+				LEFT JOIN ZAUTH_GROUP b
+				ON a.groupno = b.groupno
+		]]>
+		<isEqual property="cond2" compareProperty="groupno">
+		<![CDATA[
+				where a.groupno = -1
+		]]>
+		</isEqual>
+		<isNotEqual property="cond2" compareProperty="groupno">
+		<![CDATA[
+				where a.groupno = #groupno#
+		]]>
+		</isNotEqual>
+		<![CDATA[
+			) d
+			ON d.auth_no = c.emp_no
+			WHERE 1 = 1
+		]]>
+		<isNotEmpty prepend="AND" property="keyword">
+		<isEqual property="cond1" compareValue="emp_nm">
+		<![CDATA[
+			c.emp_nm LIKE CONCAT('%',UPPER(#keyword#),'%')
+		]]>
+		</isEqual>
+		</isNotEmpty>
+		<![CDATA[
+			order by d.no
+		]]>
+	</select>
+
+	<insert id="gAuthListSel" parameterClass="gAuth">
+		<![CDATA[
+		INSERT into ZAUTH_GROUP_MEMBER(
+				groupno,
+				auth_no,
+				userid,
+				datereg
+			)
+ 			VALUES(
+				#groupno#,
+				#auth_no#,
+				#userid#,
+				now()
+			)
+			ON DUPLICATE KEY
+			UPDATE
+				userid = #userid#,
+				datereg = now()
+		]]>
+		<!-- <![CDATA[
+			MERGE INTO ZAUTH_GROUP_MEMBER a
+			USING (
+				SELECT (SELECT no FROM ZAUTH_GROUP_MEMBER WHERE groupno=#groupno# AND auth_no=#auth_no#) no FROM db_root
+			) b
+			ON (a.no = b.no)
+			WHEN MATCHED THEN
+			UPDATE SET
+				a.groupno = #groupno#,
+				a.auth_no= #auth_no#,
+				a.userid = #userid#,
+				a.datereg = #datereg#
+			WHEN NOT MATCHED THEN
+			INSERT
+			(
+				a.no,
+				a.groupno,
+				a.auth_no,
+				a.userid,
+				a.datereg
+			)
+			VALUES
+			(
+				ZAUTH_GROUP_MEMBER_SEQ.nextval,
+				#groupno#,
+				#auth_no#,
+				#userid#,
+				now()
+			)
+		]]> -->
+	</insert>
+
+	<delete id="gAuthDelete" parameterClass="gAuth">
+		<![CDATA[
+			DELETE FROM
+				ZAUTH_GROUP_MEMBER
+			WHERE
+				groupno = #groupno#
+			AND
+				auth_no = #auth_no#
+		]]>
+	</delete>
+
+	<delete id="gAuthGroupDel1" parameterClass="List">
+		<![CDATA[
+			DELETE FROM
+				ZAUTH_GROUP
+			WHERE
+				groupno IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<delete id="gAuthGroupDel2" parameterClass="List">
+		<![CDATA[
+			DELETE FROM
+				ZAUTH_GROUP_MEMBER
+			WHERE
+				groupno IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<delete id="gAuthGroupDel3" parameterClass="List">
+		<![CDATA[
+			DELETE FROM
+				ZAUTH_MENU
+			WHERE
+				groupno IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<select id="authSubMenuList" parameterClass="auth" resultClass="String">
+		<![CDATA[
+			SELECT menuno
+			FROM ZMENU
+			WHERE siteno = #siteno#
+			START WITH menuno=#menuno#
+			CONNECT BY menuparentno = PRIOR menuno
+		]]>
+	</select>
+
+	<select id="authSubUrlList" parameterClass="auth" resultClass="String">
+		<![CDATA[
+			SELECT urlno
+			FROM ZADMIN_URL
+			START WITH urlno=#urlno#
+			CONNECT BY urlparentno = PRIOR urlno
+			ORDER BY urltopno, urlstep
+		]]>
+	</select>
+
+	<insert id="gAuthSetGroup" parameterClass="gAuth">
+		<![CDATA[
+		INSERT into ZAUTH_MENU(
+				menuno,
+				siteno,
+				groupno,
+				userid,
+				datereg
+			)
+ 			VALUES(
+				#menuno#,
+				#siteno#,
+				#groupno#,
+				#userid#,
+				now()
+			)
+			ON DUPLICATE KEY
+			UPDATE
+				userid = #userid#,
+				datereg = now()
+		]]>
+
+		<!-- <![CDATA[
+			MERGE INTO ZAUTH_MENU a
+			USING (
+				SELECT (SELECT no FROM ZAUTH_MENU WHERE menuno=#menuno# AND siteno=#siteno# AND groupno=#groupno#) no FROM db_root
+			) b
+			ON (a.no = b.no)
+			WHEN MATCHED THEN
+			UPDATE SET
+				a.menuno = #menuno#,
+				a.siteno = #siteno#,
+				a.groupno= #groupno#,
+				a.userid = #userid#,
+				a.datereg = now()
+			WHEN NOT MATCHED THEN
+			INSERT
+			(
+				a.no,
+				a.menuno,
+				a.siteno,
+				a.groupno,
+				a.userid,
+				a.datereg
+			)
+			VALUES
+			(
+				ZAUTH_MENU_SEQ.nextval,
+				#menuno#,
+				#siteno#,
+				#groupno#,
+				#userid#,
+				now()
+			)
+		]]> -->
+	</insert>
+
+	<insert id="gAuthAdminSetGroup" parameterClass="gAuth">
+		<![CDATA[
+		INSERT into ZAUTH_ADMIN_URL(
+				urlno,
+				groupno,
+				userid,
+				datereg
+			)
+ 			VALUES(
+				#urlno#,
+				#groupno#,
+				#userid#,
+				now()
+			)
+			ON DUPLICATE KEY
+			UPDATE
+				userid = #userid#,
+				datereg = now()
+		]]>
+		<!-- <![CDATA[
+			MERGE INTO ZAUTH_ADMIN_URL a
+			USING (
+				SELECT (SELECT no FROM ZAUTH_ADMIN_URL WHERE urlno=#urlno# AND groupno=#groupno#) no FROM db_root
+			) b
+			ON (a.no = b.no)
+			WHEN MATCHED THEN
+			UPDATE SET
+				a.urlno = #urlno#,
+				a.groupno = #groupno#,
+				a.userid = #userid#,
+				a.datereg = now()
+			WHEN NOT MATCHED THEN
+			INSERT
+			(
+				a.no,
+				a.urlno,
+				a.groupno,
+				a.userid,
+				a.datereg
+			)
+			VALUES
+			(
+				ZAUTH_ADMIN_URL_SEQ.nextval,
+				#urlno#,
+				#groupno#,
+				#userid#,
+				now()
+			)
+		]]> -->
+	</insert>
+
+	<select id="hqList" resultClass="gAuthEmp">
+		<![CDATA[
+			SELECT
+				DISTINCT(hq_cd), hq_nm
+			FROM
+				ZAUTH_EMP
+			WHERE
+				holoff_cls = 0
+			GROUP BY hq_cd,hq_nm
+			ORDER BY hq_cd
+		]]>
+	</select>
+
+	<select id="deptList" parameterClass="gAuthEmp" resultClass="gAuthEmp">
+		<![CDATA[
+			select distinct(dept_cd), dept_nm
+			from ZAUTH_EMP
+			where hq_cd = #hq_cd#
+			and holoff_cls = 0
+			group by dept_cd,dept_nm
+			order by dept_cd
+		]]>
+	</select>
+
+	<sql id="whereEmpList">
+	
+		<isNotEmpty property="USERDATEREGFrom">
+			<isNotEmpty property="USERDATEREGTo">
+				AND STR_TO_DATE(e.USERDATEREG,'%Y-%m-%d') BETWEEN STR_TO_DATE(#USERDATEREGFrom#,'%Y-%m-%d')
+						AND STR_TO_DATE(#USERDATEREGTo#,'%Y-%m-%d')
+			</isNotEmpty>
+			<isEmpty property="USERDATEREGTo">
+				AND STR_TO_DATE(e.USERDATEREG,'%Y-%m-%d') >= STR_TO_DATE(#USERDATEREGFrom#,'%Y-%m-%d')
+			</isEmpty>			
+		</isNotEmpty>
+		<isEmpty property="USERDATEREGFrom">
+			<isNotEmpty property="USERDATEREGTo">
+				AND STR_TO_DATE(e.USERDATEREG,'%Y-%m-%d')<![CDATA[	<=	]]>STR_TO_DATE(#USERDATEREGTo#,'%Y-%m-%d')
+			</isNotEmpty>
+		</isEmpty> 
+		
+		<isNotEmpty prepend="AND" property="emp_nm">
+		<![CDATA[
+			b.emp_nm LIKE CONCAT('%',UPPER(#emp_nm#),'%')
+		]]>
+		</isNotEmpty>
+		
+		<isNotEmpty prepend="AND" property="emp_id">
+		<![CDATA[
+			b.emp_id LIKE CONCAT('%',#emp_id#,'%')
+		]]>
+		</isNotEmpty>	
+	</sql>	
+
+
+	<select id="listCount" parameterClass="gAuthEmp" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				ZAUTH_EMP b
+				]]>
+				<isNotEmpty property="GROUPNO">				
+				join
+				</isNotEmpty>
+				<isEmpty  property="GROUPNO">
+				left outer join
+				</isEmpty>
+				<![CDATA[ 
+				(
+					SELECT 
+						D.GROUPNO , f.emp_no 
+					FROM 	
+					ZAUTH_GROUP_MEMBER D
+					JOIN
+					ZAUTH_EMP F
+					on F.EMP_NO = D.AUTH_NO
+														]]>
+					<isNotEmpty property="GROUPNO">
+					WHERE
+					D.GROUPNO = #GROUPNO#
+					</isNotEmpty>
+					<![CDATA[						
+								) c 
+				on b.emp_no = c.emp_no 
+				left outer join zauth_group d 
+				on
+				c.groupno = d.GROUPNO
+				left outer join zuser e 
+				on 
+				b.emp_id = e.userid 	
+				
+				
+			WHERE b.holoff_cls = 0
+		]]>
+		<isNotEmpty prepend="AND" property="hq_cd">
+		<![CDATA[
+			b.hq_cd = #hq_cd#
+		]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="dept_cd">
+		<![CDATA[
+			b.dept_cd = #dept_cd#
+		]]>
+		</isNotEmpty>
+
+		<include refid="whereEmpList"/>
+	</select>
+
+	<resultMap id="authEmpList2" class="gAuthEmp" >
+		<result column="emp_nm" property="emp_nm"/>
+		<result column="emp_no" property="emp_no"/>
+		<result column="emp_id" property="emp_id"/>
+		<result column="hq_cd" property="hq_cd"/>
+		<result column="hq_nm" property="hq_nm"/>
+		<result column="dept_cd" property="dept_cd"/>
+		<result column="dept_nm" property="dept_nm"/>
+		<result column="dept_full_nm" property="dept_full_nm"/>
+		<result column="holoff_cls" property="holoff_cls"/>
+		<result column="tel_offc" property="tel_offc"/>
+		<result column="cond2" property="cond2"/>
+		
+		<result column="GROUPNO" property="GROUPNO"/>
+		<result column="GROUPNM" property="GROUPNM"/>
+		<result column="USERDATEREG" property="USERDATEREG"/>
+		<result column="{auth_no=emp_no,cond2=cond2}" property="gAuth" select="Auth.gEmpAuthList"/>
+	</resultMap>
+
+	<select id="authEmpList" parameterClass="gAuthEmp" resultMap="authEmpList2">
+		<![CDATA[
+			SELECT b.*, #cond2# cond2
+			from
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+								b.*,
+								c.GROUPNO,
+								d.GROUPNM,
+								STR_TO_DATE(e.USERDATEREG,'%Y-%m-%d') AS USERDATEREG
+							from
+								ZAUTH_EMP b
+								]]>
+								<isNotEmpty property="GROUPNO">				
+								join
+								</isNotEmpty>
+								<isEmpty  property="GROUPNO">
+								left outer join
+								</isEmpty>
+								<![CDATA[								
+								(
+									SELECT 
+										D.GROUPNO , f.emp_no 
+									FROM 	
+									ZAUTH_GROUP_MEMBER D
+									JOIN
+									ZAUTH_EMP F
+									on F.EMP_NO = D.AUTH_NO
+									]]>
+									<isNotEmpty property="GROUPNO">
+									WHERE
+									D.GROUPNO = #GROUPNO#
+									</isNotEmpty>
+									<![CDATA[					
+								) c 
+								on b.emp_no = c.emp_no 
+								left outer join zauth_group d 
+								on
+								c.groupno = d.GROUPNO
+								left outer join zuser e 
+								on 
+								b.emp_id = e.userid, 	
+								(SELECT @rownum := #m#) R
+								where holoff_cls = 0	]]>
+						<include refid="whereEmpList"/>
+							
+		
+			<isNotEmpty prepend="AND" property="hq_cd">
+			<![CDATA[
+				hq_cd = #hq_cd#
+			]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="dept_cd">
+			<![CDATA[
+				dept_cd = #dept_cd#
+			]]>
+			</isNotEmpty>
+			<![CDATA[
+							order by hq_cd, dept_cd
+							LIMIT #m#, #n#
+						) row_
+					where
+						@rownum < (#n#+#m#)
+				) b
+
+			]]>
+	</select>
+
+	<select id="gEmpAuthList" parameterClass="auth" resultClass="gAuth">
+		<![CDATA[
+			select a.groupnm
+			from ZAUTH_GROUP a
+			LEFT JOIN ZAUTH_GROUP_MEMBER b
+			on a.groupno = b.groupno
+			where b.auth_no = #auth_no#
+			and b.groupno <> #cond2#
+		]]>
+	</select>
+
+	<select id="authMenus" parameterClass="String" resultClass="Integer">
+		<![CDATA[
+			select menuno
+			from ZAUTH_MENU
+			where auth_no = #auth_no#
+			or groupno in (
+				select groupno
+				from ZAUTH_GROUP_MEMBER
+				where auth_no = #auth_no#
+			)t
+		]]>
+	</select>
+
+	<select id="authAdminUrlList" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT
+				a.urlno
+				, a.urltopno
+				, a.urllevel
+				, a.urlstep
+				, a.urlparentno
+				, a.urltitle
+				, a.urllink
+				, a.confirmyn
+				, (select count(*) from ZADMIN_URL b where (b.urlno=a.urlno or b.urlparentno=a.urlno) order by b.urlno) cnt
+				, a.view_yn
+			FROM ZADMIN_URL a
+			ORDER BY urltopno, urlstep
+		]]>
+	</select>
+
+	<update id="authAdminEdit" parameterClass="authAdminVo">
+		<![CDATA[
+			UPDATE ZADMIN_URL
+			SET
+				urltitle=#urltitle#,
+				urllink=#urllink#,
+				confirmyn=#confirmyn#
+			WHERE urlno=#urlno#
+		]]>
+	</update>
+
+	<!-- <procedure id="authAdminWrite">
+		{call pro_authadmin_insert(#urlno#,#urltitle#,#urllink#)}
+	</procedure> -->
+
+	<select id="authAdminWrite1" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT urllevel+1 urllevel, urltopno, urlstep
+			FROM ZADMIN_URL
+			WHERE urlno=#urlno#
+		]]>
+	</select>
+
+	<select id="authAdminWrite2" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT MAX(urlstep)+1 as urlstep
+			FROM ZADMIN_URL
+			WHERE urlno = #urlno# OR urlparentno = #urlno#
+		]]>
+	</select>
+
+	<update id="authAdminWrite3" parameterClass="authAdminVo">
+		<![CDATA[
+			UPDATE ZADMIN_URL
+			SET urlstep = urlstep + 1
+			WHERE urltopno=#urltopno#
+			AND urlstep>=#urlstep#
+		]]>
+	</update>
+
+	<insert id="authAdminWrite4" parameterClass="authAdminVo">
+		<![CDATA[
+			INSERT INTO ZADMIN_URL (
+			urltitle
+			,urllink
+			,urltopno
+			,urllevel
+			,urlstep
+			,urlparentno
+			,confirmyn)
+			VALUES (
+			#urltitle#
+			,#urllink#
+			,#urltopno#
+			,#urllevel#
+			,#urlstep#
+			,#urlparentno#
+			,0)
+		]]>
+		<selectKey resultClass="java.lang.Integer" keyProperty="urltopno">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="authAdminWrite5" parameterClass="authAdminVo">
+
+		<![CDATA[
+			UPDATE ZADMIN_URL
+			SET urltopno = #urlnonew#
+			WHERE urltopno=#urltopno#
+		]]>
+	</update>
+
+	<!-- <procedure id="authAdminUrlDelete"  parameterClass="java.util.Map">
+		{call pro_authadmin_delete(#urlno#)}
+	</procedure> -->
+
+	<select id="authAdminUrlDelete1" parameterClass="java.util.List" resultClass="auth">
+		<![CDATA[
+			SELECT urlno
+			FROM ZADMIN_URL
+			where (urlno IN
+		]]>
+			<iterate open="(" close=")" conjunction=",">
+				<![CDATA[#urlno[]#]]>
+			</iterate>
+
+			OR urlparentno in
+			<iterate open="(" close=")" conjunction=",">
+				<![CDATA[#urlno[]#]]>
+			</iterate>
+			)
+	</select>
+
+
+	<delete id="authAdminUrlDelete2" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM ZADMIN_URL WHERE urlno IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#urlno[]#]]>
+		</iterate>
+	</delete>
+
+	<delete id="authAdminUrlDelete3" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM ZAUTH_ADMIN_URL WHERE urlno IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#urlno[]#]]>
+		</iterate>
+	</delete>
+
+	<delete id="authAdminDel">
+		<![CDATA[
+			DELETE FROM
+				ZADMIN_URL
+			WHERE
+				confirmyn = 0
+		]]>
+	</delete>
+
+	<resultMap id="authAdminVoList" class="authAdminVo" >
+		<result column="urlno" property="urlno"/>
+		<result column="urltopno" property="urltopno"/>
+		<result column="urllevel" property="urllevel"/>
+		<result column="urlstep" property="urlstep"/>
+		<result column="urlparentno" property="urlparentno"/>
+		<result column="urltitle" property="urltitle"/>
+		<result column="cnt" property="cnt"/>
+		<result column="{urlno=urlno}" property="authemp" select="Auth.authAdminList2" />
+		<result column="{urlno=urlno}" property="fpList" select="Auth.retrievePermissionInfoList" />
+	</resultMap>
+
+	<select id="authAdminList" parameterClass="authAdminVo" resultMap="authAdminVoList">
+		<![CDATA[
+			SELECT
+				a.urlno
+				, a.urltopno
+				, a.urllevel
+				, a.urlstep
+				, a.urlparentno
+				, a.urltitle
+				, (select count(*) from ZADMIN_URL b where (b.urlno=a.urlno or b.urlparentno=a.urlno) order by b.urlno) cnt
+			FROM ZADMIN_URL a
+			WHERE a.confirmyn = 1
+			ORDER BY urltopno, urlstep
+		]]>
+	</select>
+<!-- 
+				SELECT  a.emp_no,a.emp_nm,a.hq_nm,a.dept_nm,a.tel_offc,0 groupno,'' groupnm,b.no,1 as orderd FROM ZAUTH_EMP a
+				LEFT JOIN ZAUTH_ADMIN_URL b
+				ON a.emp_no = b.auth_no
+				WHERE b.urlno=#urlno#
+				UNION ALL
+ -->
+	<select id="authAdminList2" parameterClass="authAdminVo" resultClass="authEmp">
+		<![CDATA[
+			SELECT * FROM (
+
+				SELECT '' emp_no,'' emp_nm,'' hq_nm,'' dept_nm,'' tel_offc,a.groupno,a.groupnm,b.no,3 as orderd FROM ZAUTH_GROUP a
+				LEFT JOIN ZAUTH_ADMIN_URL b
+				ON a.groupno = b.groupno
+				WHERE b.urlno=#urlno#
+			)t
+			ORDER BY no,orderd
+		]]>
+	</select>
+
+	<select id="authUrlList" parameterClass="String" resultClass="Integer">
+		<![CDATA[
+			select urlno
+			from ZAUTH_ADMIN_URL
+			where auth_no = #auth_no#
+			or groupno in (
+				select groupno
+				from ZAUTH_GROUP_MEMBER
+				where auth_no = #auth_no#
+			)
+		]]>
+	</select>
+
+	<insert id="gAuthDefaultGroup" parameterClass="gAuth">
+		<![CDATA[
+		INSERT into ZAUTH_GROUP_MEMBER(
+				groupno,
+				auth_no,
+				userid,
+				datereg
+			)
+ 			VALUES(
+				#groupno#,
+				#auth_no#,
+				#userid#,
+				now()
+			)
+			ON DUPLICATE KEY
+			UPDATE
+				userid = #userid#,
+				datereg = now()
+		]]>
+
+		<!-- <![CDATA[
+			MERGE INTO ZAUTH_GROUP_MEMBER a
+			USING (
+				SELECT (SELECT no FROM ZAUTH_GROUP_MEMBER WHERE auth_no=#auth_no# AND groupno=#groupno#) no FROM db_root
+			) b
+			ON (a.no = b.no)
+			WHEN MATCHED THEN
+			UPDATE SET
+				a.groupno = #groupno#,
+				a.auth_no= #auth_no#,
+				a.userid = #userid#,
+				a.datereg = now()
+			WHEN NOT MATCHED THEN
+			INSERT
+			(
+				a.no,
+				a.groupno,
+				a.auth_no,
+				a.userid,
+				a.datereg
+			)
+			VALUES
+			(
+				ZAUTH_GROUP_MEMBER_SEQ.nextval,
+				#groupno#,
+				#auth_no#,
+				#userid#,
+				now()
+			)
+		]]> -->
+	</insert>
+
+	<select id="authMenuAllList" parameterClass="menuAuthVo" resultClass="menuAuthVo">
+		<![CDATA[
+			SELECT
+				urlno
+				, urltopno
+				, urllevel
+				, urlstep
+				, urlparentno
+				, urltitle
+				, urllink
+			FROM ZADMIN_URL
+			WHERE confirmyn = 1
+			AND VIEW_YN = 'Y'
+		 	ORDER BY urltopno, urlstep
+		]]>
+	</select>
+
+	<select id="authMenuList" parameterClass="menuAuthVo" resultClass="menuAuthVo">
+			SELECT
+				DISTINCT urlno
+				, urltopno
+				, urllevel
+				, urlstep
+				, urlparentno
+				, urltitle
+				, urllink
+			FROM (
+				SELECT
+					urlno
+					, urltopno
+					, urllevel
+					, urlstep
+					, urlparentno
+					, urltitle
+					, urllink
+				FROM ZADMIN_URL
+				WHERE confirmyn = 1
+				<!--CONNECT BY urlno=PRIOR urlparentno
+				START WITH urlno IN-->
+				AND urlno IN
+				(
+					select urlno
+					from ZAUTH_ADMIN_URL
+					where auth_no = #auth_no#
+					or groupno in (
+						select groupno
+						from ZAUTH_GROUP_MEMBER
+						where auth_no = #auth_no#
+					)
+				)
+			)t
+			ORDER BY t.urltopno,t.urlstep
+	</select>
+
+	<select id="authMenuListForInitCheck" parameterClass="menuAuthVo" resultClass="menuAuthVo">
+		<![CDATA[
+			SELECT
+			    distinct
+			    urlno
+			    , urltopno
+			    , urllevel
+			    , urlstep
+			    , urlparentno
+			    , urltitle
+			    , urllink
+			FROM ZADMIN_URL
+			WHERE confirmyn = 1
+			and urlno IN
+			(
+			    select urlno
+			    from ZAUTH_ADMIN_URL
+			    where auth_no = #auth_no#
+			    or groupno in (
+			        select groupno
+			        from ZAUTH_GROUP_MEMBER
+			        where auth_no = #auth_no#
+			    )
+			)
+			ORDER BY urltopno,urlstep
+		]]>
+	</select>
+
+
+	<select id="authMenuInfo" parameterClass="menuAuthVo" resultClass="menuAuthVo">
+		<![CDATA[
+			SELECT
+				urlno
+				, urltopno
+				, urllevel
+				, urlstep
+				, urlparentno
+				, urltitle
+				, urllink
+			FROM ZADMIN_URL
+			WHERE urllink = #urllink#
+		]]>
+	</select>
+
+	<select id="gAuthGroupCheck" parameterClass="gAuth" resultClass="int">
+		<![CDATA[
+			SELECT COUNT(*)
+			FROM ZAUTH_GROUP a
+			LEFT JOIN ZAUTH_GROUP_MEMBER b
+			ON a.groupno = b.groupno
+			WHERE b.auth_no = #auth_no#
+			AND b.groupno IN
+		]]>
+		<iterate property="arrFaqBestGroupNo" open="(" close=")" conjunction=",">
+			<![CDATA[#arrFaqBestGroupNo[]#]]>
+		</iterate>
+	</select>
+
+	<!-- <procedure id="adminUrlOrder" parameterClass="java.util.Map">
+		<![CDATA[ { call pro_url_order(#urlno#, #act#) } ]]>
+	</procedure> -->
+
+	<select id="adminUrlOrder1" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT urltopno, urllevel, urlstep, urlparentno
+			FROM ZADMIN_URL
+			WHERE urlno=#urlno#
+		]]>
+	</select>
+
+	<select id="adminUrlOrder2" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT IFNULL(MIN(urlstep), 0) urlstepmax1
+			FROM ZADMIN_URL
+			WHERE urltopno=#urltopno#
+			AND urlparentno=#urlparentno#
+			AND urllevel=#urllevel#
+			AND urlstep>#urlsteporg#
+		]]>
+	</select>
+
+	<select id="adminUrlOrder3" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT IFNULL(MIN(urlstep), 0) urlstepmax2
+			FROM ZADMIN_URL
+			WHERE urltopno=#urltopno#
+			AND urllevel=#urllevel#
+			AND urlstep>#urlstepmax1#
+		]]>
+	</select>
+
+	<select id="adminUrlOrder4" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT urlno
+			FROM ZADMIN_URL
+			WHERE urltopno=#urltopno#
+			AND urllevel>=#urllevel#
+			AND (urlstep>=#urlsteporg# AND urlstep<#urlstepmax1#)
+			order by urlstep
+		]]>
+	</select>
+
+	<select id="adminUrlOrder15" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT urlno
+			FROM ZADMIN_URL
+			WHERE urltopno=#urltopno#
+			AND urllevel>=#urllevel#
+			AND (urlstep>=#urlstepmax1# AND urlstep<#urlstepmax2#)
+			order by urlstep
+		]]>
+	</select>
+
+	<select id="adminUrlOrder5" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT urlno
+			FROM ZADMIN_URL
+			WHERE urltopno=#urltopno#
+			AND urllevel>=#urllevel#
+			AND urlstep>=#urlstepmax1#
+			order by urlstep
+		]]>
+	</select>
+
+	<update id="adminUrlOrder6" parameterClass="authAdminVo">
+		<![CDATA[
+			UPDATE ZADMIN_URL
+			SET urlstep=#step#
+			WHERE urlno=#mno#
+		]]>
+	</update>
+
+	<select id="adminUrlOrder7" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT IFNULL(MAX(urlstep), 0) urlstepmin1
+			FROM ZADMIN_URL
+			WHERE urltopno=#urltopno#
+			AND urlparentno=#urlparentno#
+			AND urllevel=#urllevel#
+			AND urlstep<#urlsteporg#
+		]]>
+	</select>
+
+	<select id="adminUrlOrder8" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT IFNULL(MIN(urlstep), 0) urlstepmin2
+			FROM ZADMIN_URL
+			WHERE urltopno=#urltopno#
+			AND urllevel=#urllevel#
+			AND urlstep>#urlsteporg#
+		]]>
+	</select>
+
+	<select id="adminUrlOrder9" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT urlno
+			FROM ZADMIN_URL
+			WHERE urltopno=#urltopno#
+			AND urllevel>=#urllevel#
+			AND (urlstep>=#urlstepmin1# AND urlstep<#urlsteporg#)
+			order by urlstep
+		]]>
+	</select>
+
+	<select id="adminUrlOrder16" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT urlno
+			FROM ZADMIN_URL
+			WHERE urltopno=#urltopno#
+			AND urllevel>=#urllevel#
+			AND (urlstep>=#urlsteporg# AND urlstep<#urlstepmin2#)
+			order by urlstep
+		]]>
+	</select>
+
+	<select id="adminUrlOrder10" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT urlno
+			FROM ZADMIN_URL
+			WHERE urltopno=#urltopno#
+			AND urllevel>=#urllevel#
+			AND urlstep>=#urlsteporg#
+			order by urlstep
+		]]>
+	</select>
+
+	<select id="adminUrlOrder11" parameterClass="authAdminVo" resultClass="authAdminVo">
+		<![CDATA[
+			SELECT IFNULL($type$(urlno), 0) urlnonew FROM ZADMIN_URL WHERE urlno$mark$#urlnoorg# AND urllevel=0 AND urlstep=0
+		]]>
+	</select>
+
+	<update id="adminUrlOrder12" parameterClass="authAdminVo">
+		<![CDATA[
+			UPDATE ZADMIN_URL SET urltopno=(power(10,10)-1) WHERE urltopno=#urlnoorg#
+		]]>
+	</update>
+
+	<update id="adminUrlOrder13" parameterClass="authAdminVo">
+		<![CDATA[
+			UPDATE ZADMIN_URL SET urltopno=#urlnoorg# WHERE urltopno=#urlnonew#
+		]]>
+	</update>
+
+	<update id="adminUrlOrder14" parameterClass="authAdminVo">
+		<![CDATA[
+			UPDATE ZADMIN_URL SET urltopno=#urlnonew# WHERE urltopno=(power(10,10)-1)
+		]]>
+	</update>
+
+	<delete id="delete" parameterClass="java.util.List">
+		        DELETE
+		    		FROM ZAUTH_EMP
+		  			where emp_id in
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+
+	</delete>
+
+	<insert id="insertEmp">
+		<![CDATA[
+ 			insert into ZAUTH_EMP(
+ 				emp_no,
+				emp_nm,
+				dept_nm,
+				emp_id,
+				holoff_cls
+ 			)  values(
+ 				#emp_no#
+ 				,#emp_nm#
+ 				,#dept_nm#
+ 				,#emp_id#
+ 				,0
+ 			)
+		]]>
+	</insert>
+
+	<select id="findOneUserOtpKey" parameterClass="String" resultClass="String">
+		<![CDATA[
+			SELECT	
+					otp_key
+			  FROM	user_otp
+			 WHERE	otp_user_id = #userId#
+		]]>
+	</select>
+	
+	<insert id="insertUserOtpKey" parameterClass="userOtpVo">
+		<selectKey resultClass="java.lang.Integer" keyProperty="otpSn">
+			<![CDATA[
+				SELECT IFNULL(MAX(otp_sn),0)+1 AS otpSn FROM user_otp
+			]]>
+		</selectKey>
+			
+		<![CDATA[
+ 			INSERT into user_otp(
+ 				otp_sn,
+				otp_user_id,
+				otp_key,
+				reg_date
+ 			)  VALUES(
+ 				#otpSn#,
+ 				#otpUserId#,
+ 				#otpKey#,
+ 				now()
+ 			)
+		]]>
+	</insert>
+	
+	<insert id="registrationFunctionInfo" parameterClass="functionPerMenuVo">
+		<![CDATA[
+			INSERT INTO w_function_per_menu
+			(
+					URLNO
+				,	FUNCTION_NAME
+				,	FUNCTION_TYPE
+				,	create_user
+				,	create_date
+			)	
+			VALUES
+			(
+					#URLNO#
+				,	#FUNCTION_NAME#
+				,	#FUNCTION_TYPE#
+				,	#create_user#
+				,	NOW()
+			)
+		
+		]]>
+		<selectKey keyProperty="NO" resultClass="Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>		
+	</insert>
+	
+	<select id="retrieveFunctionInfo" parameterClass="functionPerMenuVo" resultClass="functionPerMenuVo">
+		<![CDATA[
+			SELECT
+					NO
+				,	URLNO
+				,	FUNCTION_NAME
+				,	FUNCTION_TYPE
+				,	create_user
+				,	create_date
+				,	update_user
+				,	update_date
+				,	delete_user
+				,	delete_date
+				,	delete_yn
+			FROM	w_function_per_menu
+			WHERE
+					DELETE_YN = 'N'
+		]]>
+		<isNotEmpty property="URLNO">
+			<isNotEqual property="URLNO" compareValue="0">
+				AND URLNO = #URLNO#
+			</isNotEqual>
+		</isNotEmpty>
+	</select>
+
+	<update id="deleteFunctionInfo">
+		<![CDATA[
+			UPDATE 	w_function_per_menu 
+			SET 
+					DELETE_YN = 'Y'
+				,	DELETE_USER = #delete_user#
+				,	DELETE_DATE = NOW()
+			WHERE NO IN
+		]]>
+		<iterate property="delList" open="(" close=")" conjunction=",">
+			#delList[]#
+		</iterate>
+	</update>
+	
+	<update id="deleteFunctionInfoWithPermission">
+		<![CDATA[
+			UPDATE 	w_function_per_menu_permission_info 
+			SET 
+					DELETE_YN = 'Y'
+				,	DELETE_USER = #delete_user#
+				,	DELETE_DATE = NOW()
+			WHERE
+					URLNO = #URLNO#
+				AND	FUNCTIONNO IN
+		]]>
+		<iterate property="delList" open="(" close=")" conjunction=",">
+			#delList[]#
+		</iterate>
+	</update>
+	
+	<select id="retrieveGroupNoList" resultClass="int">
+		<![CDATA[
+			SELECT GROUPNO FROM zauth_group
+		]]>
+	</select>
+	
+	<insert id="registrationFunctionPerMenuPermission" parameterClass="java.util.ArrayList">
+		<![CDATA[ 
+			INSERT INTO w_function_per_menu_permission_info
+			(
+					URLNO
+				,	GROUPNO
+				,	FUNCTIONNO
+				,	create_user
+				,	create_date
+			)	
+			VALUES
+		]]>
+		<iterate conjunction=",">			
+			(
+					#[].URLNO#
+				,	#[].GROUPNO#
+				,	#[].FUNCTIONNO#
+				,	#[].create_user#
+				,	NOW()
+			)
+		</iterate>
+	</insert>
+	
+	<select id="retrievePermissionInfoList" parameterClass="authAdminVo" resultClass="functionPerMenuPermissionVo">
+		<![CDATA[ 	
+			SELECT
+					A.NO 
+				,	A.URLNO
+				,	A.GROUPNO
+				,	A.FUNCTIONNO
+				,	A.ALLOW_YN
+				,	B.FUNCTION_NAME
+			FROM
+				W_FUNCTION_PER_MENU_PERMISSION_INFO	A
+				JOIN
+				W_FUNCTION_PER_MENU					B
+				ON
+					A.FUNCTIONNO = B.NO
+				AND	A.DELETE_YN = 'N'
+				AND B.DELETE_YN = 'N'
+			WHERE 
+					A.URLNO =#urlno#
+			ORDER BY A.GROUPNO, A.FUNCTIONNO 
+		]]>
+	</select>
+	
+	<update id="updatePermissionAllowYN" parameterClass="functionPerMenuPermissionVo">
+		<![CDATA[
+			UPDATE W_FUNCTION_PER_MENU_PERMISSION_INFO
+				SET 	ALLOW_YN = #ALLOW_YN#
+					,	UPDATE_USER = #update_user#
+					,	UPDATE_DATE = NOW()
+			WHERE
+				NO = #NO#
+		]]>
+	</update>
+	
+	<select id="retrievePerList" parameterClass="functionPerMenuPermissionInfoListVo" resultClass="functionPerMenuPermissionInfoListVo">
+		<![CDATA[ 	
+			SELECT 
+					A.URLNO
+				,	B.GROUPNO 
+				,	B.FUNCTIONNO 
+				,	B.ALLOW_YN
+				,	C.FUNCTION_TYPE 
+				,	C.FUNCTION_NAME 
+			FROM 
+				ZADMIN_URL A
+				LEFT JOIN
+				W_FUNCTION_PER_MENU_PERMISSION_INFO B 
+				ON
+					A.URLNO  =  B.URLNO 
+				AND B.DELETE_YN = 'N'
+				JOIN
+				W_FUNCTION_PER_MENU C
+				ON
+					B.FUNCTIONNO  = C.NO
+				AND C.DELETE_YN  = 'N'
+			WHERE
+				UPPER(A.URLLINK) = UPPER(#URLLINK#)
+			AND B.GROUPNO =(
+								SELECT 
+									D.GROUPNO 
+								FROM 	
+								ZAUTH_GROUP_MEMBER D
+								JOIN
+								ZAUTH_EMP F
+								ON
+								F.EMP_ID = #USER_ID#
+								AND F.EMP_NO = D.AUTH_NO 
+							)
+		]]>
+	</select>
+	
+	<update id="updateMenuViewYN" parameterClass="authAdminVo">
+		<![CDATA[
+			UPDATE zadmin_url
+				SET VIEW_YN = #view_yn#
+			WHERE
+				URLNO = #urlno#
+		]]>
+	</update>
+	
+	<insert id="registrationFunctionPerMenuPermissionWhenAddGroupNo"  parameterClass="functionPerMenuPermissionVo" >
+		<![CDATA[ 
+			INSERT INTO w_function_per_menu_permission_info
+			(
+					URLNO
+				,	GROUPNO
+				,	FUNCTIONNO
+				,	create_user
+				,	create_date
+			)	
+			VALUES
+			(		#URLNO#
+				,	#GROUPNO#
+				,	#FUNCTIONNO#
+				,	#create_user#
+				,	NOW()
+			)
+		]]>
+	</insert>
+	
+	<select id="selectZauthAdminUrlByNo" parameterClass="Integer" resultClass="auth">
+		SELECT
+				URLNO
+			,	GROUPNO
+		FROM
+			zauth_admin_url
+		WHERE
+			NO = #no#
+	</select>
+	
+	<delete id="deleteZauthAdminUrlByUrlNoGrouNo" parameterClass="auth">
+		DELETE FROM w_function_per_menu_permission_info WHERE URLNO = #urlno# AND GROUPNO = #groupno#
+	</delete>
+	
+	
+	<select id="chargeList" parameterClass="zUserVo" resultClass="zUserVo">
+		<![CDATA[
+			select
+				  a.*
+				 ,@rownum:=@rownum+1 AS rownum
+			 from 
+				  zuser a,
+				  (SELECT @rownum:=0) TMP
+			where a.USERAUTH = '5'
+			]]>
+			<isNotEmpty prepend="AND" property="username">
+			<![CDATA[ a.USERNAME LIKE CONCAT('%',#username#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="userid">
+			<![CDATA[ a.USERID = #userid# ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="userdateregfrom">
+			<isNotEmpty property="userdateregto">
+			<![CDATA[ date_format(a.USERDATEREG, '%Y%m%d') between #userdateregfrom# and #userdateregto#]]>
+			</isNotEmpty>
+			</isNotEmpty>
+			<![CDATA[
+				  order by a.USERNO
+				  limit #m#, #n# 
+			]]>
+	</select>
+	
+	<select id="chargeListCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				  COUNT(*) AS total
+			 from 
+				  zuser a
+			where a.USERAUTH = '5'
+			]]>
+			<isNotEmpty prepend="AND" property="username">
+			<![CDATA[ a.USERNAME LIKE CONCAT('%',#username#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="userid">
+			<![CDATA[ a.USERID = #userid# ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="userdateregfrom">
+			<isNotEmpty property="userdateregto">
+			<![CDATA[ date_format(a.USERDATEREG, '%Y%m%d') between #userdateregfrom# and #userdateregto#]]>
+			</isNotEmpty>
+			</isNotEmpty>
+			
+	</select>
+	
+</sqlMap>

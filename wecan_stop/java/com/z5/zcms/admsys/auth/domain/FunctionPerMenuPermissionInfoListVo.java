@@ -1,0 +1,69 @@
+package com.z5.zcms.admsys.auth.domain;
+
+import java.io.Serializable;
+
+public class FunctionPerMenuPermissionInfoListVo implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1860524339833512813L;
+	String URLLINK = "";
+	String GROUPNO = "";
+	String FUNCTION_NAME = "";
+	String FUNCTION_TYPE = "";
+	String ALLOW_YN = "";
+	String userId = "";
+
+	public String getURLLINK() {
+		return URLLINK;
+	}
+
+	public void setURLLINK(String uRLLINK) {
+		URLLINK = uRLLINK;
+	}
+
+	public String getGROUPNO() {
+		return GROUPNO;
+	}
+
+	public void setGROUPNO(String gROUPNO) {
+		GROUPNO = gROUPNO;
+	}
+
+	public String getFUNCTION_NAME() {
+		return FUNCTION_NAME;
+	}
+
+	public void setFUNCTION_NAME(String fUNCTION_NAME) {
+		FUNCTION_NAME = fUNCTION_NAME;
+	}
+
+	public String getFUNCTION_TYPE() {
+		return FUNCTION_TYPE;
+	}
+
+	public void setFUNCTION_TYPE(String fUNCTION_TYPE) {
+		FUNCTION_TYPE = fUNCTION_TYPE;
+	}
+
+	public String getALLOW_YN() {
+		return ALLOW_YN;
+	}
+
+	public void setALLOW_YN(String aLLOW_YN) {
+		ALLOW_YN = aLLOW_YN;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+}

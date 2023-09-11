@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZFormMail">
+	<typeAlias alias="zFormMailVo" type="com.z5.zcms.admsys.module.domain.ZFormMailVo"/>
+	<resultMap id="zFormMailVo" class="com.z5.zcms.admsys.module.domain.ZFormMailVo"/>
+	
+	<insert id="ZFormMail.formMailWrite">
+		<![CDATA[
+			INSERT INTO ZFORMMAILCFG
+			(
+				
+				title,
+				skin,
+				target,
+				contstype,
+				conts,
+				required,
+				added,
+				memo,
+				datereg,
+				userid
+			)
+			VALUES
+			(
+				
+				#title#,
+				#skin#,
+				#target#,
+				#contstype#,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				#required#,
+				#added#,
+				#memo#,
+				now(),
+				#userid#
+			)
+		]]>
+	</insert>
+	
+	<select id="ZFormMail.list" resultClass="zFormMailVo">
+		<![CDATA[
+			SELECT
+				formmailno,
+				title,
+				sitetitle,
+				datereg,
+				skin
+			FROM 
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								a.*
+								,(SELECT GROUP_CONCAT(SITETITLE) FROM ZFORMMAILUSE where formmailno = a.formmailno) AS sitetitle
+								/*, get_sitetitle('ZFORMMAILUSE','formmailno', a.formmailno) as sitetitle*/
+							FROM
+								ZFORMMAILCFG a,   (SELECT @rownum := #m#) R
+							WHERE 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							ORDER BY formmailno DESC
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+							
+			]]> 
+	</select>
+	
+	<select id="ZFormMail.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				ZFORMMAILCFG
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# AND $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+	<select id="ZFormMail.getDetailInfo" resultClass="zFormMailVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				ZFORMMAILCFG
+			WHERE
+				formmailno=#formmailno#
+		]]>
+	</select>
+	
+	<delete id="ZFormMail.formMailDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZFORMMAILCFG
+			WHERE
+				formmailno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<delete id="ZFormMail.formMailUseDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZFORMMAILCFGUSE
+			WHERE
+				formmailno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<update id="ZFormMail.update">
+		<![CDATA[
+		UPDATE
+			ZFORMMAILCFG
+		SET
+			title=#title#,
+			skin=#skin#,
+			target=#target#,
+			contstype=#contstype#,
+			conts=
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+			required=#required#,
+			added=#added#,
+			memo=#memo#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#
+		WHERE
+			formmailno=#formmailno#
+		]]>
+	</update>
+
+</sqlMap>

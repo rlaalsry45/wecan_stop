@@ -1,0 +1,39 @@
+<%@ page contentType="text/html;charset=utf-8" %>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<script type="text/javascript">
+
+	$(document).ready(function () {
+		$("#reset_time").click(function()
+		{
+			SetTime = 3600;
+		});
+		
+		setInterval("msg_time()",1000);
+	});
+
+	function msg_time() {
+
+       	var msg = Math.floor(SetTime / 60) + "분 " + (SetTime % 60) + "초";
+       	$("#time").html(msg);
+
+       	SetTime--;
+       	
+       	if (SetTime < 0) {
+       		alert("장시간 미사용하여 로그아웃되었습니다.");
+       		document.location.href = "/login.html";	
+       	}
+    }
+
+</script>
+<div class="lnb">
+	<div class='subtitle'>
+	<ul class='sub1' style='display:none;'>
+		<li>이름:</li>
+		<li>직급:</li>
+		<li>최종접근 IP:</li>
+		<li>최종 로그인 일시:</li>
+		<li>현재 접속 IP:</li>
+		<li class="first">자동 로그 남은시간 <font id="time" color='red'>60분 0초</font> 남았습니다. <a href="#" id="reset_time">[연장]</a></li>
+	</ul>
+	</div>
+</div>

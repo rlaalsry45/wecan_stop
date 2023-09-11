@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="downloadLog">
+    <typeAlias alias="DownloadLogVo" type="com.z5.zcms.admsys.ftp.domain.DownloadLogVo" />
+	<resultMap id="DownloadLogVo" class="com.z5.zcms.admsys.ftp.domain.DownloadLogVo"/>
+
+    <select id="downloadLog.listCount" resultClass="java.lang.Integer">
+        <![CDATA[
+			select
+			count(*) as total
+			
+			from downloadlog
+			where 1=1
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<![CDATA[
+				date_format(regDt,'%Y%m%d') between #sdate# and #edate#
+        	]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="dataName">
+			<![CDATA[
+				dataName LIKE CONCAT('%',UPPER(#dataName#),'%')
+        	]]>
+        	</isNotEmpty>
+			<isNotEmpty prepend="AND" property="regName">
+			<![CDATA[
+				regId in (select userid from zuser where username LIKE CONCAT('%',UPPER(#regName#),'%'))
+        	]]>
+        	</isNotEmpty>
+
+    </select>
+
+    <select id="downloadLog.getList" parameterClass="DownloadLogVo" resultClass="DownloadLogVo">
+        <![CDATA[
+        
+			select
+            	no,
+				dataName, 
+				reason, 
+				regDt, 
+				regId,
+				(select username from zuser where userid = regId) AS regName		
+            from
+                downloadlog
+			where 1=1
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<![CDATA[
+				date_format(regDt,'%Y%m%d') between #sdate# and #edate#
+        	]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="dataName">
+			<![CDATA[
+				dataName LIKE CONCAT('%',UPPER(#dataName#),'%')
+        	]]>
+        	</isNotEmpty>
+			<isNotEmpty prepend="AND" property="regName">
+			<![CDATA[
+				regId in (select userid from zuser where username LIKE CONCAT('%',UPPER(#regName#),'%'))
+        	]]>
+        	</isNotEmpty>	        	        	     		          
+            
+			order by no desc
+            LIMIT #m#, #n#
+
+    </select>
+    
+	<insert id="downloadLog.actionRegistration" parameterClass="DownloadLogVo">
+    	<![CDATA[
+    	insert into downloadlog
+            (
+				dataName, 
+				reason, 
+				regDt, 
+				regId
+			)
+			values
+			(
+			#dataName#,
+			#reason#,
+			now(),
+			#regId#
+			)
+				                
+        ]]>
+    	
+    </insert>
+ 
+</sqlMap>

@@ -1,0 +1,1344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="FrontBoard">
+
+	<typeAlias alias="zBoardVo" type="com.z5.zcms.admsys.board.domain.ZBoardVo"/>
+	<resultMap id="zBoardVo" class="com.z5.zcms.admsys.board.domain.ZBoardVo"/>
+
+	<typeAlias alias="frontBoardVo" type="com.z5.zcms.admsys.board.domain.FrontBoardVo"/>
+	<resultMap id="frontBoardVo" class="com.z5.zcms.admsys.board.domain.FrontBoardVo"/>
+
+	<typeAlias alias="zCateVo" type="com.z5.zcms.admsys.board.domain.ZCateVo"/>
+	<resultMap id="zCateVo" class="com.z5.zcms.admsys.board.domain.ZCateVo"/>
+
+	<typeAlias alias="zFileVo" type="com.z5.zcms.admsys.board.domain.ZFileVo"/>
+	<resultMap id="zFileVo" class="com.z5.zcms.admsys.board.domain.ZFileVo"/>
+
+	<typeAlias alias="zBannedVo" type="com.z5.zcms.admsys.board.domain.ZBannedVo"/>
+	<resultMap id="zBannedVo" class="zBannedVo"/>
+
+	<select id="FrontBoard.config" parameterClass="zBoardVo" resultClass="zBoardVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				zboard
+			WHERE
+				boardno=#boardno#
+		]]>
+		<isNotEmpty prepend="AND" property="skin">
+		<![CDATA[
+			skin=#skin#
+		]]>
+		</isNotEmpty>
+	</select>
+
+	<select id="FrontBoard.getAllBoard" parameterClass="zBoardVo" resultClass="zBoardVo">
+		 SELECT
+               *
+           FROM
+               zboard
+           WHERE 1=1
+       <isNotEmpty prepend="AND" property="tblnames">
+            tblname not in
+            <iterate open="(" close=")" conjunction="," property="tblnames">
+				#tblnames[]#
+			</iterate>
+       	</isNotEmpty>   
+	</select>
+
+	<select id="FrontBoard.getBoardRow" parameterClass="frontBoardVo" resultClass="frontBoardVo">
+		<![CDATA[
+			select
+				a.*
+				,(select userid from $tblname$ where bbsno = a.bbsparentno ) as puserid
+			from
+				$tblname$ a
+			where
+				bbsno = #bbsno#
+		]]>
+	</select>
+
+	<select id="FrontBoard.listNotice" parameterClass="zBoardVo" resultClass="frontBoardVo">
+		<![CDATA[
+			SELECT
+				bbsno,
+				boardno,
+				/*CONCAT(bbstitle,(SELECT CASE COUNT(bbsno) WHEN 0 THEN '' ELSE '['||COUNT(bbsno)||']' END FROM $tblname$ WHERE bbsparentno=a.bbsno AND siteno=a.siteno AND bbstitle IS NULL))*/ bbstitle,
+				/*zcms_bbsconcat(,a.bbsno) fnos,*/
+				(SELECT count(fno) FROM ZBBSFILE WHERE bbsno=a.bbsno AND boardno=a.boardno) fnos,
+				bbscatenos,
+				userid,
+				bbsusername,
+				DATE_FORMAT(bbsdatereg,'%Y-%m-%d') bbsreg,
+				if(sdate <= date_format(now(), '%Y-%m-%d') && edate >= date_format(now(), '%Y-%m-%d') = 1, DATEDIFF(edate, date_format(now(), '%Y-%m-%d')) ,-1) as appYN,
+				bbsdatereg,
+				bbshit,
+				bbslevel,
+				bbsnotice,
+				bbssecret,
+				sdate,
+				edate,
+				bbsopen,
+				bbsclose,
+				place,
+				sponsor,
+				joinnum,
+				sdate,
+				edate,
+				bbsopen,
+				bbsclose,
+				place,
+				sponsor,
+				bbsconts,
+				goal,
+				bbsuseraddr,
+				bbsuserhomepage,
+				bbsusertel,
+				bbsusermobile,
+				bbsuseremail,
+				bbsip,
+				etc1,
+				etc2,
+				etc3,
+				etc4,
+				etc5,
+				etc6,
+				etc7,
+				etc8,
+				etc9,
+				etc10				
+			FROM
+				$tblname$ a
+			WHERE
+				bbsnotice = 1
+			and shw_yn=1
+			ORDER BY bbsno DESC
+		]]>
+	</select>
+
+	<select id="FrontBoard.noticeCount" parameterClass="zBoardVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				$tblname$
+			WHERE
+				bbsnotice = 1
+			and shw_yn=1
+		]]>
+	</select>
+
+	<select id="FrontBoard.listCount" parameterClass="zBoardVo" resultClass="java.lang.Integer">
+        <![CDATA[
+            SELECT
+                COUNT(*) AS total
+            FROM $tblname$
+            WHERE
+            bbstitle IS NOT NULL
+            and shw_yn=1
+        ]]>
+        <isNotEmpty property="adminid">
+            <![CDATA[
+            and userid= #adminid# and bbslevel=0
+        ]]>
+        </isNotEmpty>
+        <isEqual property="noticeyn" compareValue="1">
+            <![CDATA[
+            AND bbsnotice = 0
+        ]]>
+        </isEqual>
+        <isNotEmpty prepend="AND" property="cond1">
+            <![CDATA[
+            bbscatenos LIKE '$cond1$%'
+        ]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="cond2">
+            <isEqual property="cond2" compareValue="community">
+                <isNotEmpty property="keyword">
+                    <![CDATA[
+                    (
+                        replace(upper(bbstitle),' ','') LIKE CONCAT('%',replace(UPPER(#keyword#),' ',''),'%') OR
+                        replace(upper(bbsconts),' ','') LIKE CONCAT('%',replace(UPPER(#keyword#),' ',''),'%') OR
+                        replace(upper(bbsusername),' ','') LIKE CONCAT('%',replace(UPPER(#keyword#),' ',''),'%')
+                    )
+                ]]>
+                </isNotEmpty>
+            </isEqual>
+            <isNotEqual property="cond2" compareValue="community">
+                <![CDATA[
+               		replace(upper($cond2$),' ','') LIKE CONCAT('%',replace(UPPER(#keyword#),' ',''),'%')
+            	]]>
+            </isNotEqual>
+        </isNotEmpty>
+        <isEqual property="secretyn" compareValue="1">
+            <![CDATA[
+            	 or (bbssecret = 0 and bbslevel=0)
+        	]]>
+        </isEqual>
+        <isNotEmpty prepend="and" property="cateno">
+            <![CDATA[ bbscatenos = #cateno# ]]>
+        </isNotEmpty>
+    </select>
+
+	<select id="FrontBoard.list" parameterClass="zBoardVo" resultClass="frontBoardVo">
+		<![CDATA[
+			SELECT
+				c.*,
+				/*(SELECT count(*) FROM $tblname$ where shw_yn =1 START WITH bbsno= c.bbsno CONNECT BY PRIOR bbsno = bbsparentno and bbslevel=1) cnt,
+				zcms_bbsconcat(c.boardno,c.bbsno) fnos,*/
+				(SELECT count(fno) FROM ZBBSFILE WHERE bbsno=c.bbsno AND boardno=c.boardno) fnos,
+				DATE_FORMAT(c.bbsdatereg,'%Y-%m-%d') bbsreg,
+				if(c.sdate <= date_format(now(), '%Y-%m-%d') && c.edate >= date_format(now(), '%Y-%m-%d') = 1, DATEDIFF(c.edate, date_format(now(), '%Y-%m-%d')) ,-1) as appYN  
+			FROM
+			(SELECT
+				*
+			FROM
+				(
+					SELECT
+						row_.*,
+						@rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+						SELECT
+							bbsno,
+							bbsstep,
+							boardno,
+							bbstopno,
+							siteno,
+							/*CONCAT(bbstitle,(SELECT CASE COUNT(bbsno) WHEN 0 THEN '' ELSE '['||COUNT(bbsno)||']' END FROM $tblname$ WHERE bbsparentno=a.bbsno AND siteno=a.siteno AND bbstitle IS NULL))*/ bbstitle,
+							bbsconts,
+							bbscatenos,
+							userid,
+							bbsusername,
+							bbsdatereg,
+							bbshit,
+							bbslevel,
+							bbsnotice,
+							bbssecret,
+							joinnum,
+							sdate,
+							edate,
+							bbsopen,
+							bbsclose,
+							place,
+							sponsor,
+							goal,
+							bbsuseraddr,
+							bbsuserhomepage,
+							bbsusertel,
+							bbsusermobile,
+							bbsuseremail,
+							bbsip,
+							etc1,
+							etc2,
+							etc3,
+							etc4,
+							etc5,
+							etc6,
+							etc7,
+							etc8,
+							etc9,
+							etc10
+						FROM
+							$tblname$ a,   (SELECT @rownum := #m#) R
+						WHERE
+			bbstitle IS NOT NULL
+			and shw_yn=1
+		]]>
+		<isNotEmpty property="adminid">
+		<![CDATA[
+			and userid= #adminid# and bbslevel=0
+		]]>
+		</isNotEmpty>
+		<isEqual property="noticeyn" compareValue="1">
+            <![CDATA[
+            AND bbsnotice = 0
+        ]]>
+        </isEqual>
+        <isNotEmpty prepend="AND" property="cond1">
+            <![CDATA[
+            bbscatenos LIKE '$cond1$%'
+        ]]>
+        </isNotEmpty>
+         <isNotEmpty prepend="AND" property="cond2">
+            <isEqual property="cond2" compareValue="community">
+                <isNotEmpty property="keyword">
+                    <![CDATA[
+                    (
+                        replace(upper(bbstitle),' ','') LIKE CONCAT('%',replace(UPPER(#keyword#),' ',''),'%') OR
+                        replace(upper(bbsconts),' ','') LIKE CONCAT('%',replace(UPPER(#keyword#),' ',''),'%') OR
+                        replace(upper(bbsusername),' ','') LIKE CONCAT('%',replace(UPPER(#keyword#),' ',''),'%')
+                    )
+                ]]>
+                </isNotEmpty>
+            </isEqual>
+            <isNotEqual property="cond2" compareValue="community">
+                <![CDATA[
+                replace(upper($cond2$),' ','') LIKE CONCAT('%',replace(UPPER(#keyword#),' ',''),'%')
+            ]]>
+            </isNotEqual>
+        </isNotEmpty>
+        <isEqual property="secretyn" compareValue="1">
+            <![CDATA[
+            	or (bbssecret = 0 and bbslevel=0)
+        	]]>
+        </isEqual>
+      <isNotEmpty prepend="and" property="cateno">
+            <![CDATA[ bbscatenos = #cateno# ]]>
+        </isNotEmpty>
+
+		<![CDATA[
+					 	ORDER BY bbstopno DESC, bbsstep
+						) row_
+					WHERE @rownum < (#n#+#m#)
+					ORDER BY bbstopno DESC, bbsstep
+		            LIMIT #m#, #n#
+				)t
+
+			) c
+			ORDER BY bbstopno DESC, bbsstep
+		]]>
+	</select>
+
+	<select id="FrontBoard.cateListAll" parameterClass="zBoardVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZBBSCATE
+			WHERE
+				boardno = #boardno#
+			AND
+				cstatus = 1
+			AND
+				confirmyn = 1
+			ORDER BY
+				ctopno, cstep
+		]]>
+	</select>
+
+	<select id="FrontBoard.comment" parameterClass="frontBoardVo" resultClass="frontBoardVo">
+		<![CDATA[
+			SELECT
+				bbsno,
+				boardno,
+				bbstopno,
+				siteno,
+				bbsconts,
+				bbscatenos,
+				userid,
+				bbsusername,
+				bbsdatereg,
+				bbshit,
+				bbslevel,
+				bbsnotice,
+				bbssecret,
+				joinnum,
+				sdate,
+				edate,
+				bbsopen,
+				bbsclose,
+				place,
+				sponsor,
+				goal,
+				bbsuseraddr,
+				bbsuseremail,
+				bbsuserhomepage,
+				bbsusermobile,
+				etc1,
+				etc2,
+				etc3,
+				etc4,
+				etc5,
+				etc6,
+				etc7,
+				etc8,
+				etc9,
+				etc10
+			FROM
+				$tblname$
+			WHERE
+				bbstopno=#bbstopno#
+			AND
+				siteno=#siteno#
+			AND
+				bbsparentno=#bbsno#
+			AND
+				bbstitle IS NULL
+			ORDER BY
+				bbsstep DESC
+		]]>
+	</select>
+
+	<select id="FrontBoard.attaches" parameterClass="frontBoardVo" resultClass="zFileVo">
+		<![CDATA[
+			SELECT
+				ZBBSFILE.*
+				,LOWER(substr(fsave,instr(fsave,'.')+1,length(fsave))) AS bbsfileicon
+			FROM
+				ZBBSFILE
+			WHERE
+				bbsno=#bbsno#
+			AND
+				boardno=#boardno#
+		]]>
+	</select>
+
+	<select id="FrontBoard.bandWord" resultClass="zBannedVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				zbanned
+			WHERE
+				bannedno=1
+		]]>
+	</select>
+
+	<!-- <procedure id="FrontBoard.writeComment" parameterClass="frontBoardVo">
+		{call pro_comment_insert(#bbsno#,#siteno#,#tblname#,#userid#,#boardno#,#bbspasswd#,#bbsip#,#bbsconts#,#bbscatenos#,#bbssecret#)}
+	</procedure> -->
+
+
+
+
+	<select id="writeComment1" parameterClass="frontBoardVo" resultClass="frontBoardVo">
+		<![CDATA[ SELECT bbslevel+1 as bbslevel, bbstopno, bbsstep FROM $tblname$ WHERE bbsno=#bbsno# ]]>
+	</select>
+
+	<select id="writeComment2" parameterClass="frontBoardVo" resultClass="frontBoardVo">
+		<![CDATA[ SELECT MAX(bbsstep)+1 as bbsstep FROM $tblname$ START WITH bbsno=#bbsno# CONNECT BY PRIOR bbsno = bbsparentno ]]>
+	</select>
+
+	<update id="writeComment3">
+		<![CDATA[ UPDATE $tblname$ SET bbsstep = bbsstep + 1 WHERE bbstopno=#bbstopno# AND bbsstep>=#bbsstep# ]]>
+	</update>
+
+	<insert id="writeComment4">
+		<![CDATA[
+
+		INSERT INTO $tblname$
+		 (
+		 bbstopno,
+		 bbslevel,
+		 bbsstep,
+		 bbsparentno,
+		 userid,
+		 bbsdatereg,
+		 siteno,
+		 boardno,
+		 bbsip,
+		 bbsconts,
+		 bbscatenos,
+		 bbssecret,
+		 etc1,
+		 etc6
+		 )
+		 VALUES
+		 (
+		 #bbstopno#,
+		 #bbslevel#,
+		 #bbsstep#,
+		 #bbsno#,
+		 #userid#,
+		 date_format(now(),'%Y%m%d%H%i%s'),
+		 #siteno#,
+		 #boardno#,
+		 #bbsip#,
+		 #bbsconts#,
+		 #bbscatenos#,
+		 #bbssecret#,
+		 #etc6#,
+		 'I')
+
+		 ]]>
+	</insert>
+
+	<select id="FrontBoard.secrect" parameterClass="frontBoardVo" resultClass="frontBoardVo">
+		<![CDATA[
+			SELECT
+				bbssecret,
+				userid
+			FROM
+				$tblname$
+			WHERE
+				bbsno=#bbsno#
+			AND
+				siteno=#siteno#
+		]]>
+	</select>
+
+	<delete id="FrontBoard.deleteComment" parameterClass="frontBoardVo">
+		<![CDATA[
+			DELETE FROM
+				$tblname$
+			WHERE
+				bbsno=#bbsno#
+			AND
+				siteno=#siteno#
+		]]>
+	</delete>
+
+	<select id="FrontBoard.pwComment" parameterClass="frontBoardVo" resultClass="frontBoardVo">
+		<![CDATA[
+			SELECT
+				bbsconts
+			FROM
+				$tblname$
+			WHERE
+				bbsno=#bbsno#
+			AND
+				siteno=#siteno#
+		]]>
+		<isNotNull prepend="AND" property="bbspasswd">
+			<![CDATA[
+				bbspasswd=#bbspasswd#
+			]]>
+		</isNotNull>
+	</select>
+
+	<select id="FrontBoard.cateTopList" parameterClass="zBoardVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT
+				cno,
+				cname
+			FROM
+				ZBBSCATE
+			WHERE
+				boardno = #boardno#
+			AND
+				cstatus = '1'
+			AND
+				confirmyn = 1
+			AND
+				clevel = 0
+			ORDER BY
+				ctopno, cstep
+		]]>
+	</select>
+
+	<select id="FrontBoard.cateSubList" parameterClass="frontBoardVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT
+				cno,
+				cname
+			FROM
+				ZBBSCATE
+			WHERE
+				boardno = #boardno#
+			AND
+				cstatus = 1
+			AND
+				confirmyn = 1
+			AND
+				cparentno = #cno#
+			AND
+				clevel = (SELECT clevel+1 FROM ZBBSCATE a WHERE a.cno = #cno#)
+			ORDER BY
+				ctopno,cstep
+		]]>
+	</select>
+
+	<select id="FrontBoard.cateDepth" parameterClass="zBoardVo" resultClass="int">
+		<![CDATA[
+			SELECT
+				IFNULL(MAX(clevel),0)
+			FROM
+				ZBBSCATE
+			WHERE
+				boardno = #boardno#
+		]]>
+	</select>
+
+	<select id="FrontBoard.cateList" parameterClass="frontBoardVo" resultClass="zCateVo">
+		<![CDATA[
+			SELECT
+				cname
+			FROM
+				ZBBSCATE
+			WHERE
+				boardno = #boardno#
+			AND
+				cno IN ($bbscatenos$)
+			AND
+				confirmyn = 1
+		]]>
+	</select>
+
+	<parameterMap id="frontW" class="com.z5.zcms.admsys.board.domain.FrontBoardVo" >
+		<parameter property="act" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="siteno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="boardno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="tblname" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="userid" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbspasswd" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsip" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbstitle" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsconts" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbscontstype" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbscatenos" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsnotice" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbssecret" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsusername" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsuseremail" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsuserhomepage" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsusertel" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsusermobile" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsuseraddr" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsfile" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="falts" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="fnos" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="sponsor" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="place" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="joinnum" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="sdate" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="edate" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="goal" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="approval" jdbcType="VARCHAR" javaType="java.lang.String"  mode="IN"/>
+		<parameter property="adminyn" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsopen" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbsclose" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="maxno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+	</parameterMap>
+
+	<procedure id="FrontBoard.saveBoard" parameterMap="frontW">
+		<![CDATA[{call pro_board_save(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}]]>
+	</procedure>
+
+	<parameterMap id="frontV" class="java.util.HashMap" >
+		<parameter property="bbsno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="siteno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="tblname" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbscatenos" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="keyword" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="cond2" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="bbshit" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="isadmin" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="result" jdbcType="ORACLECURSOR" javaType="java.sql.ResultSet" mode="OUT"/>
+	</parameterMap>
+	<resultMap id="frontR" class="com.z5.zcms.admsys.board.domain.FrontBoardVo">
+		<result property="bbsno" column="BBSNO"/>
+		<result property="siteno" column="SITENO"/>
+		<result property="boardno" column="BOARDNO"/>
+		<result property="bbstopno" column="BBSTOPNO"/>
+		<result property="bbslevel" column="BBSLEVEL"/>
+		<result property="bbsstep" column="BBSSTEP"/>
+		<result property="bbsparentno" column="BBSPARENTNO"/>
+		<result property="userid" column="USERID"/>
+		<result property="bbspasswd" column="BBSPASSWD"/>
+		<result property="bbsip" column="BBSIP"/>
+		<result property="bbshit" column="BBSHIT"/>
+		<result property="bbstitle" column="BBSTITLE"/>
+		<result property="bbsconts" column="BBSCONTS"/>
+		<result property="bbscontstype" column="BBSCONTSTYPE"/>
+		<result property="bbscatenos" column="BBSCATENOS"/>
+		<result property="bbsnotice" column="BBSNOTICE"/>
+		<result property="bbssecret" column="BBSSECRET"/>
+		<result property="bbsdatereg" column="BBSDATEREG"/>
+		<result property="bbsdatemod" column="BBSDATEMOD"/>
+		<result property="bbsusername" column="BBSUSERNAME"/>
+		<result property="bbsuseremail" column="BBSUSEREMAIL"/>
+		<result property="bbsuserhomepage" column="BBSUSERHOMEPAGE"/>
+		<result property="bbsusertel" column="BBSUSERTEL"/>
+		<result property="bbsusermobile" column="BBSUSERMOBILE"/>
+		<result property="bbsuseraddr" column="BBSUSERADDR"/>
+		<result property="sponsor" column="SPONSOR"/>
+		<result property="place" column="PLACE"/>
+		<result property="joinnum" column="JOINNUM"/>
+		<result property="sdate" column="SDATE"/>
+		<result property="edate" column="EDATE"/>
+		<result property="goal" column="GOAL"/>
+		<result property="approval" column="APPROVAL"/>
+		<result property="bbsopen" column="BBSOPEN"/>
+		<result property="bbsclose" column="BBSCLOSE"/>
+		<result property="prevno" column="PREVNO"/>
+		<result property="nextno" column="NEXTNO"/>
+		<result property="prevtitle" column="PREVTITLE"/>
+		<result property="nexttitle" column="NEXTTITLE"/>
+		<result property="cnt" column="CNT"/>
+		<result property="puserid" column="PUSERID"/>
+		<result property="shw_yn" column="SHW_YN"/>
+
+	</resultMap>
+
+	<!-- <procedure id="FrontBoard.view" parameterMap="frontV" resultMap="frontR">
+		<![CDATA[{call pro_board_view(?,?,?,?,?,?,?,?,?)}]]>
+	</procedure> -->
+
+	<select id="FrontBoard.view" parameterClass="frontBoardVo" resultClass="frontBoardVo" remapResults="true">
+		<![CDATA[
+			SELECT
+				a.bbsno,
+				a.boardno,
+				a.bbstopno,
+				a.siteno,
+				a.bbstitle,
+				a.bbsconts,
+				a.bbscatenos,
+				a.userid,
+				a.bbsusername,
+				a.bbsdatereg,
+				a.bbshit,
+				a.bbslevel,
+				a.bbsnotice,
+				a.bbssecret,
+				a.joinnum,
+				a.sdate,
+				a.edate,
+				a.bbsopen,
+				a.bbsclose,
+				a.place,
+				a.sponsor,
+				a.goal,
+				a.bbsuseraddr,
+				a.bbsuseremail,
+				a.bbsuserhomepage,
+				a.bbsusermobile,
+				a.etc1,
+				a.etc2,
+				a.etc3,
+				a.etc4,
+				a.etc5,
+				a.etc6,
+				a.etc7,
+				a.etc8,
+				a.etc9,
+				a.etc10,
+				IFNULL(a.p,0) as prevno,
+				IFNULL(a.n,0) as nextno,
+				(select bbstitle from $tblname$ where bbsno=a.p) as prevtitle,
+				(select bbstitle from $tblname$ where bbsno=a.n) as nexttitle
+			FROM (SELECT *,
+						(SELECT bbsno FROM $tblname$ WHERE bbsno < #bbsno#  
+		]]>
+		<isNotEmpty property="adminid">
+            <![CDATA[
+            				and userid=#adminid# and bbslevel=0
+        	]]>
+        </isNotEmpty>
+        <isEqual property="secretyn" compareValue="1">
+            <![CDATA[
+            				or (bbssecret = 0 and bbslevel=0)
+       	]]>
+        </isEqual>	
+		<![CDATA[
+							ORDER BY bbsno DESC LIMIT 1) as p,			
+		]]>				
+		<![CDATA[
+     					(SELECT bbsno FROM $tblname$ WHERE bbsno > #bbsno#
+ 		]]>				
+		<isNotEmpty property="adminid">
+            <![CDATA[
+            				and userid= #adminid# and bbslevel=0
+        	]]>
+        </isNotEmpty>
+        <isEqual property="secretyn" compareValue="1">
+            <![CDATA[
+            				or (bbssecret = 0 and bbslevel=0)
+        	]]>
+        </isEqual>	
+     	 <![CDATA[				
+     						ORDER BY bbsno LIMIT 1) as n
+        ]]>     						
+     	 <![CDATA[				
+				FROM $tblname$
+				WHERE bbstitle IS NOT NULL
+		]]>
+			<isNotEmpty prepend="and" property="bbscatenos">
+				<![CDATA[ bbscatenos LIKE '$bbscatenos$%']]>
+			</isNotEmpty>
+			<isNotEmpty property="keyword">
+				<isNotEmpty property="cond2">
+					<isEqual prepend="and" property="cond2" compareValue="bbstitlecont">
+						<![CDATA[ (bbstitle LIKE '%$keyword$%' OR bbsconts LIKE '%$keyword$%']]>
+					</isEqual>
+					<isNotEqual prepend="and" property="cond2" compareValue="bbstitlecont">
+						<isEqual property="cond2" compareValue="community">
+							<![CDATA[
+								(
+									bbstitle LIKE '%$keyword$%' OR
+									bbsconts LIKE '%$keyword$%' OR
+									bbsusername LIKE '%$keyword$%'
+								)
+							]]>
+						</isEqual>
+						<isNotEqual property="cond2" compareValue="community">
+							<![CDATA[ $cond2$ LIKE '%$keyword$%']]>
+						</isNotEqual>
+					</isNotEqual>
+				</isNotEmpty>
+			</isNotEmpty>
+			<isNotEqual property="isadmin" compareValue="1">
+				and shw_yn=1
+			</isNotEqual>
+		<![CDATA[
+			) a
+			WHERE a.bbsno=#bbsno#
+		 ]]>
+	</select>
+
+	<select id="FrontBoard.view2" parameterClass="java.util.HashMap" resultClass="frontBoardVo">
+		<![CDATA[
+			SELECT $tblname$.*
+			, #prevno# as prevno
+			, #nextno# as nextno
+			, #prevtitle# as prevtitle
+			, #nexttitle# as nexttitle
+			, (SELECT count(*) FROM $tblname$ where shw_yn =1 START WITH bbsno=#bbsno# CONNECT BY PRIOR bbsno = bbsparentno and bbslevel=1) cnt
+			, (select userid from $tblname$ where bbsno=(select bbsparentno from $tblname$ where bbsno=#bbsno#)) puserid
+			FROM $tblname$ WHERE bbsno=#bbsno#
+		]]>
+	</select>
+
+	<update id="FrontBoard.updatehit" parameterClass="frontBoardVo">
+		<![CDATA[
+		UPDATE $tblname$
+		SET bbshit = bbshit + 1
+		WHERE bbsno = #bbsno# ]]>
+	</update>
+
+	<update id="FrontBoard.updateEtc" parameterClass="frontBoardVo">
+		<![CDATA[
+		UPDATE $tblname$
+		SET $cond1$ = IFNULL($cond1$, 0) + 1
+		WHERE bbsno = #bbsno# ]]>
+	</update>
+
+
+	<parameterMap id="frontA" class="java.util.HashMap" >
+		<parameter property="fno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="result" jdbcType="ORACLECURSOR" javaType="java.sql.ResultSet" mode="OUT"/>
+	</parameterMap>
+
+	<resultMap id="frontAR" class="com.z5.zcms.admsys.board.domain.ZFileVo">
+		<result property="fno" column="FNO"/>
+		<result property="forg" column="FORG"/>
+		<result property="fsave" column="FSAVE"/>
+		<result property="fhit" column="FHIT"/>
+		<result property="datereg" column="DATEREG"/>
+		<result property="falt" column="FALT"/>
+		<result property="ftype" column="FTYPE"/>
+		<result property="bbsno" column="BBSNO"/>
+		<result property="boardno" column="BOARDNO"/>
+	</resultMap>
+
+	<!-- <procedure id="FrontBoard.attach" parameterMap="frontA" resultMap="frontAR">
+		<![CDATA[{call pro_board_attach(?,?)}]]>
+	</procedure> -->
+
+	<update id="FrontBoard.attach1">
+		<![CDATA[
+			UPDATE ZBBSFILE SET fhit=fhit+1 WHERE fno=#fno#
+		]]>
+	</update>
+
+	<select id="FrontBoard.attach2" parameterClass="frontBoardVo" resultClass="zFileVo">
+		<![CDATA[
+			SELECT * FROM ZBBSFILE WHERE fno=#fno#
+		]]>
+	</select>
+
+	<parameterMap id="frontDA" class="com.z5.zcms.admsys.board.domain.FrontBoardVo" >
+		<parameter property="fno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="fsave" jdbcType="VARCHAR" javaType="java.lang.String" mode="OUT"/>
+	</parameterMap>
+
+	<!-- <procedure id="FrontBoard.deleteAttach" parameterMap="frontDA">
+		<![CDATA[{call pro_board_deleteAttach(?,?)}]]>
+	</procedure> -->
+
+	<delete id="FrontBoard.deleteAttach" parameterClass="frontBoardVo">
+		<![CDATA[ DELETE FROM ZBBSFILE WHERE fno=#fno# ]]>
+	</delete>
+
+
+	<parameterMap id="frontD" class="java.util.HashMap" >
+		<parameter property="bbsno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="bbsnos" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="boardno" jdbcType="INTEGER" javaType="java.lang.Integer" mode="IN"/>
+		<parameter property="tblname" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="result" jdbcType="ORACLECURSOR" javaType="java.sql.ResultSet" mode="OUT"/>
+	</parameterMap>
+
+	<resultMap id="frontDR" class="com.z5.zcms.admsys.board.domain.ZFileVo">
+		<result property="fsave" column="FSAVE"/>
+	</resultMap>
+
+	<procedure id="FrontBoard.delete" parameterMap="frontD" resultMap="frontDR">
+		<![CDATA[{call pro_board_delete(?,?,?,?,?)}]]>
+	</procedure>
+
+	<!-- 프로시져를 걷어내는 작업 9i 대응 -->
+	<insert id="FrontBoard.insertBbs">
+		<![CDATA[
+			INSERT INTO $tblname$
+			(
+			 siteno
+			 ,boardno
+			 ,userid
+			 ,bbspasswd
+			 ,bbsip
+			 ,bbstitle
+			 ,bbsconts
+			 ,bbscontstype
+			 ,bbscatenos
+			 ,bbsnotice
+			 ,bbssecret
+			 ,bbsdatereg
+			 ,bbsusername
+			 ,bbsuseremail
+			 ,bbsuserhomepage
+			 ,bbsusertel
+			 ,bbsusermobile
+			 ,bbsuseraddr
+			 ,sponsor
+			 ,place
+			 ,joinnum
+			 ,sdate
+			 ,edate
+			 ,goal
+			 ,approval
+			 ,bbsopen
+			 ,bbsclose
+			 ,etc1
+			 ,etc2
+			 ,etc3
+			 ,etc4
+			 ,etc5
+			 ,etc6
+			 ,etc7
+			 ,etc8
+			 ,etc9
+			 ,etc10
+			 )
+			 VALUES(
+			 #siteno#
+			 ,#boardno#
+			 ,#userid#
+			 ,#bbspasswd#
+			 ,#bbsip#
+			 ,#bbstitle#
+			 ,#bbsconts#
+			 ,IFNULL(#bbscontstype#,'1')
+			 ,#bbscatenos#
+			 ,IFNULL(#bbsnotice#,'0')
+			 ,IFNULL(#bbssecret#,'0')
+			 ,date_format(now(),'%Y%m%d%H%i%s')
+			 ,#bbsusername#
+			 ,#bbsuseremail#
+			 ,#bbsuserhomepage#
+			 ,#bbsusertel#
+			 ,#bbsusermobile#
+			 ,#bbsuseraddr#
+			 ,#sponsor#
+			 ,#place#
+			 ,#joinnum#
+			 ,#sdate#
+			 ,#edate#
+			 ,#goal#
+			 ,IFNULL(#approval#,'0')
+			 ,IFNULL(#bbsopen#,'1')
+			 ,IFNULL(#bbsclose#,'0')
+			 ,#etc1#
+			 ,#etc2#
+			 ,#etc3#
+			 ,#etc4#
+			 ,#etc5#
+			 ,'I' /*액션 설정 i:인서트, u:업데이트,d:delete*/
+			 ,#etc7#
+			 ,#etc8#
+			 ,#etc9#
+			 ,#etc10#
+			 )
+		]]>
+		<selectKey resultClass="java.lang.Integer" keyProperty="bbsno">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="FrontBoard.selectBbsno" parameterClass="java.lang.String" resultClass="java.lang.Integer" remapResults="true">
+		<![CDATA[
+			SELECT $seqname$ FROM db_root
+		]]>
+	</select>
+	<update id="FrontBoard.updateBbstopno">
+		<![CDATA[
+			UPDATE $tblname$ SET bbstopno = #bbsno#  WHERE bbstopno=0
+		]]>
+	</update>
+	<insert id="FrontBoard.insertBbsFile">
+		<![CDATA[
+			INSERT INTO ZBBSFILE
+			(
+			   forg
+		       ,fsave
+		       ,fhit
+		       ,datereg
+		       ,falt
+		       ,ftype
+		       ,bbsno
+		       ,boardno
+			 ) VALUES
+			 (
+			   #forg#
+		       ,#fsave#
+		       ,#fhit#
+		       ,date_format(now(),'%Y%m%d%H%i%s')
+		       ,#falt#
+		       ,#ftype#
+		       ,#bbsno#
+		       ,#boardno#
+			)
+		]]>
+	</insert>
+	<update id="FrontBoard.updateBbs">
+		<!-- 관리자의 글 허락이 필요하지 않기 때문에 주석처리 -->
+		<!-- <isEqual property="adminyn" compareValue="0"> -->
+			<![CDATA[
+					UPDATE $tblname$ SET
+					 bbspasswd=#bbspasswd#
+					,bbsip=#bbsip#
+					,bbstitle=#bbstitle#
+					,bbsconts=#bbsconts#
+					,bbscontstype=IFNULL(#bbscontstype#,'1')
+					,bbscatenos=#bbscatenos#
+					,bbsnotice=IFNULL(#bbsnotice#,'0')
+					,bbssecret=IFNULL(#bbssecret#,'0')
+					,bbsdatemod=date_format(now(),'%Y%m%d%H%i%s')
+					,bbsusername=#bbsusername#
+					,bbsuseremail=#bbsuseremail#
+					,bbsuserhomepage=#bbsuserhomepage#
+					,bbsusertel=#bbsusertel#
+					,bbsusermobile=#bbsusermobile#
+					,bbsuseraddr=#bbsuseraddr#
+					,sponsor=#sponsor#
+					,place=#place#
+					,joinnum=#joinnum#
+					,sdate=#sdate#
+					,edate=#edate#
+					,goal=#goal#
+					,approval=IFNULL(#approval#,'0')
+					,bbsopen=IFNULL(#bbsopen#,'1')
+					,bbsclose=IFNULL(#bbsclose#,'0')
+			]]>
+			<isNotEmpty prepend="," property="etc1">etc1=#etc1#</isNotEmpty>
+			<isNotEmpty prepend="," property="etc2">etc2=#etc2#</isNotEmpty>
+			<isNotEmpty prepend="," property="etc3">etc3=#etc3#</isNotEmpty>
+			<isNotEmpty prepend="," property="etc4">etc4=#etc4#</isNotEmpty>
+			<isNotEmpty prepend="," property="etc5">etc5=#etc5#</isNotEmpty>
+			<isNotEmpty prepend="," property="etc6">etc6=#etc6#</isNotEmpty>/*액션 설정 i:인서트, u:업데이트,d:delete*/
+			<isNotEmpty prepend="," property="etc7">etc7=#etc7#</isNotEmpty>
+			<isNotEmpty prepend="," property="etc8">etc8=#etc8#</isNotEmpty>
+			<isNotEmpty prepend="," property="etc9">etc9=#etc9#</isNotEmpty>
+			<isNotEmpty prepend="," property="etc10">etc10=#etc10#</isNotEmpty>
+			<![CDATA[
+					WHERE bbsno=#bbsno#
+			]]>
+		<!-- </isEqual>
+		<isNotEqual property="adminyn" compareValue="0">
+			<![CDATA[
+					UPDATE $tblname$ SET
+					bbspasswd=#bbspasswd#
+					,bbsip=#bbsip#
+					,bbstitle=#bbstitle#
+					,bbsconts=#bbsconts#
+					,bbscontstype=IFNULL(#bbscontstype#,'1')
+					,bbscatenos=#bbscatenos#
+					,bbsnotice=IFNULL(#bbsnotice#,'0')
+					,bbssecret=IFNULL(#bbssecret#,'0')
+					,bbsdatemod=date_format(now(),'%Y%m%d%H%i%s')
+					,bbsuseremail=#bbsuseremail#
+					,bbsuserhomepage=#bbsuserhomepage#
+					,bbsusertel=#bbsusertel#
+					,bbsusermobile=#bbsusermobile#
+					,bbsuseraddr=#bbsuseraddr#
+					,sponsor=#sponsor#
+					,place=#place#
+					,joinnum=#joinnum#
+					,sdate=#sdate#
+					,edate=#edate#
+					,goal=#goal#
+					,approval=IFNULL(#approval#,'0')
+					,bbsopen=IFNULL(#bbsopen#,'0')
+					,bbsclose=IFNULL(#bbsclose#,'1')
+					WHERE bbsno=#bbsno#
+			]]>
+		</isNotEqual>-->
+	</update>
+	<update id="FrontBoard.updateBbsFile">
+		<![CDATA[
+				UPDATE $tblname$ SET
+				 bbspasswd=#bbspasswd#
+				,bbsip=#bbsip#
+				,bbstitle=#bbstitle#
+				,bbsconts=#bbsconts#
+				,bbscontstype=IFNULL(#bbscontstype#,'1')
+				,bbscatenos=#bbscatenos#
+				,bbsnotice=IFNULL(#bbsnotice#,'0')
+				,bbssecret=IFNULL(#bbssecret#,'0')
+				,bbsdatemod=date_format(now(),'%Y%m%d%H%i%s')
+				,bbsusername=#bbsusername#
+				,bbsuseremail=#bbsuseremail#
+				,bbsuserhomepage=#bbsuserhomepage#
+				,bbsusertel=#bbsusertel#
+				,bbsusermobile=#bbsusermobile#
+				,bbsuseraddr=#bbsuseraddr#
+				,sponsor=#sponsor#
+				,place=#place#
+				,joinnum=#joinnum#
+				,sdate=#sdate#
+				,edate=#edate#
+				,goal=#goal#
+				,approval=IFNULL(#approval#,'0')
+				,bbsopen=IFNULL(#bbsopen#,'1')
+				,bbsclose=IFNULL(#bbsclose#,'0')
+				WHERE bbsno=#bbsno#
+		]]>
+	</update>
+	<select id="FrontBoard.getBbsparentVO" parameterClass="frontBoardVo" resultClass="frontBoardVo">
+		<![CDATA[
+			SELECT bbslevel+1 as bbslevel, bbstopno, bbsstep FROM $tblname$ WHERE bbsno=#bbsno#
+		]]>
+	</select>
+	<select id="FrontBoard.getMaxBbsStep" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT MAX(bbsstep)+1 as bbsstep FROM $tblname$ START WITH bbsno=#bbsno# CONNECT BY PRIOR bbsno = bbsparentno
+		]]>
+	</select>
+	<update id="FrontBoard.updateBbsstep">
+		<![CDATA[
+			UPDATE $tblname$ SET bbsstep = bbsstep + 1 WHERE bbstopno=#bbstopno# AND bbsstep>=#bbsstep#
+		]]>
+	</update>
+	<insert id="FrontBoard.insertBbsReply">
+		<![CDATA[
+			INSERT INTO $tblname$
+			(
+				 bbstopno
+				,bbslevel
+				,bbsstep
+				,bbsparentno
+				,siteno
+				,boardno
+				,userid
+				,bbspasswd
+				,bbsip
+				,bbstitle
+				,bbsconts
+				,bbscontstype
+				,bbscatenos
+				,bbsnotice
+				,bbssecret
+				,bbsdatereg
+				,bbsusername
+				,bbsuseremail
+				,bbsuserhomepage
+				,bbsusertel
+				,bbsusermobile
+				,bbsuseraddr
+				,sponsor
+				,place
+				,joinnum
+				,sdate
+				,edate
+				,goal
+				,approval
+				,bbsopen
+				,bbsclose
+			) VALUES(
+				 #bbstopno#
+				,#bbslevel#
+				,#bbsstep#
+				,#bbsno#
+				,#siteno#
+				,#boardno#
+				,#userid#
+				,#bbspasswd#
+				,#bbsip#
+				,#bbstitle#
+				,#bbsconts#
+				,IFNULL(#bbscontstype#,'0')
+				,#bbscatenos#
+				,IFNULL(#bbsnotice#,'0')
+				,IFNULL(#bbssecret#,'0')
+				,#bbsusername#
+				,#bbsuseremail#
+				,#bbsuserhomepage#
+				,#bbsusertel#
+				,#bbsusermobile#
+				,#bbsuseraddr#
+				,#sponsor#
+				,#place#
+				,#joinnum#
+				,#sdate#
+				,#edate#
+				,#goal#
+				,IFNULL(#approval#,'0')
+				,IFNULL(#bbsopen#,'1')
+				,IFNULL(#bbsclose#,'0')
+			)
+		]]>
+	</insert>
+	<select id="FrontBoard.selectFileList" parameterClass="frontBoardVo" resultClass="zFileVo">
+		<![CDATA[
+			SELECT *
+			FROM ZBBSFILE
+			WHERE boardno=#boardno#
+			  AND bbsno IN (SELECT bbsno
+			  				FROM $tblname$
+			  				where (bbsno=#bbsno# or bbsno = bbsparentno)
+			  				)
+		]]>
+	</select>
+
+	<delete id="FrontBoard.deleteBbs" parameterClass="frontBoardVo">
+		<![CDATA[
+			DELETE FROM
+				$tblname$
+			WHERE
+				bbsno in (SELECT bbsno
+			  				FROM (select bbsno from $tblname$ ) a
+			  				where (bbsno=#bbsno# or bbsno = bbsparentno) )
+		]]>
+	</delete>
+	<delete id="FrontBoard.deletetFileList" parameterClass="frontBoardVo">
+		<![CDATA[
+			DELETE
+			FROM ZBBSFILE
+			WHERE boardno=#boardno#
+			  AND bbsno IN (SELECT bbsno
+			  				FROM $tblname$
+			  				where (bbsno=#bbsno# or bbsno = bbsparentno) )
+		]]>
+	</delete>
+
+	<select id="FrontBoard.listAllCount" parameterClass="ZBoardVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT count(*) as total
+			FROM ($tblname$)
+			WHERE 1=1
+		]]>
+		<isNotEmpty prepend="AND" property="cond2">
+			<isEqual property="cond2" compareValue="all">
+				<isNotEmpty property="keyword">
+				<![CDATA[
+					(
+						bbstitle LIKE '%$keyword$%' OR
+						bbsconts LIKE '%$keyword$%'
+					)
+				]]>
+				</isNotEmpty>
+			</isEqual>
+			<isNotEqual property="cond2" compareValue="all">
+			<![CDATA[
+				$cond2$ LIKE '%$keyword$%'
+			]]>
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cateno">
+			<![CDATA[ bbscatenos = #cateno# ]]>
+		</isNotEmpty>
+		<isNotEmpty property="cond1">
+			<isEqual property="cond1" compareValue="1">
+				ORDER BY BBSDATEREG DESC
+			</isEqual>
+			<isEqual property="cond1" compareValue="2">
+				ORDER BY bbstitle DESC
+			</isEqual>
+		</isNotEmpty>
+
+		<isNotEmpty property="notCate">
+			and bbscatenos not in
+			<iterate property="notCate" open="(" close=")" conjunction=",">
+	            #notCate[]#
+	        </iterate>
+		</isNotEmpty>
+	</select>
+
+	<select id="FrontBoard.listAll" parameterClass="ZBoardVo" resultClass="frontBoardVo">
+        <![CDATA[
+            SELECT  a.bbsno
+				    ,a.boardno
+					,a.siteno
+					,a.bbshit
+					,a.bbstitle
+					,a.bbsdatereg
+					,b.menuno
+            FROM $tblname$ a, zboarduse b
+			WHERE 1=1
+			AND a.boardno = b.boardno
+        ]]>
+        <isNotEmpty prepend="AND" property="cond2">
+            <isEqual property="cond2" compareValue="all">
+                <isNotEmpty property="keyword">
+                    <![CDATA[
+                    (
+                        bbstitle LIKE '%$keyword$%' OR
+                        bbsconts LIKE '%$keyword$%'
+                    )
+                ]]>
+                </isNotEmpty>
+            </isEqual>
+            <isNotEqual property="cond2" compareValue="all">
+                <![CDATA[
+
+                $cond2$ LIKE '%$keyword$%'
+            ]]>
+            </isNotEqual>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="cond3">
+            <isEqual property="cond3" compareValue="2">
+                <![CDATA[ BBSDATEREG BETWEEN to_char(sysdate-7,'YYYYMMDDHH24MISS')  and  to_char(sysdate,'YYYYMMDDHH24MISS')       ]]>
+            </isEqual>
+            <isEqual property="cond3" compareValue="3">
+                <![CDATA[ BBSDATEREG BETWEEN to_char(sysdate-42,'YYYYMMDDHH24MISS')  and  to_char(sysdate,'YYYYMMDDHH24MISS')       ]]>
+            </isEqual>
+            <isEqual property="cond3" compareValue="4">
+                <![CDATA[ BBSDATEREG BETWEEN to_char(sysdate-365,'YYYYMMDDHH24MISS')  and  to_char(sysdate,'YYYYMMDDHH24MISS')       ]]>
+            </isEqual>
+            <isEqual property="cond3" compareValue="5">
+                <![CDATA[ to_date(BBSDATEREG,'YYYYMMDDHH24MISS') BETWEEN to_date(#sdate#||'000000','YYYYMMDDHH24MISS')  and  to_date(#edate#||'235959','YYYYMMDDHH24MISS')       ]]>
+            </isEqual>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="cateno">
+            <![CDATA[ bbscatenos = #cateno# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="cond1">
+            <isEqual property="cond1" compareValue="1">
+                ORDER BY BBSDATEREG DESC
+            </isEqual>
+            <isEqual property="cond1" compareValue="2">
+                ORDER BY bbstitle DESC
+            </isEqual>
+        </isNotEmpty>
+    </select>
+
+
+	<select id="titleDupchk" parameterClass="frontBoardVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT COUNT(*) AS total
+			FROM $tblname$
+			WHERE bbstitle = trim(#bbstitle#)
+			and shw_yn=1
+			and (etc6='I' or etc6='U')
+		]]>
+		<isEqual property="etc1" compareValue="Y">
+		<![CDATA[
+			and etc1 = 'Y'
+		]]>
+		</isEqual>
+	</select>
+
+	<select id="pwprove" parameterClass="frontBoardVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT count(*) cnt
+			FROM $tblname$
+			WHERE bbsno=#bbsno#
+			AND bbspasswd=#bbspasswd#
+		]]>
+	</select>
+
+
+</sqlMap>

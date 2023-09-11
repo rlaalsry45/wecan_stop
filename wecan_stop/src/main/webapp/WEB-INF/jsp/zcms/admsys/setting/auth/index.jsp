@@ -1,0 +1,213 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../../lnb.jsp" flush="true" />
+            <script type="text/javascript">
+            $(function() {
+                $('.main_table1 tbody img').bind("click",function(){
+                    var attr = $(this).attr("id");
+                    if (typeof attr !== 'undefined' && attr !== false){
+                        if ($(this).attr("src").indexOf("closed")!=-1){
+                            $(this).attr("src","/cms/image/btn_opened.jpg");
+                            $(this).attr("alt","열림");
+                            $(this).closest("tr").siblings("#"+$(this).attr("id")).show();
+                        }
+                        else{
+                            $(this).attr("src","/cms/image/btn_closed.jpg");
+                            $(this).attr("alt","닫힘");
+                            if ($(this).attr("id").match(/^\d+/)=="1"){
+                                var id = $(this).attr("id").match(/\d+$/);
+                                $(this).closest("tr").siblings("tr[id$='_"+id+"']").hide();
+                                $(this).closest("tr").siblings("tr[id$='_"+id+"']").find("img[id$='"+id+"']").attr("src","/cms/image/btn_closed.jpg");
+                            }
+                            else{
+                                $(this).closest("tr").siblings("#"+$(this).attr("id")).hide();
+                            }
+                        }
+                    }
+                });
+                $('.main_table1 thead img').bind("click",function(){
+                    if ($(this).attr("src").indexOf("open")!=-1){
+                        $(".main_table1 tbody img[id]").attr("src","/cms/image/btn_opened.jpg");
+                        $('.main_table1 tbody tr').show();
+                    }
+                    else{
+                        $(".main_table1 tbody img[id]").attr("src","/cms/image/btn_closed.jpg");
+                        $(".main_table1 tbody tr:not([id^='0'])").hide();
+                    }
+                });
+                $(":checkbox[name=menuno]").bind("click",function(){
+                    var item = $(this);
+                    var flag = item.prop("checked");
+                    if ($(":checkbox[name=opt]").prop("checked")){
+                        item.closest("tr").find("img").attr("src", flag ? "/cms/image/btn_opened.jpg" : "/cms/image/btn_closed.jpg");
+                        var obj = item.closest("tr").siblings("#"+item.val());
+                        function selAll(obj){
+                            obj.find("img").attr("src", flag ? "/cms/image/btn_opened.jpg" : "/cms/image/btn_closed.jpg");
+                            obj.each(function(){
+                                if (flag) $(this).show().find(":checkbox").prop("checked", true);
+                                else $(this).hide().find(":checkbox").prop("checked", false);
+                                if ($(this).find(":checkbox").closest("tr").siblings("#"+$(this).find(":checkbox").val()).length > 0 ){
+                                    selAll($(this).find(":checkbox").closest("tr").siblings("#"+$(this).find(":checkbox").val()));
+                                }
+                            });
+                        }
+                        selAll(obj);
+                    }
+                });
+                var menunos = $.url().param('menunos');
+                var opens = $.url().param('opens');
+                if (menunos){
+                    $.each(menunos.split(","), function(index, v) {
+                        $(":checkbox[name=menuno][value="+v+"]").prop("checked", true);
+                    });
+                }
+                if (opens){
+                    $.each(opens.split(","), function(index, v) {
+                        $('#' + v).trigger('click');
+                    });
+                }
+                $(":button").click(function(){
+                    if ($(this).parent().get(0).tagName=="LI"){
+                        <c:if test="${empty list}">
+                            alert("콘텐츠 등록 후 해당 그룹/운영자를 선택 해주세요.");
+                            return;
+                        </c:if>
+                        <c:if test="${not empty list}">
+                            if ($(":checkbox[name=menuno]:checked").length==0){
+                                alert("관리권한울 부여 할 콘텐츠를 선택 해주세요.");
+                                return;
+                            }
+                            var menunos = $(":checkbox[name=menuno]:checked").map(function(){return $(this).val();}).get();
+                            var opens = $("[src$='btn_opened.jpg']").map(function(){return $(this).attr('id');}).get();
+                            var siteno = $("[name=siteno]").val();
+                            if ($(this).index()==0){
+                                window.open("searchGroup.html?menunos="+menunos+"&siteno="+siteno+"&opens="+opens, "popupFindGroup", "directories=no,toolbar=no,width=950,height=700");
+                            }
+                            else{
+                                window.open("searchEmp.html?menunos="+menunos+"&siteno="+siteno+"&opens="+opens, "popupFindEmp", "directories=no,toolbar=no,width=950,height=700");
+                            }
+                        </c:if>
+                    }
+                });
+            });
+
+            function delAuth(flag,menuno,no,gno,eno){
+                var menunos = $(":checkbox[name=menuno]:checked").map(function(){return $(this).val();}).get();
+                var opens = $("[src$='btn_opened.jpg']").map(function(){return $(this).attr('id');}).get();
+                if ($(":checkbox[name=opt]").prop("checked")){
+                    if (confirm("선택하신 그룹/운영자의 해당 콘텐츠(하위 메뉴 포함)에 대한 관리권한을 삭제 하시겠습니까?")){
+                        no = flag=='G' ? gno : eno;
+                        document.frm.action = "authDelete.html?flag="+flag+"&menuno="+menuno+"&no="+no+"&menunos="+menunos+"&opens="+opens;
+                        document.frm.submit();
+                    }
+                }
+                else {
+                    if (confirm("선택하신 그룹/운영자의 해당 콘텐츠에 대한 관리권한을 삭제 하시겠습니까?")){
+                        document.frm.action = "authDelete.html?no="+no+"&menunos="+menunos+"&opens="+opens;
+                        document.frm.submit();
+                    }
+                }
+            }
+            </script>
+            <div id="contents">
+                <div class="contents_top">
+                    <div class="location">
+                        <a href="/admsys/dashboard/index.html">HOME</a> <a href="/admsys/setting/">권한관리설정</a> <a href="/admsys/setting/auth/">컨텐츠 담당자 관리</a> <strong>콘텐츠 담당자 관리 목록</strong>
+                    </div>
+                    <form:form name="frm" method="post">
+                    <div class="TopSearch">
+                        <span>SEARCH AREA</span>
+                        <select name="siteno" class="" title="홈페이지리스트" onchange="window.location.href='?siteno='+this.v" style="height:27px;">
+                            <c:forEach items="${sitelist}" var="site">
+                                <option value="<c:out value='${site.siteno}' />" <c:if test="${site.siteno==siteno}">selected</c:if>><c:out value='${site.sitetitle}' /></option>
+                            </c:forEach>
+                        </select>
+                        <input class="bt01" type="submit" onclick="this.form.action='?pageIndex=1'" value="GO">
+
+                    </div>
+                </div>
+
+                <div id="content">
+                <ul class="homepagebbs">
+                            <li class="bg"><h3 class="setting">콘텐츠 담당자 관리 목록</h3>
+                                <div class="user_btn"><input class="bor_none" name="opt" id="opt" type="checkbox" /><label class="on" for="opt">하위메뉴포함</label> <input class="chost_btn_s4" type="button" value="그룹등록" /> <input class="chost_btn_s4" type="button" value="운영자설정" /></div>
+                            </li>
+                            <li>
+                    <div class="main_table">
+                        <!--게시판 영역-->
+                        <table class="main_table1" border="1" cellspacing="0" cellpadding="0" width="100%" summary="메뉴전체보기">
+                            <caption>메뉴전체보기</caption>
+                            <colgroup>
+                                <col width="5%" />
+                                <col width="5%" />
+                                <col width="" />
+                                <col width="65%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input class="bor_none" id="batch" type="checkbox" onclick="javascript:checkAll('','menuno')" />
+                                    </th>
+                                    <th>번호</th>
+                                    <th><span style="float:left"><img src="/cms/image/btn_lnb_open.gif" alt="전체열림"> <img src="/cms/image/btn_lnb_close.gif" alt="전체닫힘"></span></th>
+                                    <th style="padding:0px">
+                                        <div id="css_table">
+                                            <div class="css_td_r" style="font-weight:bold">운영담당자/그룹</div>
+                                            <div class="css_td_r" style="font-weight:bold">기관</div>
+                                            <div class="css_td_r" style="font-weight:bold">부서/팀</div>
+                                            <div class="css_td_r" style="font-weight:bold">전화번호</div>
+                                            <div class="css_td" style="font-weight:bold">관리</div>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach items="${list}" var="each">
+                                    <tr style="display:<c:if test='${each.menulevel!="0"}'>none</c:if>" id="${each.menulevel}_${each.menuparentno}_${each.menutopno}">
+                                        <td>
+                                            <input class="bor_none" name="menuno" value="${each.menulevel+1}_${each.menuno}_${each.menutopno}" type="checkbox" />
+                                        </td>
+                                        <td>${each.menuno}</td>
+                                        <td class='menu_d${each.menulevel}'>
+                                            <c:if test='${each.cnt!="1"}'><img src="/cms/image/btn_closed.jpg" id="${each.menulevel+1}_${each.menuno}_${each.menutopno}" /></c:if>
+                                            ${each.menutitle}<c:if test='${each.cnt!="1"}'>(${each.cnt-1})</c:if>
+                                        </td>
+                                        <td style="padding:0px">
+                                            <div id="css_table">
+                                            <c:forEach items="${each.authemp}" var="emp" varStatus="loop">
+                                                <div class="css_tr">
+                                                    <div class="css_td_r<c:if test="${not loop.last}" >b</c:if>">${emp.emp_nm}${emp.groupnm}</div>
+                                                    <div class="css_td_r<c:if test="${not loop.last}" >b</c:if>">${emp.hq_nm}</div>
+                                                    <div class="css_td_r<c:if test="${not loop.last}" >b</c:if>">${emp.dept_nm}</div>
+                                                    <div class="css_td_r<c:if test="${not loop.last}" >b</c:if>">${emp.tel_offc}</div>
+                                                    <div class="css_td<c:if test="${not loop.last}" >_b</c:if>">
+                                                        <input type="button" value="권한 해제" style="width:70px;height:20px" onclick="delAuth('<c:if test="${empty emp.emp_nm}">G</c:if>','${each.menuno}','${emp.no}','${emp.groupno}','${emp.emp_no}')"/>
+                                                    </div>
+                                                </div>
+                                            </c:forEach>
+                                            <c:if test="${empty each.authemp}">
+                                                <div class="css_tr">
+                                                    <div class="css_td_r">&nbsp;</div>
+                                                    <div class="css_td_r">&nbsp;</div>
+                                                    <div class="css_td_r">&nbsp;</div>
+                                                    <div class="css_td_r">&nbsp;</div>
+                                                    <div class="css_td"><input class="chost_btn_s5" type="button" value="권한 미지정"></div>
+                                                </div>
+                                            </c:if>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                        <!--/게시판 영역-->
+                    </div>
+                    <!--/main_table-->
+                    </li>
+                </ul>
+                </div>
+                <!--/content-->
+                </form:form>
+            </div>
+<jsp:include page="../../end.jsp" flush="true" />

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZMemberHis">
+	<typeAlias alias="zMemberHisVo" type="com.z5.zcms.admsys.module.domain.ZMemberHisVo"/>
+	<typeAlias alias="zMemberVo" type="com.z5.zcms.admsys.module.domain.ZMemberVo"/>
+	<resultMap id="zMemberHisVo" class="zMemberHisVo"/>
+	
+	<select id="ZMemberHis.list" parameterClass="zMemberVo" resultClass="zMemberHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZMEMBERHIS
+			WHERE
+				memberno=#memberno#
+			ORDER BY
+				hisno DESC
+		]]>
+	</select>
+
+	<select id="ZMemberHis.getByPk" parameterClass="zMemberHisVo" resultClass="zMemberHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZMEMBERHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</select>
+	
+	<delete id="ZMemberHis.delete" parameterClass="zMemberHisVo">
+		<![CDATA[
+			DELETE FROM 
+				ZMEMBERHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</delete>
+	
+	<delete id="ZMemberHis.deleteMuti" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZMEMBERHIS
+			WHERE
+				memberno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<insert id="ZMemberHis.insert" parameterClass="zMemberVo">
+		<![CDATA[
+			INSERT INTO ZMEMBERHIS
+			(
+				
+				title,
+				skin,
+				contstype2,
+				conts2,
+				contstype3,
+				conts3,
+				contstype4,
+				conts4,
+				contstype5,
+				conts5,
+				memo,
+				datereg,
+				datemod,
+				userid,
+				datehis,
+				memberno
+			)
+			SELECT
+				
+				title,
+				skin,
+				contstype2,
+		]]>
+		<isEqual property="contstype2" compareValue="1"><![CDATA[#conts2#,]]></isEqual>
+		<isEqual property="contstype2" compareValue="3"><![CDATA[#ckeditorConts2#,]]></isEqual>
+		<![CDATA[#contstype3#,]]>
+		<isEqual property="contstype3" compareValue="1"><![CDATA[#conts3#,]]></isEqual>
+		<isEqual property="contstype3" compareValue="3"><![CDATA[#ckeditorConts3#,]]></isEqual>
+		<![CDATA[#contstype4#,]]>
+		<isEqual property="contstype4" compareValue="1"><![CDATA[#conts4#,]]></isEqual>
+		<isEqual property="contstype4" compareValue="3"><![CDATA[#ckeditorConts4#,]]></isEqual>
+		<![CDATA[#contstype5#,]]>
+		<isEqual property="contstype5" compareValue="1"><![CDATA[#conts5#,]]></isEqual>
+		<isEqual property="contstype5" compareValue="3"><![CDATA[#ckeditorConts5#,]]></isEqual>
+		<![CDATA[
+				memo,
+				datereg,
+				datemod,
+				#userid#,
+				now(),
+				memberno
+			FROM
+				ZMEMBER
+			WHERE
+				memberno=#memberno#
+		]]>
+	</insert>
+
+</sqlMap>

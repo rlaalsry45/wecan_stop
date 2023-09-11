@@ -1,0 +1,248 @@
+﻿@import url("base.css");
+
+/* title */
+#content {
+	margin-right:10px;
+}
+.page_title {
+	overflow:hidden;
+	padding:20px 0 0 10px;
+}
+.main_table {
+	margin-left:10px;
+	margin-right:0;
+	margin-top:10px;
+}
+/* 2013-10-16 */
+.main_table .search {
+	overflow:hidden;
+	margin-bottom:10px;
+}
+.main_table .search div {
+	float:left;
+}
+.main_table .search div label {
+	margin-left:10px;
+}
+.main_table .search div a img {
+	vertical-align:middle;
+}
+.main_table .search span {
+	float:right;
+	margin-top:6px;
+}
+
+/* main_table1 */
+table, th, td {
+    border:0 none;
+    border-collapse:collapse;
+    margin:0;
+}
+table, th, td img {vertical-align:top;}
+div.board {margin-top:7px;}
+.main_table1 {
+    width:100%;
+	border:1px solid #DDDDDD;
+}
+.main_table1 td {
+    border:1px solid #DDDDDD;
+    color:#666666;
+    padding:5px;
+    text-align:center;
+}
+.main_table1 th {
+    background-color:#F9F9F9;
+    border:1px solid #DDDDDD;
+    color:#333333;
+    padding:5px;
+}
+.main_table1 td span {
+    display:block;
+    margin-top:10px;
+}
+.main_table1 td input.img {
+    vertical-align:top;
+}
+
+/* input_table */
+.input_table {
+    border: 1px solid #DDDDDD;
+}
+.input_table td {
+    border: 1px solid #DDDDDD;
+    padding: 5px 20px;
+    text-align: left;
+}
+.input_table tbody.type td {
+    padding: 5px 0;
+    text-align: center;
+}
+.input_table tbody.type td.subject {
+    padding: 5px 0 5px 20px;
+    text-align: left;
+}
+.input_table td {
+    line-height: 20px;
+}
+
+.input_table td.td_cen {
+    line-height: 20px;
+    text-align: center;
+}
+.input_table th {
+    background-color: #F9F9F9;
+    border: 1px solid #DDDDDD;
+    padding: 5px;
+}
+input.bor1ddd {
+    border: 1px solid #DDDDDD;
+    height: 16px;
+    padding-top: 2px;
+    vertical-align: middle;
+}
+input.bor1ddd_domain {
+    border: 1px solid #DDDDDD;
+    height: 16px;
+    vertical-align: middle;
+    width: 350px;
+}
+input.bor1ddd_num {
+    border: 1px solid #DDDDDD;
+    height: 16px;
+    padding-right: 3px;
+    padding-top: 2px;
+    text-align: right;
+    vertical-align: middle;
+}
+input.inputxt_r {
+    padding-right: 5px;
+    text-align: right;
+}
+input.file1 {
+    border: 1px solid #DDDDDD;
+    height: 16px;
+    vertical-align: middle;
+}
+input.checkbox1 {
+    height: 16px;
+    vertical-align: middle;
+}
+input.radio0 {
+    width:13px;
+	height:13px;
+	margin:0;
+	padding:0;
+    vertical-align:-2px;
+}
+input.radio1 {
+    width:13px;
+	height:13px;
+	margin:0 0 0 8px;
+	padding:0;
+    vertical-align:-2px;
+}
+.input_table input.textfield_eval {
+    border: 1px solid #DDDDDD;
+    height: 16px;
+    text-align: right;
+    vertical-align: middle;
+}
+.input_table textarea.bor1ddd {
+    border: 1px solid #DDDDDD;
+    line-height: 16px;
+    padding: 5px;
+    vertical-align: middle;
+}
+.input_table li.eval_display {
+    margin-top: 5px;
+    width: 300px;
+}
+.input_table td.load_temp ul {
+    float: left;
+}
+.input_table td.load_temp ul li {
+    float: left;
+    line-height: 20px;
+    margin-right: 20px;
+    vertical-align: middle;
+}
+
+/* paging */
+.paging {
+    height: 30px;
+    margin-top: 10px;
+    width: 100%;
+}
+.paging ul {
+    text-align: center;
+}
+.paging ul li {
+    display: inline;
+    margin-right: 3px;
+}
+.paging ul li img {vertical-align:top;}
+span.paging_selected {
+    color: #FB8035;
+}
+
+/* 신규 */
+div.btn-r {
+	margin-top:-25px;
+	text-align:right;
+}
+div.btn-r2 {
+	margin-top:15px;
+	text-align:center;
+}
+.input_table td a.close img {vertical-align:middle;}
+p.text {margin-top:15px;}
+p.text a img {vertical-align:middle;}
+.input_table span.file {display:block;}
+
+
+/* 2013-10-30 */
+.input_table td em.type {
+	margin-left:8px;
+	color:#ff4800;
+}
+.input_table td span.type {
+	display:block;
+	margin-top:10px;
+}
+.input_table td div.img-text {
+	overflow:hidden;
+	margin-top:10px;
+}
+.input_table td div.img-text img {
+	float:left;
+	margin-right:20px;
+}
+.input_table td div.img-text ul {
+	float:left;
+}
+.input_table td div.img-text ul li {
+	vertical-align:top;
+}
+.input_table td div.img-text label {
+	display:inline-block;
+	width:40px;
+	color:#000000;
+	font-weight:bold;
+	vertical-align:top;
+}
+.input_table td div.img-text ul li p {
+	margin:5px 0 10px 40px;
+	color:#ff4800;
+}
+.input_table td ul.ranking {
+	margin-top:10px;
+}
+.input_table td ul.ranking li {
+	margin-bottom:5px;
+}
+.input_table td ul.ranking li label {
+	display:inline-block;
+	width:40px;
+	color:#000000;
+	font-weight:bold;
+}

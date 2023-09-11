@@ -1,0 +1,283 @@
+<%@ page contentType="text/html;charset=utf-8" %>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true"/>
+<link rel='stylesheet' href='/com/css/jquery-1.10.3-ui.css'/>
+<script src='/com/js/jquery-1.10.3-ui.js'></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#keyword2').datepicker({
+            dateFormat        : "yy-mm-dd",
+            showMonthAfterYear: true,
+            dayNamesMin       : ['월', '화', '수', '목', '금', '토', '일'],
+            monthNames        : ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            onSelect          : function (dateText, inst) {
+            }
+        });
+
+        if ($('#cond2').val() == "userdatereg") {
+            $('#keyword').attr("disabled", true);
+            $('#keyword').hide();
+
+            $('#keyword2').attr("disabled", false);
+            $('#keyword2').show();
+        } else if ($('#cond2').val() == "total") {
+            $('#keyword').attr("disabled", false);
+            $('#keyword').val('');
+            $('#keyword').hide();
+
+            $('#keyword2').attr("disabled", true);
+            $('#keyword2').val('');
+            $('#keyword2').hide();
+        } else if ($('#cond2').val() == "foreigner") {
+            $('#keyword').val('1');
+            $('#keyword').hide();
+
+            $('#keyword2').attr("disabled", true);
+            $('#keyword2').val('');
+            $('#keyword2').hide();
+        }
+
+        $('#cond2').change(function () {
+            if ($(this).val() == "userdatereg") {
+                $('#keyword').attr("disabled", true);
+                $('#keyword').hide();
+
+                $('#keyword2').attr("disabled", false);
+                $('#keyword2').show();
+
+            } else if ($(this).val() == "total") {
+                $('#keyword').attr("disabled", false);
+                $('#keyword').val('');
+                $('#keyword').hide();
+
+                $('#keyword2').attr("disabled", true);
+                $('#keyword2').val('');
+                $('#keyword2').hide();
+            } else if ($(this).val() == "foreigner") {
+                $('#keyword').val('1');
+                $('#keyword').hide();
+
+                $('#keyword2').attr("disabled", true);
+                $('#keyword2').val('');
+                $('#keyword2').hide();
+            } else {
+                $('#keyword').attr("disabled", false);
+                $('#keyword').val('');
+                $('#keyword').show();
+
+                $('#keyword2').attr("disabled", true);
+                $('#keyword2').val('');
+                $('#keyword2').hide();
+            }
+        });
+    });
+
+    //    function userCommitForStudent(userid, userno, username, useremail, re) {
+    //        //alert("userid="+userid+"&userno="+userno+"&username="+username+"&useremail="+useremail);
+    //        if (re == "re") msg = "해당 유저의  준회원기간을 1년더 연장하시겠습니까?";
+    //        else            msg = "해당 유저를 준회원으로 인증하시겠습니까?";
+    //        if (confirm(msg)) {
+    //            $.ajax({
+    //                type   : 'post',
+    //                async  : true,
+    //                url    : '/admsys/user/common/userCommitForStudent.html',
+    //                data   : "userid=" + userid + "&userno=" + userno + "&username=" + username + "&useremail=" + useremail,
+    //                success: function (data) {
+    //                    alert("인증되었습니다.");
+    //                    window.location.reload();
+    //                },
+    //                error  : function (data, status, err) {
+    //                    alert('서버와의 통신이 실패했습니다.');
+    //                }
+    //            });
+    //        }
+    //    }
+
+
+    function excelAll() {
+
+        if (confirm("검색된 기관 전체의 엑셀을 다운로드하시겠습니까?")) {
+            $("#act").val("excel_all");
+            window.open("", "excelAll", "resizable=no, status=no, scrollbars=yes, toolbar=no, menubar=no, width=10, height=10");
+            document.frm.action = "/admsys/user/common/popupExcel.html";
+            document.frm.target = "excelAll";
+            document.frm.submit();
+            document.frm.target = "";
+        }
+
+    }
+
+    function excelChk(obj) {
+        if ($(":checkbox[name='ndex']:checked").length == 0) {
+            alert("다운받을 엑셀의 기관을 체크해주세요. ");
+        } else {
+
+            if (confirm("체크된 기관의 엑셀을 다운로드하시겠습니까?")) {
+
+                var ndex = "";
+
+                $("input:checkbox[name='ndex']").each(function () {
+                    if ($(this).is(":checked") == true) {
+                        if ($(this).val() != "undefined") {
+                            if (ndex != "")
+                                ndex += "," + $(this).val();
+                            else
+                                ndex = $(this).val();
+                        }
+                    }
+                });
+
+                $("#chk_userno").val(ndex);
+                $("#act").val("excel_chk");
+
+                window.open("", "excelAll", "resizable=no, status=no, scrollbars=yes, toolbar=no, menubar=no, width=10, height=10");
+                document.frm.action = "/admsys/user/common/popupExcel.html";
+                document.frm.target = "excelAll";
+                document.frm.submit();
+                document.frm.target = "";
+
+            }
+        }
+    }
+
+    function full_check(name, data) {
+        $("input[name=" + name + "]:checkbox").each(function () {
+            if (typeof(data) == "boolean") {
+                $(this).prop("checked", data);
+            } else {
+                $(this).prop("checked", $(this).prop('checked') ? false : true);
+            }
+        });
+    }
+
+    function ndex_clean(name) {
+        if (confirm("정말 삭제하시겠습니까?")) {
+            var list = $(":checkbox[name=" + name + "]:checked").map(function () {
+                return $(this).val();
+            }).get();
+
+            if ($(list).length > 0) {
+                document.frm.action = "inst_delete.html?list=" + list;
+                document.frm.submit();
+            } else {
+                alert("삭제할 기관을 선택하여 주세요!")
+            }
+        }
+    }
+</script>
+
+<jsp:include page="../../lnb.jsp" flush="true"/>
+<div id="r_side">
+    <div id="contents">
+        <form:form name="frm" method="post">
+            <div class="contants_top">
+                <div class="location">
+                    <a href="/admsys/dashboard/index.html">HOME</a>
+                    <a href="/admsys/user/common/index.html">회원관리</a>
+                    <strong>기관관리</strong>
+                </div>
+                <div class="TopSearch">
+                    <span>SEARCH AREA</span>
+                    <select style="height:27px;" name="cond2">
+                        <option value="name" <c:if test="${input.cond2=='name'}"><c:out value='selected'/></c:if>>기관이름</option>
+                        <option value="type" <c:if test="${input.cond2=='type'}"><c:out value='selected'/></c:if>>기관유형</option>
+                        <option value="arch" <c:if test="${input.cond2=='arch'}"><c:out value='selected'/></c:if>>주무부처</option>
+                    </select>
+                    <input type=text name="keyword" value="${input.keyword}" class="bor1ddd" style="width:128px;"/>
+                    <input class="bt01" type="submit" value="검색" onclick="document.forms[0].action='?pageIndex=1'"/>
+                </div>
+            </div>
+
+            <div id="content">
+                <ul class="homepagebbs">
+                    <li class="bg">
+                        <h3 class="sub">
+                            전체기관 [${input.total}기관]
+                        </h3>
+                        <div class="user_btn">
+                            <a class="btmore01" href="/admsys/user/common/inst_signup.html">+ 기관 등록</a>
+                            <a class="btmore01" href="/admsys/user/common/inst_xcelup.html">+ 일괄 등록</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="top_bt">
+                            <a class="btmore07" href="javascript:full_check('ndex', true);">전체선택</a>
+                            <a class="btmore07" href="javascript:full_check('ndex', false);">전체해제</a>
+                            <a class="btmore05" href="javascript:ndex_clean('ndex');">삭제</a>
+                            <select name="pageSize" onChange="this.form.action='?pageIndex=1';this.form.submit()" style="height:28px;">
+                                <c:forTokens items="10,20,30,40,50" var="each" delims=",">
+                                    <option value="${each}" <c:if test="${input.pageSize==each}"><c:out value='selected'/></c:if>>${each}개 출력</option>
+                                </c:forTokens>
+                            </select>
+                        </div>
+                        <div class="main_table">
+                            <table id="main_table" class="main_table1" summary="체크박스, 번호, 기관코드, 기관명, 기관유형, 관리자, 회원수, 대표값, 자가진단일, 통계보기">
+                                <caption>기관관리 리스트</caption>
+                                <colgroup>
+                                    <col width="2%"/>
+                                    <col width="7%"/>
+                                    <col width="25%"/>
+                                    <col width="17%"/>
+                                    <col width="17%"/>
+                                    <col width="7%"/>
+                                    <col width="5%"/>
+                                    <col width="*"/>
+                                    <col width="7%"/>
+                                </colgroup>
+                                <thead>
+                                <tr>
+                                    <th><input class="bor_none" id="batch" type="checkbox" onclick="javascript:full_check('ndex','')"/></th>
+                                    <th>번호</th>
+                                    <th>기관이름</th>
+                                    <th>기관유형</th>
+                                    <th>주무부처</th>
+                                    <th>관리자</th>
+                                    <th>회원수</th>
+                                    <th>자가진단일</th>
+                                    <th>통계보기</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <c:forEach items="${ilist}" var="inst" varStatus="loop">
+                                    <tr>
+                                        <td><input class="bor_none" name="ndex" value="${inst.ndex}" type="checkbox"/></td>
+                                        <td><c:out value='${input.total-(input.pageIndex-1)*input.pageSize-loop.index}'/></td>
+                                        <td>${inst.name}</td>
+                                        <td>${inst.type}</td>
+                                        <td>${inst.arch}</td>
+                                        <td>${inst.host}</td>
+                                        <td>${inst.clan}</td>
+                                        <td><c:set var="date" value="${fn:split(inst.pick,' ')}"/>${date[0]}</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${inst.pick ne null}">
+                                                    <a class="btmore09" href="inst_census.html?insno=${inst.ndex}">통계보기</a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:out value="-"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                <c:if test="${input.total==0}">
+                                    <tr>
+                                        <td colspan="9" style="padding: 20px;">등록된 정보가 없습니다.</td>
+                                    </tr>
+                                </c:if>
+                                </tbody>
+                            </table>
+                            <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}'/>
+                        </div>
+                        <!--/main_table-->
+                    </li>
+                </ul>
+            </div>
+            <!--/content-->
+        </form:form>
+    </div>
+</div>
+<!--/r_side-->
+<c:import url="../../footer.jsp"/>

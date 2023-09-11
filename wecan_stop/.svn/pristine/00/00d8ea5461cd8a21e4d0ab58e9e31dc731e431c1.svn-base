@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Mail">
+
+	<typeAlias  alias="Mail" type="com.z5.zcms.frontsys.mail.domain.Mail"/>
+	<resultMap  id="Mail" class="com.z5.zcms.frontsys.mail.domain.Mail" />
+	<typeAlias  alias="MailParticipant" type="com.z5.zcms.frontsys.mail.domain.MailParticipant"/>
+	<resultMap  id="MailParticipant" class="com.z5.zcms.frontsys.mail.domain.MailParticipant" />
+	
+	
+	<select id="listCount"  resultClass="java.lang.Integer" parameterClass="Mail" >
+		<![CDATA[
+			SELECT
+				count(*)
+			FROM TBL_MAIL
+			WHERE 
+				(1=1)
+		]]>
+		<isNotEmpty prepend="and" property="keyword">
+			<![CDATA[
+				upper($cond1$) like '%'||upper(#keyword#)||'%'
+			]]>
+		</isNotEmpty>	
+     
+	</select>
+	
+
+	<select id="list" parameterClass="Mail" resultClass="Mail">
+		<![CDATA[
+			SELECT
+				idx
+				,title
+				,conts
+				,DATE_FORMAT(reservedate, '%Y-%m-%d%H%i%s') AS reservedate
+				,status
+				,regdate
+				,ref
+				,sended
+			from 
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        *
+						       
+				    	   from
+						        TBL_MAIL,   (SELECT @rownum := #m#) R
+						   where 1 = 1
+			]]>
+							
+					    <isNotEmpty prepend="and" property="keyword">
+							<![CDATA[
+								upper($cond1$) like '%'||upper(#keyword#)||'%'
+							]]>
+						</isNotEmpty>		
+			<![CDATA[
+							order by idx desc
+					 	) row_
+					where
+						@rownum < (#n#+#m#)
+				) re
+			
+			]]> 
+      
+	</select>
+	
+
+     <select id="detail" parameterClass="Mail" resultClass="Mail">
+ 		<![CDATA[
+           SELECT 
+				idx
+				,title
+				,conts
+				,DATE_FORMAT(reservedate, '%Y-%m-%d%H%i%s') AS reservedate
+				,status
+				,ref
+				,regdate
+				,sended
+				,fromemail
+			FROM 
+				TBL_MAIL
+			WHERE  
+				idx = #idx#
+ 		]]>
+    </select>
+    
+   <!--  <select id="detailForFront" parameterClass="Mail" resultClass="Mail">
+ 		<![CDATA[
+           SELECT 
+				conidx,
+				contitle,
+				conoutlinefilename,
+				conoutlinefilepath,
+				conenter,
+				conenmemberfee,
+				conenomemberfee,
+				conparticipate,
+				DATE_FORMAT(conprestartdate, 'YYYY. MM. DD') AS conprestartdate,
+				DATE_FORMAT(conprestartend, 'YYYY. MM. DD') AS conprestartend,
+				DATE_FORMAT(constartdate, 'YYYY. MM. DD') AS constartdate,
+				DATE_FORMAT(conenddate, 'YYYY. MM. DD') AS conenddate,
+				DATE_FORMAT(coneventstartdate, 'YYYY. MM. DD') AS coneventstartdate,
+				DATE_FORMAT(coneventenddate, 'YYYY. MM. DD') AS coneventenddate,
+				createdate,
+				conapplicationfilename,
+				conapplicationfilepath,
+				confinalfilename,
+				confinalfilepath,
+				consummaryfilename,
+				consummaryfilepath,
+				section,
+				field,
+				panner_userno
+				
+
+			FROM 
+				TBL_MAIL
+			WHERE  
+				conidx = #conidx#
+ 		]]>
+    </select> -->
+    
+    <insert id="insert" parameterClass="Mail"  >
+    	<selectKey type="pre" resultClass="java.lang.String" keyProperty="idx">
+		<![CDATA[
+			SELECT tbl_mail_idx_seq.nextval  FROM db_root
+		]]>
+		</selectKey>
+         <![CDATA[
+           INSERT INTO  TBL_MAIL (
+           		 idx
+				,title
+				,conts
+				,reservedate
+				,status
+				,regdate
+				,ref
+				,sended
+				,fromemail
+			)
+			VALUES
+			(
+				 #idx#
+				,#title#     
+				,#conts#  
+			 ]]>
+			<isEqual property="sendType" compareValue="1">
+				<![CDATA[ 
+				,now() + (1/(24*60))*2
+				 ]]>
+			</isEqual>
+			<isEqual property="sendType" compareValue="2">
+				<![CDATA[ 
+				,TO_DATETIME(#reservedate#||' '||#reservetime#||':'||#reservemin#||':00', '%Y-%m-%d %H:%i:%s')
+				 ]]>
+			</isEqual>        
+			<![CDATA[  
+				,#status#
+				,now()
+				,#ref#
+				,#sended#
+				,#fromemail#
+			)
+			]]>
+    </insert>
+	
+    <update id="update" parameterClass="Mail"  >
+          <![CDATA[
+          UPDATE  TBL_MAIL SET 
+				title    		=#title#    
+				,conts 			=#conts#      
+				,reservedate   	=,TO_DATETIME(#reservedate#||' '||#reservetime#||':'||#reservemin#||':00', '%Y-%m-%d %H:%i:%s') 
+				,status      	=#status#
+				,ref			=#ref#
+				,sended			=#sended#
+		  WHERE 
+				idx = #idx#
+				]]>
+    </update>
+    
+    
+    <delete id="delete" parameterClass="Mail" >
+     <![CDATA[
+          DELETE  
+          	FROM TBL_MAIL 
+		  WHERE 
+			idx = #idx#
+				]]>
+    </delete>
+    
+    <delete id="deleteAll" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM TBL_MAIL
+			WHERE idx IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<select id="getListCountUserForSearch" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				zuser a
+			where 1 = 1
+			and a.userauth is null
+		]]>
+			<!-- <isNotEmpty property="cond5">
+		    	and b.authority =#cond5#
+		    </isNotEmpty> -->
+		    
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[  
+						date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d") 
+					and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d") 
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="work_grade">
+				<![CDATA[ work_grade =#work_grade# ]]>
+			</isNotEmpty>
+			<!-- <isNotEmpty prepend="and" property="cond4">
+				<![CDATA[ a.$cond4$ =#sitedivision# ]]>
+			</isNotEmpty> -->
+	</select>
+	
+	<select id="getListUserForSearch" parameterClass="ZUserVo" resultClass="ZUserVo">
+		<![CDATA[
+			SELECT
+				t.userno
+				,t.username
+				,t.userid
+				,t.useremail
+				,t.newsletter1
+				,decode(t.work_grade,'1','정회원'
+				                    ,'2','종신회원'
+				                    ,'3','준회원'
+				                    ,'4','연구용역담당'
+				                    ,'6','외부심사위원'
+				                    ,'') as work_grade
+				
+				/*,get_authorities(t.userid) as authority*/
+				/* ,(select annualPause from tbl_dues where duesno =
+					(SELECT duesno from tbl_dues where limityearmonth =
+                        (select MAX (limityearmonth) FROM tbl_dues WHERE userno = t.userno and annualpause is null  and payconfirm ='1')
+                        and annualpause is null and userno =t.userno and isannual ='1' and payconfirm ='1'
+                    )) as annualPause
+				,(select limitYearmonth from tbl_dues where duesno =
+					(SELECT duesno from tbl_dues where limityearmonth =
+                        (select MAX (limityearmonth) FROM tbl_dues WHERE userno = t.userno and annualpause is null and payconfirm ='1' )
+                        and annualpause is null and userno =t.userno and isannual ='1' and payconfirm ='1'
+                    )) as limityearmonth
+				,(select duesno from tbl_dues where duesno =
+					(SELECT duesno from tbl_dues where limityearmonth =
+                        (select MAX (limityearmonth) FROM tbl_dues WHERE userno = t.userno and annualpause is null and payconfirm ='1' )
+                        and annualpause is null and userno =t.userno and isannual ='1' and payconfirm ='1'
+                    )) as duesno
+				,(select semimemberconfirm from tbl_dues where duesno =
+					(SELECT duesno from tbl_dues where limityearmonth =
+                        (select MAX (limityearmonth) FROM tbl_dues WHERE userno = t.userno and annualpause is null  and payconfirm ='1')
+                        and annualpause is null and userno =t.userno and isannual ='1' and payconfirm ='1'
+                    )) as semimemberconfirm */
+			from 
+			zuser t,
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        a.userno
+				    	   from
+						        zuser a,   (SELECT @rownum := #m#) R
+						   where 1 = 1
+						   and userauth is null
+			]]>
+							<!-- <isNotEmpty property="cond5">
+						    	and b.authority =#cond5#
+						    </isNotEmpty> -->
+					   		
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[  
+										date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d") 
+									and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d") 
+								]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="work_grade">
+								<![CDATA[ work_grade =#work_grade# ]]>
+							</isNotEmpty>
+							<!-- <isNotEmpty prepend="and" property="cond4">
+								<![CDATA[ a.$cond4$ =#sitedivision# ]]>
+							</isNotEmpty> -->
+			<![CDATA[
+							order by userno desc
+					 	) row_
+					where
+						@rownum < (#n#+#m#)
+				)re
+			where 
+				re.userno = t.userno
+			
+			order by t.userno desc
+			]]> 
+	</select>
+	
+	<insert id="inserMailList" parameterClass="Mail"  >
+         	INSERT ALL
+	        <dynamic>
+			<iterate conjunction=" " property="listUsernos" >
+				INTO TBL_MAIL_PARTICIPANT 
+				(
+					
+					IDX 
+					,USERNO 
+					,USEREMAIL
+					,USERNAME
+					,work_grade
+					,userid
+					,newsletter1
+				) 
+				VALUES 
+				(
+					
+					#idx# 
+					,#listUsernos[]#
+					,(select useremail from zuser where userno = #listUsernos[]#)
+					,(select username from zuser where userno = #listUsernos[]#)
+					,(select decode(work_grade,'1','정회원'
+				                    ,'2','종신회원'
+				                    ,'3','준회원'
+				                    ,'4','연구용역담당'
+				                    ,'6','외부심사위원'
+				                    ,'') from zuser where userno = #listUsernos[]#)
+				    ,(select userid from zuser where userno = #listUsernos[]#)
+				    ,(select newsletter1 from zuser where userno = #listUsernos[]#)
+				)
+					
+			</iterate>
+			</dynamic>
+			SELECT * FROM db_root
+		
+    </insert>
+    
+    
+    <insert id="insertUser" parameterClass="Mail"  >
+    	<![CDATA[
+         	INSERT 
+				INTO TBL_MAIL_PARTICIPANT 
+				(
+					IDX 
+					,USERNO 
+					,USEREMAIL
+					,work_grade
+					,newsletter1
+					,USERNAME
+					,userid
+				) 
+				VALUES 
+				(
+					
+					#idx# 
+					,#usernos#
+		]]>				
+					<isNotEmpty property="useremail">
+						,#useremail# 
+						,#work_grade# 
+						,1
+					</isNotEmpty>
+					<isEmpty property="useremail">
+						,(select useremail from zuser where userno = #usernos#)
+						,(select decode(work_grade,'1','정회원'
+				                    ,'2','종신회원'
+				                    ,'3','준회원'
+				                    ,'4','연구용역담당'
+				                    ,'6','외부심사위원'
+	                    ,'') from zuser where userno = #usernos#)
+	                    ,(select newsletter1 from zuser where userno = #usernos#)
+					</isEmpty>
+		<![CDATA[			
+					,(select username from zuser where userno = #usernos#)
+				    ,(select userid from zuser where userno = #usernos#)
+				)
+		]]>	
+    </insert>
+    
+    <insert id="insertGuest" parameterClass="MailParticipant"  >
+    	<![CDATA[
+         	INSERT 
+				INTO TBL_MAIL_PARTICIPANT 
+				(
+					IDX 
+					,USERNO 
+					,USEREMAIL
+					,USERNAME
+					,work_grade
+					,userid
+					,newsletter1
+				) 
+				VALUES 
+				(
+					#idx# 
+					,#userno#
+					,#useremail#
+					,#username#
+					,#work_grade#
+				    ,#userid#
+				    ,#newsletter1#
+				)
+		]]>	
+    </insert>
+    
+    <select id="getMailParticipantList" parameterClass="Mail" resultClass="MailParticipant">
+		<![CDATA[
+			SELECT
+				*
+			from tbl_mail_participant
+			where idx=#idx#
+      ]]>
+	</select>
+	
+	 <delete id="deleteMailList" parameterClass="Mail" >
+     <![CDATA[
+          DELETE  
+          	FROM tbl_mail_participant 
+		  WHERE 
+			idx = #idx#
+	]]>
+    </delete>
+    
+    <select id="getListWillSendMail"  resultClass="Mail">
+		<![CDATA[
+			select * from tbl_mail
+			where reservedate between (now() - 1/24/12) and (now() + 1/24/12)
+			and status =1
+			and sended is null
+      ]]>
+	</select>
+	
+	 <update id="updateMailParticipantToSended" parameterClass="MailParticipant"  >
+          <![CDATA[
+          UPDATE  tbl_mail_participant SET 
+				sended    		= '1'    
+		  WHERE	idx = #idx#
+		 ]]>
+		 <isNotEmpty property="userno">
+			<![CDATA[
+				and userno = #userno#
+			]]>
+		</isNotEmpty>		    
+		 <isNotEmpty property="useremail">
+			<![CDATA[
+				and useremail = #useremail#
+			]]>
+		</isNotEmpty>		    
+    </update>
+	
+	 <update id="updateMailToSended" parameterClass="Mail"  >
+          <![CDATA[
+          UPDATE  tbl_mail SET 
+          ]]>
+		<isNotEmpty property="sended">
+			<![CDATA[ sended = #sended# ]]>
+		</isNotEmpty>	
+        <![CDATA[  
+		  WHERE	idx = #idx#
+		]]>
+    </update>
+	
+</sqlMap>            

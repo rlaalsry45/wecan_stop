@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="wCheckGov">
+	<typeAlias alias="govUserInfoVo" type="com.z5.zcms.frontsys.front.domain.GovUserInfoVo"/>
+	<resultMap id="govUserInfoVo" class="com.z5.zcms.frontsys.front.domain.GovUserInfoVo"/>
+	
+	<select id="checkGovFirstStep" parameterClass="String" resultClass="govUserInfoVo">
+		<![CDATA[
+			SELECT
+					ORGANIZATION_NO
+				,	ORGANIZATION_ID
+				,	ORGANIZATION_NAME
+				,	ORGANIZATION_CHARGENAME
+				,	ORGANIZATION_EMAIL
+				,	ORGANIZATION_TELNUM
+				,	USE_YN
+				,	DEL_YN
+				,	REG_DATE
+				,	REG_ID
+				,	UPD_DATE
+				,	UPD_ID
+			FROM
+				w_organization
+			WHERE
+					DEL_YN = 'N'
+				AND USE_YN = 'Y'
+				AND ORGANIZATION_ID = #ORGANIZATION_ID#
+		]]>
+	</select>
+</sqlMap>

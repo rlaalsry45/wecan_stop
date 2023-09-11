@@ -1,0 +1,71 @@
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<script type="text/javascript" src="/var/sha/core.min.js"></script>
+<script type="text/javascript" src="/var/sha/sha256.min.js"></script>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko" lang="ko">
+<c:choose>
+    <c:when test="${adminip eq 'true'}">
+        <head>
+            <title>ADMINISTRATOR</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+            <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+            <meta http-equiv="Content-Style-Type" content="text/css"/>
+            <meta http-equiv="X-UA-Compatible" content="IE=10"/>
+            <link rel="stylesheet" type="text/css" href="<c:url value="/cms/css/base.css"/>"/>
+            <link rel="stylesheet" type="text/css" href="<c:url value="/cms/css/we.css"/>"/>
+            <script type="text/javascript" src="<c:url value="/cms/js/valid.js"/>"></script>
+            <script type="text/javascript">
+                window.onload = function () {
+                    if ("true" === "${param.fail}") {
+                        alert("※ 아이디 혹은 비밀번호가 틀립니다.");
+                    }
+                    if ("true" === "${param.pwfivefail}") {
+                        alert("※ 비밀번호 5회이상 틀렸습니다.\n※ 개인정보보호를 위해 인증메일이 발송되었습니다. \n※ 메일인증하시면 로그인을 다시 시도할 수 있습니다.\n※ KF지원사업신청포털(https://apply.kf.or.kr)에 회원 가입하신 분은 별도의 회원가입이 필요합니다.\n※ 로그인 관련문의는 02-2151-6547 또는 02-2046-8558로 연락 주시기 바랍니다.");
+                    }
+                    if ("true" === "${param.pwfail}") {
+                        alert("※ 아이디 혹은 비밀번호가 틀립니다. ");
+                    }
+                    if ("true" === "${param.failadmin}") {
+                        alert("※ 'admin'계정의 로그인에 실패하였습니다.\n※ 비밀번호를 확인해주시기 바랍니다.\n※ 로그인 관련문의는 02-2151-6547 또는 02-2046-8558로 연락 주시기 바랍니다.");
+                    }
+                    if ("true" === "${sessionout}") {
+                        alert("세션시간이 끝났습니다. 다시 로그인해 주세요.");
+                        window.location.href = "/?menuno=" + "${menuno}";
+                    }
+                };
+            </script>
+        </head>
+        <body>
+        <div id="wrap">
+            <div id="header"><h1>${projectName}&nbsp;<em>Administrator</em></h1></div>
+            <div id="container">
+                <form name="frm" method="post" action="<c:url value='/j_spring_security_check'/>" onsubmit="return checkForm()">
+                	<input type="hidden" name="_to" value="aseanrok"/>
+                    <fieldset class="login">
+                        <ul>
+                            <li>
+                                <label class="on" for="userid">ID</label>
+                                <input id="userid" type="text" name="username" value="" style="width:217px;height:27px;">
+                            </li>
+                            <li class="pw">
+                                <label class="on" for="userpw">PASSWORD</label>
+                                <input id="userpw" type="password" name="password" style="width:217px;height:27px;">
+                            </li>
+                        </ul>
+                        <a class="login" href="javascript:{}">
+                            <input type="submit" onload="firstfocus(this.form);" style="cursor:pointer" value="LOGIN"/>
+                        </a>
+                    </fieldset>
+                </form>
+                <p class="text">아이디/비밀번호를 입력 후 로그인하시기 바랍니다.</p>
+                <div id="footer"><p class="footer">Copyright(c) zsol.co.kr, All rights reserved.</p></div>
+            </div>
+        </div>
+        </body>
+    </c:when>
+    <c:otherwise>
+        허용되지 않은 IP 입니다. IP 추가는 관리자에게 문의하시기 바랍니다.
+    </c:otherwise>
+</c:choose>
+</html>

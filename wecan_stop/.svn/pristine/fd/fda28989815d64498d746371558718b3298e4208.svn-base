@@ -1,0 +1,130 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="java.util.*, java.text.*"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../../lnb.jsp" flush="true" />
+            <div id="contents">
+                <form:form modelAttribute="zTplVo" name="frm" method="post">
+					<div class="contents_top">
+						<div class="location">
+							<a href="/admsys/site/site/">HOME</a> <a href="/admsys/site/site/">홈페이지관리</a> <strong>템플릿 관리</strong>
+						</div>
+						<div class="TopSearch">
+							<span>SEARCH AREA</span>
+							<select style="height:27px;" name="cond2">
+								<option value="tpltitle" <c:if test="${input.cond2=='tpltitle'}"><c:out value='selected' /></c:if>>템플릿명</option>
+							</select>
+							<input type=text name="keyword" value="<c:out value='${input.keyword}' />" class="bor1ddd" style="width:128px;"/>
+							<select style="height:27px;" name="tplpositionword">
+								<option value="">위치</option>
+								<option value="Bottom"	<c:if test="${ input.tplpositionword=='Bottom'}"><c:out value='selected' /></c:if> >Bottom</option>
+								<option value="Top"		<c:if test="${ input.tplpositionword=='Top'}"><c:out value='selected' /></c:if> >Top</option>
+								<option value="Left"	<c:if test="${ input.tplpositionword=='Left'}"><c:out value='selected' /></c:if> >Left</option>
+								<option value="Right"	<c:if test="${ input.tplpositionword=='Right' }"><c:out value='selected' /></c:if> >Right</option>
+							</select>
+							<input class="bt01" type="submit" value="검색" onclick="document.forms[0].action='?pageIndex=1'" />
+						</div>
+					</div>
+                    <div id="content">
+					<ul class="homepagebbs">
+						<li class="bg"><h3 class="sub">템플릿 목록</h3><a class="btmore03" href="insert.html">+ 템플릿 등록</a></li>
+						<li>
+						<div class="top_bt">
+							<a class="btmore07" href="javascript:checkAll(true,'tplno');">전체선택</a>
+							<a class="btmore07" href="javascript:checkAll(false,'tplno');">전체해제</a>
+							<a class="btmore05" href="javascript:del('tplno');">삭제</a>
+						</div>
+                        <div class="main_table">
+                            <!---게시판 영역------------------------->
+                            <table class="main_table1" border="1" cellspacing="1" cellpadding="2" width="100%" summary="관리목록">
+                                <caption>관리목록</caption>
+                                <colgroup>
+                                    <col width="5" />
+                                    <col width="5%" />
+                                    <col width="" />
+                                    <col width="15%" />
+                                    <col width="15%" />
+                                    <col width="15%" />
+                                    <col width="15%" />
+                                    <col width="5%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input class="bor_none" id="batch" type="checkbox" onclick="javascript:checkAll('','tplno')" />
+                                        </th>
+                                        <th>번호</th>
+                                        <th>템플릿명</th>
+                                        <th>위치
+											<a class="imgSelect" title="위치 설명">설명</a>
+											<div class="popupLayer">
+											<div><a onClick="closeLayer(this)"><img id="close" src="/cms/image/common/c.gif" alt="닫기"></a></div>
+											<strong>위치</strong><br>
+											아래 그림과 같이 템플릿의 위치 정보입니다.
+											<img class="s001" src="/usr/image/main/sample01.gif" alt="템플릿 샘플">
+											</div>
+										</th>
+                                        <th>사용현황</th>
+                                        <th>등록일</th>
+                                        <th>수정일</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${list}" var="each" varStatus="loop">
+                                        <tr>
+                                            <td>
+                                                <input class="bor_none" name="tplno" value="${each.tplno}" type="checkbox" />
+                                            </td>
+                                            <td>
+                                                <c:out value='${input.total-(input.pageIndex-1)*input.pageSize-loop.index}' /><br>
+                                            </td>
+                                            <td>
+                                                <c:out value='${each.tpltitle}' />
+                                            </td>
+                                            <td>
+                                                <c:out value='${each.tplpositionword}' />
+                                            </td>
+                                            <td>
+                                                <c:out value='${fn:replace(each.sitetitle,",","<br>")}' escapeXml="false" />
+                                            </td>
+                                            <td>
+                                                <fmt:parseDate value="${each.tpldatereg}" pattern="yyyyMMddHHmmss" var="isoDate" />
+                                                <fmt:formatDate type="both" value="${isoDate}" pattern="yyyy-MM-dd HH:mm:ss" />
+                                            </td>
+                                            <td>
+                                                <fmt:parseDate value="${each.tpldatemod}" pattern="yyyyMMddHHmmss" var="isoDate" />
+                                                <fmt:formatDate type="both" value="${isoDate}" pattern="yyyy-MM-dd HH:mm:ss" />
+                                            </td>
+                                            <td>
+                                                <c:url value="update.html" var="url">
+                                                    <c:param name="tplno" value="${each.tplno}" />
+                                                </c:url>
+												<a class="btmore09" href="${url}">수정</a>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                    <c:if test="${input.total==0}">
+                                        <tr>
+                                            <td colspan="8" style="padding:20;">기록이 없습니다.</td>
+                                        </tr>
+                                    </c:if>
+                                </tbody>
+                            </table>
+                            <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}' />
+							<p class="notification_right01">
+								<img alt="!" src="/cms/image/excla.gif"> 1. 상단의 템플릿 등록을 통해 반복적으로 사용하는 페이지를 미리 등록합니다.(인클루드 개념으로 보시면 됩니다.)
+								<br>
+								<img alt="!" src="/cms/image/excla.gif"> 2. 등록 시 템플릿의 위치를 미리 지정합니다. 상단 내비게이션(Top), 왼쪽 메뉴(Left), 오른쪽 메뉴(Right), 하단저작권(Bottom)
+								<br>
+								<img alt="!" src="/cms/image/excla.gif"> 3. 집적 코딩한 HTML 파일을 넣거나, 파일 등록을 할 수 있습니다. 파일 등록의 경우 파일 내의 소스만을 호출합니다.
+								<br>
+								<img alt="!" src="/cms/image/excla.gif"> 4. 템플릿 명의 경우 한글로 작성하셔도 문제가 없습니다.
+							</p>
+                            <!---/게시판 영역------------------------->
+                        </div><!--/main_table-->
+						</li>
+					</ul>
+                    </div><!--/content-->
+                </form:form>
+<jsp:include page="../../end.jsp" flush="false" />

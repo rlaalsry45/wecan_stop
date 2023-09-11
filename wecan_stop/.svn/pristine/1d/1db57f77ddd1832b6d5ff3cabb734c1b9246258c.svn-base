@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZSatisfactionResult">
+	<typeAlias alias="zSatisfactionResultVo" type="com.z5.zcms.admsys.module.domain.ZSatisfactionResultVo"/>
+	<resultMap id="zSatisfactionResultVo" class="com.z5.zcms.admsys.module.domain.ZSatisfactionResultVo"/>
+	
+	<select id="ZSatisfactionResult.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(1) AS total
+			FROM
+				ZSATISFACTIONRESULT
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="satisfactionno">
+				<![CDATA[
+					satisfactionno = #satisfactionno#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="askno">
+				<![CDATA[
+					askno = #askno#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="answer">
+				<![CDATA[
+					answer = #answer#
+				]]>
+			</isNotEmpty>
+			<isEmpty prepend="and" property="answer">
+				<![CDATA[
+					answer IS NOT NULL
+				]]>
+			</isEmpty>
+	</select>
+
+	<select id="ZSatisfactionResult.listSubject" resultClass="zSatisfactionResultVo">
+		<![CDATA[
+			SELECT
+				no,
+				answer
+			FROM
+				ZSATISFACTIONRESULT
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="satisfactionno">
+				<![CDATA[
+					satisfactionno = #satisfactionno#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="askno">
+				<![CDATA[
+					askno = #askno#
+				]]>
+			</isNotEmpty>
+			<isEmpty prepend="and" property="answer">
+				<![CDATA[
+					answer IS NOT NULL
+				]]>
+			</isEmpty>
+			<![CDATA[
+				ORDER BY no DESC
+			]]>
+	</select>
+
+	<delete id="ZSatisfactionResult.satisfactionResultDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				zsatisfactionresult
+			WHERE
+				satisfactionno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<update id="ZSatisfactionResult.satisfactionResultTotalUpdate" parameterClass="zSatisfactionResultVo">
+		<![CDATA[
+			update zsatisfaction
+			set   total = total+1
+			where satisfactionno = #satisfactionno#
+		]]>
+		
+	</update>
+	
+	<delete id="ZSatisfactionResult.satisfactionResultChangeDelete" parameterClass="zSatisfactionResultVo">
+		<![CDATA[
+			DELETE FROM 
+				zsatisfactionresult
+			WHERE
+				satisfactionno = #satisfactionno#
+			AND askno = #askno#
+		]]>
+	</delete>
+	
+	<update id="ZSatisfactionResult.satisfactionResultUpdate" parameterClass="zSatisfactionResultVo">
+		<![CDATA[
+			update zsatisfactionresult
+			set   askno = #change_askno#
+			where satisfactionno = #satisfactionno#
+			and askno = #askno#
+		]]>
+		
+	</update>
+	
+	<insert id="ZSatisfactionResult.satisfactionResultWrite">
+		INSERT INTO zsatisfactionresult(
+			ORG_ID, 
+			CONSULTING_APPLICATION_NO,
+			ASKNO_1, 
+			ASKNO_1_OPINION, 
+			ASKNO_2, 
+			ASKNO_2_OPINION, 
+			ASKNO_3, 
+			ASKNO_3_OPINION, 
+			ASKNO_4, 
+			ASKNO_4_OPINION, 
+			ASKNO_5, 
+			ASKNO_5_OPINION, 
+			ASKNO_6, 
+			ASKNO_6_OPINION, 
+			ASKNO_7, 
+			ASKNO_7_OPINION, 
+			ASKNO_8, 
+			ASKNO_8_OPINION, 
+			ASKNO_9, 
+			REG_ID, 
+			REG_DATE
+		)VALUES(
+			#orgId#, 
+			#consulting_application_no#,
+			#askno1#, 
+			#askno1opinion#, 
+			#askno2#, 
+			#askno2opinion#, 
+			#askno3#, 
+			#askno3opinion#, 
+			#askno4#, 
+			#askno4opinion#, 
+			#askno5#, 
+			#askno5opinion#, 
+			#askno6#, 
+			#askno6opinion#, 
+			#askno7#, 
+			#askno7opinion#, 
+			#askno8#, 
+			#askno8opinion#, 
+			#askno9#, 
+			#regId#, 
+			NOW()
+		)
+	
+	</insert>
+	
+	<select id="ZSatisfactionResult.resultListCount" resultClass="java.lang.Integer">
+		<![CDATA[	
+			SELECT
+				 COUNT(*)
+			FROM zsatisfactionresult zsr,
+				 w_organization wo
+		   WHERE zsr.DEL_YN = 'N'
+		   ]]>
+		   <isNotEmpty prepend="and" property="cond1">
+		   		<isNotEmpty property="sdate">
+           		<isNotEmpty property="edate">
+				<![CDATA[ date_format($cond1$,'%Y%m%d') between #sdate# and #edate# ]]>
+				</isNotEmpty>
+				</isNotEmpty>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+          		<isNotEqual property="cond2" compareValue="org_name">
+           		<isNotEmpty property="keyword">
+				<![CDATA[ upper($cond2$) like concat('%',upper(#keyword#),'%') ]]>
+				</isNotEmpty>
+				</isNotEqual>
+				<isEqual property="cond2" compareValue="org_name">
+				<isNotEmpty property="keyword">
+				<![CDATA[ wo.ORGANIZATION_NAME like concat('%',upper(#keyword#),'%')]]>
+				</isNotEmpty>
+				</isEqual>
+			</isNotEmpty>
+		<![CDATA[
+		   ORDER BY zsr.NO DESC
+			]]>		
+	</select>
+	
+	<select id="ZSatisfactionResult.satisfactionResultList" resultClass="zSatisfactionResultVo">
+		<![CDATA[
+			SELECT
+				zsr.NO no,
+				zsr.ORG_ID orgId,
+				wo.ORGANIZATION_NAME orgName,
+				zsr.CONSULTING_APPLICATION_NO consulting_application_no,
+				zsr.REG_ID regId,
+				(SELECT USERNAME FROM zuser WHERE USERID = zsr.REG_ID) regName,
+				DATE_FORMAT(zsr.REG_DATE, '%Y-%m-%d %H:%i:%S') regDate
+			FROM zsatisfactionresult zsr,
+				 w_organization wo
+		   WHERE zsr.ORG_ID = wo.ORGANIZATION_ID
+		     AND zsr.DEL_YN = 'N'
+		   ]]>
+		   <isNotEmpty prepend="and" property="cond1">
+		   		<isNotEmpty property="sdate">
+           		<isNotEmpty property="edate">
+				<![CDATA[ date_format($cond1$,'%Y%m%d') between #sdate# and #edate# ]]>
+				</isNotEmpty>
+				</isNotEmpty>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+          		<isNotEqual property="cond2" compareValue="org_name">
+           		<isNotEmpty property="keyword">
+				<![CDATA[ upper($cond2$) like concat('%',upper(#keyword#),'%') ]]>
+				</isNotEmpty>
+				</isNotEqual>
+				<isEqual property="cond2" compareValue="org_name">
+				<isNotEmpty property="keyword">
+				<![CDATA[ wo.ORGANIZATION_NAME like concat('%',upper(#keyword#),'%')]]>
+				</isNotEmpty>
+				</isEqual>
+			</isNotEmpty>
+				
+		<![CDATA[
+		   ORDER BY zsr.NO DESC
+		   LIMIT #m#, #n#
+		]]>			
+	</select>
+	
+	<select id="ZSatisfactionResult.satisfactionResult" resultClass="zSatisfactionResultVo">
+		<![CDATA[
+			SELECT 
+				ORG_ID orgId, 
+				ASKNO_1 askno1, 
+				ASKNO_1_OPINION askno1opinion, 
+				ASKNO_2 askno2, 
+				ASKNO_2_OPINION askno2opinion, 
+				ASKNO_3 askno3, 
+				ASKNO_3_OPINION askno3opinion, 
+				ASKNO_4 askno4, 
+				ASKNO_4_OPINION askno4opinion, 
+				ASKNO_5 askno5, 
+				ASKNO_5_OPINION askno5opinion, 
+				ASKNO_6 askno6, 
+				ASKNO_6_OPINION askno6opinion, 
+				ASKNO_7 askno7, 
+				ASKNO_7_OPINION askno7opinion, 
+				ASKNO_8 askno8, 
+				ASKNO_8_OPINION askno8opinion, 
+				ASKNO_9 askno9
+			FROM zsatisfactionresult
+			WHERE DEL_YN = 'N'
+			 AND NO = #no#
+		]]>			
+	</select>
+	
+	<select id="ZSatisfactionResult.getSatisfactionResultCount" parameterClass="zSatisfactionResultVo" resultClass="int">
+		<![CDATA[
+			SELECT
+				 COUNT(*)
+			FROM zsatisfactionresult
+		   WHERE DEL_YN = 'N'
+		     AND ORG_ID = #orgId#
+		     AND CONSULTING_APPLICATION_NO = #consulting_application_no# 
+		     AND REG_ID = #regId#
+		   ]]>
+		   	
+	</select>
+	
+</sqlMap>

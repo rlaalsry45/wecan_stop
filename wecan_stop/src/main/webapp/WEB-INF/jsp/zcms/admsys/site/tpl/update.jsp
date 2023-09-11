@@ -1,0 +1,197 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../../lnb.jsp" flush="true" />
+            <div id="contents">
+               <div class="contents_top">
+                    <div class="location">
+                        <a href="/admsys/dashboard/index.html">HOME</a> <a href="/admsys/site/site/index.html">시스템관리</a> <a href="/admsys/site/tpl/index.html">템플릿관리</a> <strong>템플릿수정</strong>
+                    </div>
+                </div>
+                <form:form modelAttribute="zTplVo" method="post" name="frm" onsubmit="return checkForm()">
+                    <input name="act" type="hidden" value="update" />
+                    <div id="content">
+                    <ul class="homepagebbs">
+                        <li class="bg"><h3 class="sub">템플릿 수정</h3></li>
+                        <li>
+                        <div class="main_table">
+                            <!--게시판 영역-->
+                            <table class="main_table1 bgneno" summary="템플릿명, 위치, 입력방법, 내용, 메모, 히스토리">
+                                <caption>템플릿수정</caption>
+                                <colgroup>
+                                    <col width="150px" />
+                                    <col />
+                                </colgroup>
+                                <tr>
+                                    <th class="Tleft">템플릿명</th>
+                                    <td class="Tbod Tbod Tleft">
+                                        <input type="text" name="tpltitle" class="bor1ddd" size="50" value="${detail.tpltitle}" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="Tbornone Tleft">위치
+										<a class="imgSelect" title="위치 설명">설명</a>
+										<div class="popupLayer">
+										<div><a onClick="closeLayer(this)"><img id="close" src="/cms/image/common/c.gif" alt="닫기"></a></div>
+										<strong>위치</strong></br>
+										메뉴/콘텐츠 관리 &gt; 메뉴 등록 시 <em>서브페이지 템플릿 설정</em>에 자동으로 노출됩니다.<br />
+										<img class="s001" src="/usr/image/main/sample01.gif" alt="템플릿 샘플"><br /><br />
+									- Top 선택 시 : 상단 템플릿 설정에 노출됩니다.<br />
+									- Left 선택 시 : 좌측 템플릿 설정에 노출됩니다.<br />
+									- Right 선택 시 : 우측 템플릿 설정에 노출됩니다.<br />
+									- Bottom 선택 시 : 하단 템플릿 설정에 노출됩니다.
+										</div>
+									</th>
+                                    <td class="Tleft">
+                                        <select name="tplposition" style="height:27px;">
+                                            <option value="1" <c:if test="${detail.tplposition=='1'}">selected</c:if>>Top</option>
+                                            <option value="2" <c:if test="${detail.tplposition=='2'}">selected</c:if>>Left</option>
+                                            <option value="3" <c:if test="${detail.tplposition=='3'}">selected</c:if>>Right</option>
+                                            <option value="4" <c:if test="${detail.tplposition=='4'}">selected</c:if>>Bottom</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="Tbornone Tleft">입력방법
+									<a class="imgSelect" title="입력방법 설명">설명</a>
+										<div class="popupLayer">
+										<div><a onClick="closeLayer(this)"><img id="close" src="/cms/image/common/c.gif" alt="닫기"></a></div>
+										<strong>입력방법</strong></br>
+										파일등록 선택 시 미리 작성한 문서의 내용만 가져올 수 있습니다.<br />(확장자는 상관 없으며, 문서의 내용만을 호출합니다.)
+										</div>
+									</th>
+                                    <td class="Tleft">
+                                        <input class="radio0" type="radio" name="tpltype" value="1" onclick="displayRow('01','tpl');" <c:if test="${detail.tpltype=='1'}">checked</c:if> />
+                                        내용직접입력
+                                        <input class="radio1" type="radio" name="tpltype" value="2" onclick="displayRow('02','tpl');" <c:if test="${detail.tpltype=='2'}">checked</c:if> />
+                                        파일등록
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="Tbornone Tleft">내용</th>
+                                    <td class="Tleft">
+                                        <input type=radio class="radio0" name="tplcontstype" value="1" onclick="selArea(1)" <c:if test="${detail.tplcontstype=='1'}">checked</c:if> />
+                                        HTML
+                                        <input type=radio class="radio1" name="tplcontstype" value="3" onclick="selArea(3)" <c:if test="${detail.tplcontstype=='3'}">checked</c:if> />
+                                        웹에디터
+                                        <div id="txtarea" style="display:<c:if test='${detail.tplcontstype==3}'>none</c:if>">
+                                            <textarea class="bor1ddd" name="tplconts" id="tplconts" style="width:95%" rows="30"><c:out value="${detail.tplconts}" escapeXml="false" /></textarea>
+                                        </div>
+                                        <div id="editorarea" style="width:96%;display:<c:if test='${detail.tplcontstype!=3}'>none</c:if>">
+                                            <script type="text/javascript">
+										$(document).ready(function(){
+											CKEDITOR.replace("ckeditorConts" ,{
+												skin : 'office2013',
+												//width : '620px',			// 입력창의 넓이, 넓이는 config.js 에서 % 로 제어
+												height : '500px',				// 입력창의 높이
+
+												fullPage: true,				// 모든 html 허용
+												allowedContent: true,		// 모든 html 허용
+
+												toolbar : [
+													{ name: 'tools', items: [ 'Maximize'] },
+													{ name: 'document', groups: [ 'mode', 'document', 'doctools' ], items: [ 'Source', '-', 'Preview', 'Print', '-', 'Templates' ] },
+													{ name: 'clipboard', groups: [ 'clipboard', 'undo' ], items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] },
+													{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ], items: [ 'Find', 'Replace', '-', 'SelectAll', '-', 'Scayt' ] },
+													'/',
+													{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ], items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat' ] },
+													{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ], items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl' ] },
+													{ name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
+													'/',
+													{ name: 'insert', items: [ 'Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak'] },
+													{ name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
+													{ name: 'colors', items: [ 'TextColor', 'BGColor' ] }
+												],
+
+												filebrowserBrowseUrl: '/var/filemanager/index.jsp',
+												enterMode: CKEDITOR.ENTER_BR,
+												language : 'ko',
+
+											});
+										});
+										</script>
+										<textarea class="bor1ddd" name="ckeditorConts" id="ckeditorConts" style="width:95%" rows="30"><c:out value="${detail.tplconts}" escapeXml="true" /></textarea>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="Tbornone Tleft">메모</th>
+                                    <td class="Tleft">
+                                        <textarea class="bor1ddd" name="tplmemo" style="width:95%" rows="8"><c:out value="${detail.tplmemo}" escapeXml="false" /></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                            <h4>히스토리</h4>
+                            <input class="checkbox1" type="checkbox" name="tplhis" value="1" <c:if test="${detail.tplhis=='1'}">checked</c:if> />히스토리사용
+                            <table class="main_table1 bgneno" summary="번호, 메뉴명, 아이디, 등록일, 곤텐츠 사용">
+                                <colgroup>
+                                    <col width="40" />
+                                    <col width="" />
+                                    <col width="150" />
+                                    <col width="150" />
+                                    <col width="180" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>템플릿명</th>
+                                        <th>아이디</th>
+                                        <th>등록일</th>
+                                        <th>콘텐츠사용</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="td_center">
+                                    <c:forEach items="${hislist}" var="each" varStatus="loop">
+                                        <tr>
+                                            <td>
+                                                <c:out value='${loop.index+1}' />
+                                            </td>
+                                            <td>
+                                                <c:out value='${each.tplhistitle}' />
+                                            </td>
+                                            <td>
+                                                <c:out value='${each.tplhisuserid}' />
+                                            </td>
+                                            <td>
+                                                <fmt:parseDate value="${each.tplhisdate}" pattern="yyyyMMddHHmmss" var="isoDate" />
+                                                <fmt:formatDate type="both" value="${isoDate}" pattern="yyyy-MM-dd HH:mm:ss" />
+                                            </td>
+                                            <td>
+                                                <c:url value="update.html" var="url">
+                                                    <c:param name="tplhisno" value="${each.tplhisno}" />
+                                                    <c:param name="tplno" value="${each.tplno}" />
+                                                    <c:param name="mode" value="" />
+                                                </c:url>
+                                                <a class="btmore09" href="javascript:void(0);" onclick="if(window.confirm('정말 삭제하시겠습니까?')) this.href='${url}delete'">삭제</a>
+                                                <a class="btmore04" href="javascript:void(0);" onclick="if(window.confirm('현재 입력한 내용이 삭제되며 복구 불가합니다.\r\n그래도 진행 하시겠습니까?')) this.href='${url}restore'">콘텐츠사용</a>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                            <!--/게시판 영역-->
+                        </div><!--/main_table-->
+                        <!--/사이트 추가-->
+                        <div class="btn-c">
+                            <input class="chost_btn_s" type="submit" value="수정" onclick="if(!window.confirm('저장하시겠습니까?')){return false;} " />
+                            <a  class="btmore09" href="javascript:void(0);" onclick="if(window.confirm('수정한 내용이 삭제되고 리스트화면으로 이동합니다.\r\n그래도 진행 하시겠습니까?')) this.href='index.html'">취소</a>
+                        </div>
+                        <!--
+                        <div class="confirm">
+                            <p>
+                                <input type="image"
+                                    src="/cms/image/btn_confirm.jpg" alt="수정"
+                                    onclick="if(window.confirm('저장하시겠습니까?')){saveContent('update')}" />
+                                <a href="javascript:void(0);" onclick="if(window.confirm('수정한 내용이 삭제되고 리스트화면으로 이동합니다.\r\n그래도 진행 하시겠습니까?')) this.href='index.html'">
+                                    <img src="/cms/image/btn_cancel.jpg"
+                                        alt="취소" />
+                                </a>
+                            </p>
+                        </div>--><!--/confirm-->
+                        </li>
+                    </ul>
+                    </div><!--/content-->
+                </form:form>
+            </div>
+            <!--/contents-->
+<jsp:include page="../../end.jsp" flush="false" />

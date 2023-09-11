@@ -1,0 +1,531 @@
+package com.z5.zcms.admsys.statisticsmng.dao;
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.z5.zcms.admsys.statisticsmng.domain.ZStatisticsMngVo;
+
+import egovframework.com.cmm.service.impl.EgovComAbstractDAO;
+
+@Repository
+public class ZStatisticsMngDAOImpl extends EgovComAbstractDAO implements ZStatisticsMngDAO {
+
+	private final String sqlMapNs = "statisticsDAO.";
+	
+	@Override
+	public ZStatisticsMngVo getMonthCounsel(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getMonthCounsel", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getYearCounsel(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getYearCounsel", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getClientVictimRelType(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getClientVictimRelType", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getActionTypeServiceRel(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getActionTypeServiceRel", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getYearActionTypeServiceRel(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getYearActionTypeServiceRel", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getActionCode(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getActionCode", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getStep8ActionCode(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getStep8ActionCode", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getOrgType(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getOrgType", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getStep8OrgType(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getStep8OrgType", reqVo);
+	}
+	
+	@Override
+	public ZStatisticsMngVo getOrgTypeGovDetail(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getOrgTypeGovDetail", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getStep8OrgTypeGovDetail(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getStep8OrgTypeGovDetail", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getHamType(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getHamType", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getConsultingType(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getConsultingType", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getWeekActionTypeCont(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getWeekActionTypeCont", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getYearActionTypeCont(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getYearActionTypeCont", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getMasterActionTypeServiceRel(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getMasterActionTypeServiceRel", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getHistoryActionTypeServiceRel(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getHistoryActionTypeServiceRel", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSatisfaction1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSatisfaction1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSatisfaction2(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSatisfaction2", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSatisfaction3(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSatisfaction3", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSatisfaction4(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSatisfaction4", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSatisfaction5(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSatisfaction5", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSatisfaction6(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSatisfaction6", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSatisfaction7(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSatisfaction7", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSatisfaction8(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSatisfaction8", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSatisfaction1OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSatisfaction1OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSatisfaction2OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSatisfaction2OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSatisfaction3OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSatisfaction3OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSatisfaction4OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSatisfaction4OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSatisfaction5OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSatisfaction5OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSatisfaction6OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSatisfaction6OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSatisfaction7OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSatisfaction7OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSatisfaction8OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSatisfaction8OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSatisfaction9List(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSatisfaction9List", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey0(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey0", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey1_1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey1_1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey1_2(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey1_2", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey1_3(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey1_3", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey1_4(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey1_4", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey2_1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey2_1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey2_2(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey2_2", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey2_3(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey2_3", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey2_4(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey2_4", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey3_1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey3_1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey3_2(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey3_2", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey3_3(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey3_3", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey3_4(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey3_4", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey3_5(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey3_5", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey4_1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey4_1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey4_2(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey4_2", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey4_3(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey4_3", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey4_4(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey4_4", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey5_1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey5_1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey5_2(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey5_2", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey5_3(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey5_3", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey5_4(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey5_4", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey5_5(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey5_5", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey6_1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey6_1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey6_2(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey6_2", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey6_3(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey6_3", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey6_4(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey6_4", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey6_5(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey6_5", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey7(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey7", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey7_1_1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey7_1_1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey7_2_1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey7_2_1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey8(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey8", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey9(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey9", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey10(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey10", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey11(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey11", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey12(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey12", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey14(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey14", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey15(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey15", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getSurvey16(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getSurvey16", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSurvey7OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSurvey7OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSurvey7_1_1OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSurvey7_1_1OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSurvey7_2_1OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSurvey7_2_1OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSurvey10OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSurvey10OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSurvey11OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSurvey11OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSurvey12OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSurvey12OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getSurvey13OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getSurvey13OpinionList", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery2(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery2", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery3(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery3", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery5(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery5", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery6_1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery6_1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery6_2(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery6_2", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery6_2_1(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery6_2_1", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery6_3(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery6_3", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery7(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery7", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery8(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery8", reqVo);
+	}
+
+	@Override
+	public ZStatisticsMngVo getPrequery12(ZStatisticsMngVo reqVo) {
+		return (ZStatisticsMngVo)select(sqlMapNs+"getPrequery12", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery2_8OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery2_8OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery4List(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery4List", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery5_8OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery5_8OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery6_1_7OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery6_1_7OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery6_2_6OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery6_2_6OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery6_2_1_6OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery6_2_1_6OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery6_3_3OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery6_3_3OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery7_4OpinionList(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery7_4OpinionList", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery9List(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery9List", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery10List(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery10List", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery11List(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery11List", reqVo);
+	}
+
+	@Override
+	public List<ZStatisticsMngVo> getPrequery13List(ZStatisticsMngVo reqVo) {
+		return (List<ZStatisticsMngVo>)list(sqlMapNs+"getPrequery13List", reqVo);
+	}
+
+}

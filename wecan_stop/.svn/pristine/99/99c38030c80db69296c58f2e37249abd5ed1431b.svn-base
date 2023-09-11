@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap	namespace="Board">
+	<typeAlias alias="BoardVO" type="com.z5.zcms.admsys.board.domain.BoardVO" />
+	<resultMap id="BoardVO" class="com.z5.zcms.admsys.board.domain.BoardVO"/>
+
+	<insert id="BoardDAO.insertBoard">	
+		<![CDATA[
+			INSERT INTO BOARD(
+				BOARD_NO,
+				BOARD_USERNAME, 
+				BOARD_PASSWD, 
+				BOARD_TITLE, 
+				BOARD_CONTS, 
+				BOARD_IP, 
+				BOARD_HIT, 
+				REG_DATE, 
+				REG_ID
+			)VALUES(
+				#boardNo#,
+				#boardUsername#, 
+				#boardPasswd#, 
+				#boardTitle#, 
+				#boardConts#, 
+				#boardIp#,
+				 0, 
+				now(), 
+				#regId#
+			)
+		]]>
+	</insert>
+	
+	<insert id="BoardDAO.insertBoardFile">
+		<![CDATA[
+			INSERT INTO BOARD_FILE(
+				BOARDFILE_BOARDNO, 
+				BOARDFILE_ORIGINAL, 
+				BOARDFILE_SAVE, 
+				BOARDFILE_TYPE, 
+				BOARDFILE_DESCRIPTION, 
+				REG_DATE, 
+				REG_ID
+			)VALUES(
+				#boardfileBoardno#, 
+				#boardfileOriginal#, 
+				#boardfileSave#, 
+				#boardfileType#, 
+				#boardfileDescription#, 
+				now(), 
+				#regId#
+			)
+		]]>
+	</insert>
+	
+	<select id="BoardDAO.getBoardList" parameterClass="BoardVO" resultClass="BoardVO">
+		<![CDATA[
+			SELECT 
+				b.BOARD_NO boardNo, 
+				b.BOARD_USERNAME boardUsername, 
+				b.BOARD_PASSWD boardPasswd, 
+				b.BOARD_TITLE boardTitle, 
+				b.BOARD_CONTS boardConts, 
+				b.BOARD_IP boardIp,
+				b.BOARD_ANSWER boardAnswer,
+				b.BOARD_ANSWER_ID boardAnswerId,
+				b.REG_DATE regDate, 
+				b.UPD_DATE updDate, 
+				bf.BOARDFILE_ORIGINAL boardfileOriginal,
+				bf.BOARDFILE_SAVE boardfileSave
+			FROM BOARD b
+				 LEFT OUTER JOIN BOARD_FILE bf
+			  ON b.BOARD_NO = bf.BOARDFILE_BOARDNO
+		   WHERE b.BOARD_USERNAME = #boardUsername#
+		     AND b.BOARD_PASSWD = #boardPasswd#
+		]]>
+		<![CDATA[
+			ORDER BY BOARD_NO DESC
+		]]>
+	</select>
+
+</sqlMap>

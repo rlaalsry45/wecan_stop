@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZSSO">
+	
+	<typeAlias alias="zSSOVO" type="com.z5.zcms.security.SSO.domain.ZSSOVO"/>
+	<resultMap id="zSSOVO" class="com.z5.zcms.security.SSO.domain.ZSSOVO"/>
+
+	<select id="ZSSO.getUserInfoKF" parameterClass="zSSOVO" resultClass="zSSOVO">
+		<![CDATA[
+			select
+				cs_id as userid
+				,cs_password as userpasswd
+				,cs_name as username
+			from
+				kf.vi_user_kfhomenew
+			where cs_id=#userid#
+			  and cs_password = #userpasswd#  
+		]]>
+	
+	</select>
+	<select id="ZSSO.getUserInfoUserSSO" parameterClass="zSSOVO" resultClass="zSSOVO">
+		<![CDATA[
+			select
+				userid
+				userpasswd
+				username
+			from
+				zuser
+			where userid='SSO_'||#userid#
+		]]>
+	
+	</select>
+
+	<insert id="ZSSO.insertSSOUser">
+		<![CDATA[
+			insert into zuser(
+ 				userno
+ 				,userid 
+				,userpasswd
+				,username
+				,userdatereg
+				,enabled
+				,userauth
+ 			) values(
+ 				zuser_no_seq.nextval
+ 				,'SSO_'||#userid# 
+				,#userpasswd#
+				,#username#
+				,now()
+				,1
+				,9
+ 			)
+		]]>
+	</insert>
+	
+	<update id="ZSSO.updateSSOPassword">
+		<![CDATA[
+			UPDATE zuser SET
+				userpasswdtmp = #userpasswd#
+		    WHERE userid=#userid#
+		]]>
+	</update>
+	<update id="ZSSO.updateSSOPasswordNull">
+		<![CDATA[
+			UPDATE zuser SET
+				userpasswdtmp = null
+		    WHERE userid=#userid#
+		]]>
+	</update>
+	
+	<!-- <select id="zmainbannerDAO.list" parameterClass="zmainbannerVO" resultClass="zmainbannerVO">
+		<![CDATA[
+			SELECT
+				no
+				, type
+				, title
+				, conts
+				, ranking
+				, link_url
+				, open_win
+				, img_alt
+				, img_title
+				, img_name
+				, read
+				, bbsno
+				, ztag
+				, siteno
+				, re_menu
+				, m_width
+				, m_height
+				, case when st_date<=now() and end_date>=now() then '사용' else '사용안함' end  use_state
+				, day	
+				, DATE_FORMAT(reg_date,'%Y-%m-%d') reg_date	
+				, DATE_FORMAT(alt_date,'%Y-%m-%d') alt_date	
+				, DATE_FORMAT(st_date,'%Y-%m-%d %H%i%s') || '~' || DATE_FORMAT(end_date,'%Y-%m-%d %H%i%s') st_date
+			from
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+								a.*
+							from
+								zmainbanner a
+							where type=#type#  
+							order by ranking asc
+						) row_
+					where
+						@rownum < (#n#+#m#)
+				)
+			where
+				rownum_ > #m#	
+				  
+			
+		]]>
+	</select>
+	
+	
+	
+
+
+ 	<delete id="zmainbannerDAO.delete" parameterClass="java.util.List">
+				DELETE
+				FROM ZMAINBANNER
+				WHERE no in
+					<iterate open="(" close=")" conjunction=",">
+						#arrDeleteNo[]#
+					</iterate>
+	</delete>
+	
+	<update id="zmainbannerDAO.update">
+		<![CDATA[
+			UPDATE ZMAINBANNER SET
+				 type=#type#
+				, title=#title#
+				, img_name=IFNULL(#img_name#,img_name)
+				, conts=#conts#
+				, ranking=#ranking#
+				, link_url=#link_url#
+				, open_win=#open_win#
+				, img_alt=#img_alt#
+				, img_title=#img_title#
+				, read=#read#
+				, bbsno=#bbsno#
+				, ztag=#ztag#
+				, siteno=#siteno#
+				, re_menu=#re_menu#
+				, m_width=#m_width#
+				, m_height=#m_height#
+				, day=#day#
+				, alt_date = now()
+				, st_date=to_date(#st_date#,'YY%Y%m%dHH24MI')
+				, end_date=to_date(#end_date#,'YY%Y%m%dHH24MI')
+		    WHERE no=#no#
+		]]>
+	</update>
+	
+		<select id="zmainbannerDAO.selectbypk"  resultClass="zmainbannerVO">
+		<![CDATA[
+			SELECT
+				  no
+				, type
+				, title
+				, conts
+				, ranking
+				, link_url
+				, open_win
+				, img_alt  
+				, img_title
+				, img_name
+				, read
+				, bbsno
+				, ztag
+				, siteno
+				, re_menu
+				, m_width
+				, m_height	 
+				, day	
+				, DATE_FORMAT(reg_date,'%Y-%m-%d') reg_date	
+				, DATE_FORMAT(alt_date,'%Y-%m-%d') alt_date	
+				, DATE_FORMAT(st_date,'YY%Y%m%dHH24MI') st_date 
+				, DATE_FORMAT(end_date,'YY%Y%m%dHH24MI') end_date
+
+			FROM ZMAINBANNER
+			WHERE no=#no#
+		]]>
+	</select>
+	
+	<update id="zmainbannerDAO.updateDownRank">
+		<![CDATA[
+			UPDATE ZMAINBANNER SET
+				ranking=ranking+1
+		    WHERE ranking>=#ranking# AND type=#type# 
+		]]>
+	</update>
+	
+	
+	<update id="zmainbannerDAO.updateRank">
+		<![CDATA[
+			UPDATE ZMAINBANNER SET
+				ranking=ranking-1
+		    WHERE   type=#type# AND ranking > (select ranking  from ZMAINBANNER  where type=#type# AND no=#no#  and rownum<=1 )
+		]]>
+	</update>
+	
+	<update id="zmainbannerDAO.updatemainbanner">
+		<![CDATA[
+			UPDATE ZMAINBANNER SET
+				 type=#type#
+				, title=#title#
+				, img_name=IFNULL(#img_name#,img_name)
+				, conts=#conts#
+				, ranking=#ranking#
+				, link_url=#link_url#
+				, open_win=#open_win#
+				, img_alt=#img_alt#
+				, img_title=#img_title#
+				, read=#read#
+				, #bbsno#
+				, #ztag#
+				, #siteno#
+				, #re_menu#
+				, #m_width#
+				, #m_height#
+		    WHERE no=#no#
+		]]>
+	</update>
+
+	<select id="zmainbannerDAO.zmainbannerfront" resultClass="zmainbannerVO">
+		<![CDATA[
+				SELECT 
+				  no
+				, type
+				, title  || 
+				  case when  type <200 and type>=100 and open_win='1' then '(상세 페이지 이동)'  
+				 	   when  type <200 and type>=100  then '(새 창 열림)'  
+				 	   when  open_win='1' then '(Link to the Pages)'  
+				 	   else  '(Open in new window)'  end title
+				, conts
+				, ranking
+				, link_url
+				, open_win
+				, img_alt  
+				, img_title
+				, img_name
+				, read
+				, bbsno
+				, ztag
+				, siteno
+				, re_menu
+				, m_width
+				, m_height	 
+				, day	  
+				FROM ZMAINBANNER  
+				WHERE   type=#type# AND now() between st_date and end_date ORDER BY ranking ASC 
+		]]>
+	</select>
+	
+	<select id="zmainbannerDAO.mobileinsert">
+		<![CDATA[
+			INSERT INTO ZMAINBANNER
+			( 	  no
+			    , type
+				, title
+				, conts
+				, img_name
+				, day
+			) VALUES(
+				  zmainbanner_no_seq.nextval
+				, #type#
+				, #title#
+				, #conts#
+				, #img_name#
+				, #day#
+			)
+		]]>
+	</select> -->
+
+</sqlMap>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

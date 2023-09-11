@@ -1,0 +1,80 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<div class="content">
+    <div class="sub_top_wrap">
+        <div class="w_1170">
+            <div class="sub_top bg01">
+                <p>신청 방법</p>
+                <div class="loca"><a href="">홈</a><span>신청 방법</span><span>상담신청</span></div>
+            </div>
+        </div>
+    </div>
+    <div class="cont_wrap">
+        <div class="w_1170">
+            <div class="left_cont">
+                <p>신청 방법</p>
+                <ul>
+                    <li class="on"><a href="/?menuno=254">상담신청</a></li>
+                    <li><a href="/?menuno=255">성희롱 방지 조직문화 진단 신청</a></li>
+                </ul>
+            </div>
+            <div class="right_cont">
+                <p class="p_t">상담신청</p>
+                <p class="support_tt">전화 상담 신청</p>
+                <div class="call_box">
+                    <ul>
+                        <li>
+                            <div>
+                                <dl>
+                                    <dt class="b_ico1">전화상담 번호</dt>
+                                    <dd>02)735-7544<br>(주말ㆍ공휴일 1366)</dd>
+                                </dl>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <dl>
+                                    <dt class="b_ico2">상담시간</dt>
+                                    <dd>평일 09:00 ~ 18:00<br>(점심시간 12:00 ~ 13:00)</dd>
+                                </dl>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <p class="support_tt2">여성가족부 공공부문 직장 내 <em></em>성희롱ㆍ성폭력 신고센터</p>
+                <p class="support_tt">신고 센터 운영 안내</p>
+                <div class="txt_box">
+                    <p>
+                        국가기관, 지방자치단체, 공직유관단체의 직원(종사자)이 직장(기관)내에서 성희롱ㆍ성폭력 피해를 입은 경우 인터넷을 통해 신고하실 수 있습니다. 신고된 사건은 사건분류회의를 거쳐 조치 방향을 결정하고
+                        그 결과를 신고인은 온라인을 통해 확인하실 수 있습니다.
+                    </p>
+                    <div class="btn">
+                        <a href="http://www.mogef.go.kr/msv/wsrMain.do">여성가족부 신고센터</a>
+                    </div>
+                </div><!--
+                <p class="support_tt">신고사건 절차 안내</p>
+                <div class="list_box">
+                    <ul>
+                        <li><dl><dt><img src="/cms/image/sub/group-23.png"></dt><dd><p>신고<br>접수</p></dd></dl></li>
+                        <li><dl><dt><img src="/cms/image/sub/group-23_2.png"></dt><dd><p>초기<br>상담</p></dd></dl></li>
+                        <li><dl><dt><img src="/cms/image/sub/group-13.png"></dt><dd><p>사건분류<br>회의</p></dd></dl></li>
+                        <li class="w_275"><dl><dt><img src="/cms/image/sub/group-11.png"></dt><dd><p>사건 발생 기관 조치 요청</p></dd></dl></li>
+                        <li><dl><dt><img src="/cms/image/sub/group-19.png"></dt><dd><p>조치결과<br>통보</p></dd></dl></li>
+                        <li><dl><dt><img src="/cms/image/sub/group-15.png"></dt><dd><p>모니터링</p></dd></dl></li>
+                    </ul>
+                </div>-->
+                <p class="support_tt2">부처별 신고센터</p>
+                <div class="link_box">
+                    <ul>
+                        <li><a href="http://www.mogef.go.kr/msv/wsrMain.do"><dl><dt><img src="/cms/image/sub/icon-family.png"></dt><dd>여성가족부 신고센터</dd></dl></a></li>
+                        <li><a href="http://www.mpm.go.kr/mpm/minwon/minwonCenter/complain/sexualViolenc/"><dl><dt><img src="/cms/image/sub/icon-work.png"></dt><dd>인사혁신처 인사신문고</dd></dl></a></li>
+                        <li><a href="https://www.moe.go.kr/sub/infoRenewal.do?m=011508&page=011508&gubun=V2&s=moe&t=02"><dl><dt><img src="/cms/image/sub/icon-study.png"></dt><dd>교육부 신고센터</dd></dl></a></li>
+                        <li><a href="https://minwon.moel.go.kr/rptcenter/regist.do"><dl><dt><img src="/cms/image/sub/icon-hire.png"></dt><dd>고용노동부 신고센터</dd></dl></a></li>
+                        <li><a href="https://case.humanrights.go.kr/"><dl><dt><img src="/cms/image/sub/icon-sports.png"></dt><dd>스포츠인권특별조사단</dd></dl></a></li>
+                        <li><a href="https://www.mcst.go.kr/kor/s_minwon/eCulture/cultureReport/cultureReportCenter.jsp"><dl><dt><img src="/cms/image/sub/icon-arts.png"></dt><dd>문화예술체육계<br>신고상담 안내</dd></dl></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

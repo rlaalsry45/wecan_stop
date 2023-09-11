@@ -1,0 +1,139 @@
+<%@ page contentType="text/html;charset=utf-8" %>
+<%@ page import="java.util.*, java.text.*" %>
+<%@ page import="com.z5.zcms.admsys.user.domain.ZUserVo" %>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true"/>
+<jsp:include page="../../lnb.jsp" flush="true"/>
+<div id="contents">
+    <div class="contents_top">
+        <div class="location">
+            <a href="/admsys/dashboard/index.html">HOME</a> <a href="/admsys/user/common/">회원관리</a> <strong>방문자통계</strong>
+        </div>
+    </div>
+    <div id="content">
+        <ul class="homepagebbs">
+            <li class="bg"><h3 class="sub">${input.sitetitle } 방문자통계</h3>
+            <%--<li><h5><a href="https://analytics.google.com/analytics/web/">구글 통계 보기</a></h5></li>--%>
+            <c:if test="${act eq 'year'}">
+            <a class="btmore03" href="visitExcel.html?siteno=${input.siteno}">엑셀 다운</a>
+            </c:if>
+            </li>
+            <li>
+                <table class="main_table1 bgneno" summary="전체, 이달 방문객, 일일 최고치, 오늘 방문객">
+                    <caption>방문자통계</caption>
+                    <colgroup>
+                        <col width="33.3%"/>
+                        <col width="33.3%"/>
+                        <col width="33.3%"/>
+                    </colgroup>
+                    <tr>
+                        <th width="100%" colspan="4"><b>전체 : ${totalCnt} 명</b></th>
+                    </tr>
+                    <tr>
+                        <td class="rborder">이달 방문객 : ${todayMonthCount} 명</td>
+                        <td class="rborder">일일 최고치 : ${maxTodayCount} 명</td>
+                        <td>오늘 방문객 : ${todayCount} 명</td>
+                    </tr>
+                </table>
+
+                <c:if test="${act eq 'year'}">
+                    <c:forEach items="${yearCountList}" var="each" varStatus="loop">
+                        <table border="0" width="100%" class="main_table1">
+                            <tr>
+                                <th class="Tleft" width="40%">
+                                    <a href="./visitStats.html?act=month&value=${each.visitdate}&yearCount=${each.count}&totalCnt=${totalCnt}&siteno=${input.siteno }&sitetitle=${input.sitetitle }">${each.visitdate} 년</a> </b></th>
+                                <td width="40%" align="right" class="Tbod"><b>${each.count} 명</b></td>
+                            </tr>
+                        </table>
+                    </c:forEach>
+                </c:if>
+
+                <c:if test="${act eq 'month'}">
+                    <strong class="Talign">${year} 년 :&nbsp;&nbsp;&nbsp;&nbsp;${yearCount} 명</strong>
+                    <table class="main_table1 bgneno" summary="전체, 이달 방문객, 일일 최고치, 오늘 방문객">
+                        <c:forEach var="monthData" begin="1" end="12" varStatus="loop">
+                            <c:if test="${loop.count %3 == 1}">
+                                <tr>
+                            </c:if>
+                            <td width="33%" style="border:0px;">
+                                <table border="0" width="100%" class="main_table1">
+                                    <tr>
+                                        <th width="45%" class="Tleft">
+                                            <c:set var="monthVal" value="${monthData}"/>
+                                            <c:if test="${monthVal < 10}">
+                                                <c:set var="monthVal" value="0${monthVal}"/>
+                                            </c:if>
+                                            <a href="./visitStats.html?act=day&year=${year}&month=${monthVal}&yearCount=${yearCount}&totalCnt=${totalCnt}&siteno=${input.siteno }&sitetitle=${input.sitetitle }">${monthVal} 월</a>
+                                        </th>
+                                        <td width="45%" align="right" class="Tbod">
+                                            <c:set var="flag" value="false"/>　　
+                                            <c:forEach items="${monthCountList}" var="each">
+                                                <c:if test="${not flag}">
+                                                    <c:if test="${each.visitdate eq monthVal}">${each.count}<c:set var="flag" value="true"/></c:if>
+                                                </c:if>
+                                            </c:forEach>
+                                            <c:if test="${not flag}">0</c:if>
+                                            명
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <c:if test="${loop.count %3 == 0}">
+                                </tr>
+                            </c:if>
+                        </c:forEach>
+                    </table>
+                    <div class="btn-c">
+                        <a href="visitStats.html?siteno=${input.siteno }&sitetitle=${input.sitetitle }" class="btmore09">뒤로가기</a>
+                    </div>
+                </c:if>
+
+                <c:if test="${act eq 'day'}">
+
+                    <strong class="Talign">${year} 년 ${month} 월:&nbsp;&nbsp;&nbsp;&nbsp;${monthCount}
+                        <c:if test="${monthCount eq null}">0</c:if> 명</strong>
+
+                    <table border="0" width="100%" class="main_table1" cellspacing="0" bordercolordark="#FFFFFF">
+
+                        <c:forEach var="dayData" begin="1" end="${dayOfMonth}" varStatus="loop">
+                            <c:if test="${loop.count %7 == 1}">
+                                <tr>
+                            </c:if>
+                            <td width="14%" style="border:0px;">
+                                <table border="0" width="100%">
+                                    <tr>
+                                        <th width="50%" class="Tleft">${dayData} 일</th>
+                                        <td width="50%" align="right" class="Tbod">
+                                            <c:set var="dayVal" value="${dayData}"/>
+                                            <c:if test="${dayVal < 10}">
+                                                <c:set var="dayVal" value="0${dayVal}"/>
+                                            </c:if>
+                                            <c:set var="flag" value="false"/>　　
+                                            <c:forEach items="${dayCountList}" var="each">
+                                                <c:if test="${not flag}">
+                                                    <c:if test="${each.visitdate eq dayVal}">${each.count}<c:set var="flag" value="true"/></c:if>
+                                                </c:if>
+                                            </c:forEach>
+                                            <c:if test="${not flag}">0</c:if> 명
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </td>
+                            <c:if test="${loop.count %7 == 0}">
+                                </tr>
+                            </c:if>
+                        </c:forEach>
+                    </table>
+                    <div class="btn-c">
+                        <a href="visitStats.html?act=month&value=${year}&yearCount=${input.yearCount}&totalCnt=${totalCnt}&siteno=${input.siteno }&sitetitle=${input.sitetitle }" class="btmore09">뒤로가기</a>
+                    </div>
+                </c:if>
+            </li>
+        </ul>
+    </div><!--/contents-->
+</div>
+<!--/container-->
+</div><!--/wrap-->
+</body>
+</html>

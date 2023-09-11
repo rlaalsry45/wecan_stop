@@ -1,0 +1,75 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page trimDirectiveWhitespaces="true"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp"%>
+<script type="text/javascript">
+function openbannerLink(link,typ,w,h){
+	
+	if(typ=='2'){
+		window.open(link ,'_blank',''); 
+	}else if(typ=='3'){
+			window.open(link ,'_blank','width='+w+',height='+h); 
+	}else{
+		window.open(link ,'_self',''); 
+	}
+	
+}
+</script>
+<c:forEach items="${list }" var="data" varStatus="status"> 
+
+<c:if test="${data.read == '0' }"> 
+	 <div class="c-guide">  
+			<span> <a title="${data.title}" href="#" onclick="javascript:openbannerLink('${data.link_url}','${data.open_win}','${data.m_width}','${data.m_height}')"> 
+				<img alt="${data.img_alt}" src="${zmainbanner_url}/${data.img_name}"/></a>
+			</span>
+			<div class="g-text">
+				<a title="${data.title}" href="#" onclick="javascript:openbannerLink('${data.link_url}','${data.open_win}','${data.m_width}','${data.m_height}')"  
+				  <c:if test="${data.open_win == '1' }">target="_blank" </c:if>
+				> 
+				<strong>${data.title}</strong> <em>${data.conts}</em></a>
+			</div>
+		</div>  
+</c:if> 
+  
+<c:if test="${data.read == '1' }">
+<div class="c-guide"  > 
+		<form  action="/?menuno=${data.re_menu}" method="post" 
+		 <c:if test="${data.open_win == '2' }">target="_blank" </c:if> 
+		 >
+		   <span> <a title="${data.title }"
+				onclick="return submitForm(this,'view',${data.bbsno});"  href="#none"> 
+				<img alt="${data.img_alt }" src="${zmainbanner_url}/${data.img_name}" onerror="this.src='${zmainbanner_url}/ '" /></a></span>
+			<div class="g-text">
+				<a onclick="return submitForm(this,'view',${data.bbsno});" href="#none"> 
+				<strong>${data.title}</strong><em>${data.conts}</em></a>
+			</div>
+			<input type="hidden" name="ztag" value="${data.ztag }" />
+			<input type="hidden" name="siteno" value="${data.siteno }" />
+		</form> 
+</div> 
+</c:if> 
+ 
+</c:forEach>
+
+<c:if test="${total ==0 }">
+     <div class="c-guide">  
+			<span>   
+				<img alt="${data.img_alt}" src="${zmainbanner_url}/noimg_big.gif"/> 
+			</span>
+			<div class="g-text">
+				 
+			</div>
+		</div> 
+  
+</c:if>
+
+
+<ul class="rollingbtn"> 
+<c:if test="${total >0 }">
+<li><a href="#"><img alt="1" src="image/common/icon/icon_rolling_on.gif" /></a></li> 
+</c:if>
+<c:forEach items="${list }" var="data" varStatus="status"> 
+
+ ${status.last ? '' : '<li><a href="#"><img alt="2" src="image/common/icon/icon_rolling_off.gif" /></a></li>'} 
+ 
+</c:forEach>
+</ul> 

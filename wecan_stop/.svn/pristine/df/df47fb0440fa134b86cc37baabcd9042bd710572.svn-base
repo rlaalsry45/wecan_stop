@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<!--suppress ALL -->
+<sqlMap namespace="zadminip">
+
+<typeAlias alias="AdminIPVO" type="com.z5.zcms.admsys.adminip.domain.AdminIPVO"/>
+<resultMap id="AdminIPVO" class="com.z5.zcms.admsys.adminip.domain.AdminIPVO"/>
+
+<select id="adminIPDAO.getIPCount" parameterClass="AdminIPVO" resultClass="java.lang.Integer">
+	<![CDATA[
+		select a.total+b.total as ipcouch
+		from
+			 (SELECT count(*) as total
+				   from zadminip
+			     where ip = #usercutip#
+			     and adminip_permit != 2) a,
+	    	  (SELECT count(*) as total
+					from zadminip
+				  where ip = #userfullip#
+				  and adminip_permit != 2) b
+
+
+	]]>
+</select>
+
+<select id="adminIPDAO.IPCount" parameterClass="AdminIPVO" resultClass="java.lang.Integer">
+	<![CDATA[
+		select
+			count(*) as total
+		from
+			zadminip
+	]]>
+</select>
+
+<select id="adminIPDAO.list" parameterClass="AdminIPVO" resultClass="AdminIPVO">
+	<![CDATA[
+		SELECT
+			no
+			,ip
+			,name
+			,memo
+			,adminip_permit
+			,global_ip
+		from
+			(
+			select
+			row_.*
+			, @rownum := @rownum + 1 AS rownum_
+		from
+			(
+			select
+			a.*
+		from
+			zadminip a, (SELECT @rownum := #m#) R
+		where 1=1
+	]]>
+		<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[ UPPER($cond2$) LIKE CONCAT('%',UPPER(#keyword#),'%') ]]>
+		</isNotEmpty>
+
+<!-- 		<isNotEmpty prepend="and" property=sitestatus>
+				<![CDATA[ sitestatus=#sitestatus# ]]>
+		</isNotEmpty>
+		  -->
+	<![CDATA[
+		ORDER BY no desc
+		LIMIT #m#, #n#
+			) row_
+		where
+			@rownum < (#n#+#m#)
+			) t
+
+	]]>
+</select>
+
+<insert id="adminIPDAO.insert">
+	<![CDATA[
+		insert into zadminip(
+			ip
+			,name
+			,memo
+			,regdate
+			,userid
+			,adminip_permit
+			, global_ip
+		)VALUES(
+	]]>
+		<isNotEmpty  property="ip4">
+			<![CDATA[
+				CONCAT(#ip#,'.',#ip2#,'.',#ip3#,'.',#ip4#),
+				]]>
+		</isNotEmpty>
+		<isEmpty  property="ip4">
+			<![CDATA[
+				CONCAT(#ip#,'.',#ip2#,'.',#ip3#),
+				]]>
+		</isEmpty>
+	<![CDATA[
+			#name#,
+			#memo#,
+			now(),
+			#userid#,
+			#adminip_permit#,
+			#global_ip#
+		)
+	]]>
+</insert>
+
+<delete id="adminIPDAO.delete" parameterClass="java.util.List">
+		DELETE
+		FROM ZADMINIP
+		WHERE no IN
+			<iterate open="(" close=")" conjunction=",">
+				#arrDeleteNo[]#
+			</iterate>
+</delete>
+
+<select id="adminIPDAO.selectUP" resultClass="adminIPVO">
+	<![CDATA[
+		SELECT
+			no
+			, IP
+			, NAME
+			, MEMO
+			, ADMINIP_PERMIT
+			, GLOBAL_IP
+		FROM
+			ZADMINIP
+		WHERE
+			no=#NO#
+	]]>
+</select>
+
+<update id="adminIPDAO.update">
+	<![CDATA[
+		UPDATE ZADMINIP SET
+	]]>
+		<isNotEmpty  property="ip4">
+			<![CDATA[
+				IP = CONCAT(#ip#,'.',#ip2#,'.',#ip3#,'.',#ip4#)
+				]]>
+		</isNotEmpty>
+		<isEmpty  property="ip4">
+			<![CDATA[
+				IP = CONCAT(#ip#,'.',#ip2#,'.',#ip3#)
+				]]>
+		</isEmpty>
+	<![CDATA[
+			, NAME = #name#
+			, MEMO = #memo#
+			, ADMINIP_PERMIT = #adminip_permit#
+			, regdate = now()
+			, GLOBAL_IP = #global_ip#
+		WHERE
+			no=#no#
+	]]>
+</update>
+
+<select id="adminIPDAO.selectByPk" resultClass="adminIPVO">
+	<![CDATA[
+		select
+			no
+			, ip
+			, name
+			, memo
+			, regdate
+			, userid
+			, adminip_permit
+			, global_ip
+		from
+			zadminip
+		where
+			no=#no#
+	]]>
+</select>
+
+	<select id="adminIPDAO.checkIPDouble"  resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				count(*)
+			FROM zadminip
+			WHERE   ip=#ip#
+			]]>
+			<isNotEqual property="no" prepend="and" compareValue="0">
+			<![CDATA[
+				no != #no#
+			]]>
+		</isNotEqual>
+			<!-- <isNotEmpty prepend="and"  property="no">
+			<![CDATA[
+				no != #no#
+				]]>
+		</isNotEmpty> -->
+	</select>
+
+	<select id="adminIPDAO.getCurrvalSequence"  resultClass="java.lang.Integer">
+		<![CDATA[ SELECT LAST_INSERT_ID() ]]>
+	</select>
+
+</sqlMap>

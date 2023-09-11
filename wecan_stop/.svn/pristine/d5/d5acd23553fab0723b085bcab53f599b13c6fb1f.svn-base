@@ -1,0 +1,427 @@
+package com.z5.zcms.frontsys.archv.domain;
+
+import java.util.List;
+
+public class ArchvVO extends Archv {
+
+	private static final long serialVersionUID = 2369143647969642475L;
+
+	private String eventCount;
+	private String documentCount;
+	private String photoCount;
+	private String vodCount;
+	private String path;
+	private String tab;
+	private String reg_psn;
+	private String reg_nm;
+	private String aprov_psn;
+	private String fileCount;
+	private String next_title;
+	private String next_archv_no;
+	private String pre_title;
+	private String pre_archv_no;
+	private String catgry_name_list;
+	private String conts;
+	private String contstype;
+	private String event_start_date;
+	private String event_end_date;
+	private List<ArchvFile> filelist;
+	private List<Integer> opt_list;
+	private String start_date_h;
+	private String start_date_i;
+	private String menuno;
+	private String siteno;
+	private String opt_name;
+	private List<ArchvMenunoPath> archvMenunoPathList;
+	private String evnt_period_start_date;
+	private String evnt_period_start_date_h;
+	private String evnt_period_start_date_i;
+	private String evnt_period_end_date;
+	private String evnt_period_end_date_h;
+	private String evnt_period_end_date_i;
+	private String catgry_name;
+
+	/* zauth_emp info */
+	private String emp_no;
+	private String emp_nm;
+	private String hq_cd;
+	private String hq_nm;
+	private String dept_cd;
+	private String dept_nm;
+	private String dept_full_nm;
+	private String holoff_cls;
+	private String tel_offc;
+	private String rownum_ = "";
+	private String file_exists_yn = "";
+
+	private String orginfo_code_nm = "";
+
+	public String getEmp_no() {
+		return emp_no;
+	}
+
+	public void setEmp_no(String emp_no) {
+		this.emp_no = emp_no;
+	}
+
+	public String getEmp_nm() {
+		return emp_nm;
+	}
+
+	public void setEmp_nm(String emp_nm) {
+		this.emp_nm = emp_nm;
+	}
+
+	public String getHq_cd() {
+		return hq_cd;
+	}
+
+	public void setHq_cd(String hq_cd) {
+		this.hq_cd = hq_cd;
+	}
+
+	public String getHq_nm() {
+		return hq_nm;
+	}
+
+	public void setHq_nm(String hq_nm) {
+		this.hq_nm = hq_nm;
+	}
+
+	public String getDept_cd() {
+		return dept_cd;
+	}
+
+	public void setDept_cd(String dept_cd) {
+		this.dept_cd = dept_cd;
+	}
+
+	public String getDept_nm() {
+		return dept_nm;
+	}
+
+	public void setDept_nm(String dept_nm) {
+		this.dept_nm = dept_nm;
+	}
+
+	public String getDept_full_nm() {
+		return dept_full_nm;
+	}
+
+	public void setDept_full_nm(String dept_full_nm) {
+		this.dept_full_nm = dept_full_nm;
+	}
+
+	public String getHoloff_cls() {
+		return holoff_cls;
+	}
+
+	public void setHoloff_cls(String holoff_cls) {
+		this.holoff_cls = holoff_cls;
+	}
+
+	public String getTel_offc() {
+		return tel_offc;
+	}
+
+	public void setTel_offc(String tel_offc) {
+		this.tel_offc = tel_offc;
+	}
+
+	public String getCatgry_name() {
+		return catgry_name;
+	}
+
+	public void setCatgry_name(String catgry_name) {
+		this.catgry_name = catgry_name;
+	}
+
+	public String getSiteno() {
+		return siteno;
+	}
+
+	public void setSiteno(String siteno) {
+		this.siteno = siteno;
+	}
+
+	public String getEventCount() {
+		return eventCount;
+	}
+
+	public void setEventCount(String eventCount) {
+		this.eventCount = eventCount;
+	}
+
+	public String getDocumentCount() {
+		return documentCount;
+	}
+
+	public void setDocumentCount(String documentCount) {
+		this.documentCount = documentCount;
+	}
+
+	public String getPhotoCount() {
+		return photoCount;
+	}
+
+	public void setPhotoCount(String photoCount) {
+		this.photoCount = photoCount;
+	}
+
+	public String getVodCount() {
+		return vodCount;
+	}
+
+	public void setVodCount(String vodCount) {
+		this.vodCount = vodCount;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getTab() {
+		return tab;
+	}
+
+	public void setTab(String tab) {
+		this.tab = tab;
+	}
+
+	public String getReg_psn() {
+		return reg_psn;
+	}
+
+	public void setReg_psn(String reg_psn) {
+		this.reg_psn = reg_psn;
+	}
+
+	public String getReg_nm() {
+		return reg_nm;
+	}
+
+	public void setReg_nm(String reg_nm) {
+		this.reg_nm = reg_nm;
+	}
+
+	public String getAprov_psn() {
+		return aprov_psn;
+	}
+
+	public void setAprov_psn(String aprov_psn) {
+		this.aprov_psn = aprov_psn;
+	}
+
+	public String getFileCount() {
+		return fileCount;
+	}
+
+	public void setFileCount(String fileCount) {
+		this.fileCount = fileCount;
+	}
+
+	public String getNext_title() {
+		return next_title;
+	}
+
+	public void setNext_title(String next_title) {
+		this.next_title = next_title;
+	}
+
+	public String getNext_archv_no() {
+		return next_archv_no;
+	}
+
+	public void setNext_archv_no(String next_archv_no) {
+		this.next_archv_no = next_archv_no;
+	}
+
+	public String getPre_title() {
+		return pre_title;
+	}
+
+	public void setPre_title(String pre_title) {
+		this.pre_title = pre_title;
+	}
+
+	public String getPre_archv_no() {
+		return pre_archv_no;
+	}
+
+	public void setPre_archv_no(String pre_archv_no) {
+		this.pre_archv_no = pre_archv_no;
+	}
+
+	public String getCatgry_name_list() {
+		return catgry_name_list;
+	}
+
+	public void setCatgry_name_list(String catgry_name_list) {
+		this.catgry_name_list = catgry_name_list;
+	}
+
+	public String getConts() {
+		return conts;
+	}
+
+	public void setConts(String conts) {
+		this.conts = conts;
+	}
+
+	public String getContstype() {
+		return contstype;
+	}
+
+	public void setContstype(String contstype) {
+		this.contstype = contstype;
+	}
+
+	public String getEvent_start_date() {
+		return event_start_date;
+	}
+
+	public void setEvent_start_date(String event_start_date) {
+		this.event_start_date = event_start_date;
+	}
+
+	public String getEvent_end_date() {
+		return event_end_date;
+	}
+
+	public void setEvent_end_date(String event_end_date) {
+		this.event_end_date = event_end_date;
+	}
+
+	public List<ArchvFile> getFilelist() {
+		return filelist;
+	}
+
+	public void setFilelist(List<ArchvFile> filelist) {
+		this.filelist = filelist;
+	}
+
+	public List<Integer> getOpt_list() {
+		return opt_list;
+	}
+
+	public void setOpt_list(List<Integer> opt_list) {
+		this.opt_list = opt_list;
+	}
+
+	public String getStart_date_h() {
+		return start_date_h;
+	}
+
+	public void setStart_date_h(String start_date_h) {
+		this.start_date_h = start_date_h;
+	}
+
+	public String getStart_date_i() {
+		return start_date_i;
+	}
+
+	public void setStart_date_i(String start_date_i) {
+		this.start_date_i = start_date_i;
+	}
+
+	public String getMenuno() {
+		return menuno;
+	}
+
+	public void setMenuno(String menuno) {
+		this.menuno = menuno;
+	}
+
+	public String getOpt_name() {
+		return opt_name;
+	}
+
+	public void setOpt_name(String opt_name) {
+		this.opt_name = opt_name;
+	}
+
+	public List<ArchvMenunoPath> getArchvMenunoPathList() {
+		return archvMenunoPathList;
+	}
+
+	public void setArchvMenunoPathList(List<ArchvMenunoPath> archvMenunoPathList) {
+		this.archvMenunoPathList = archvMenunoPathList;
+	}
+
+	public String getEvnt_period_start_date() {
+		return evnt_period_start_date;
+	}
+
+	public void setEvnt_period_start_date(String evnt_period_start_date) {
+		this.evnt_period_start_date = evnt_period_start_date;
+	}
+
+	public String getEvnt_period_start_date_h() {
+		return evnt_period_start_date_h;
+	}
+
+	public void setEvnt_period_start_date_h(String evnt_period_start_date_h) {
+		this.evnt_period_start_date_h = evnt_period_start_date_h;
+	}
+
+	public String getEvnt_period_start_date_i() {
+		return evnt_period_start_date_i;
+	}
+
+	public void setEvnt_period_start_date_i(String evnt_period_start_date_i) {
+		this.evnt_period_start_date_i = evnt_period_start_date_i;
+	}
+
+	public String getEvnt_period_end_date() {
+		return evnt_period_end_date;
+	}
+
+	public void setEvnt_period_end_date(String evnt_period_end_date) {
+		this.evnt_period_end_date = evnt_period_end_date;
+	}
+
+	public String getEvnt_period_end_date_h() {
+		return evnt_period_end_date_h;
+	}
+
+	public void setEvnt_period_end_date_h(String evnt_period_end_date_h) {
+		this.evnt_period_end_date_h = evnt_period_end_date_h;
+	}
+
+	public String getEvnt_period_end_date_i() {
+		return evnt_period_end_date_i;
+	}
+
+	public void setEvnt_period_end_date_i(String evnt_period_end_date_i) {
+		this.evnt_period_end_date_i = evnt_period_end_date_i;
+	}
+
+	public String getRownum_() {
+		return rownum_;
+	}
+
+	public void setRownum_(String rownum_) {
+		this.rownum_ = rownum_;
+	}
+
+	public String getFile_exists_yn() {
+		return file_exists_yn;
+	}
+
+	public void setFile_exists_yn(String file_exists_yn) {
+		this.file_exists_yn = file_exists_yn;
+	}
+
+	public String getOrginfo_code_nm() {
+		return orginfo_code_nm;
+	}
+
+	public void setOrginfo_code_nm(String orginfo_code_nm) {
+		this.orginfo_code_nm = orginfo_code_nm;
+	}
+
+}

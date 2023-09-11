@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="w_familyViolence">
+    <typeAlias alias="WFamilyViolenceVo" type="com.z5.zcms.admsys.cyberCounsel.domain.WFamilyViolenceVo" />
+	<resultMap id="WFamilyViolenceVo" class="com.z5.zcms.admsys.cyberCounsel.domain.WFamilyViolenceVo"/>
+	
+	
+
+    <select id="w_familyViolence.listCount" parameterClass="WFamilyViolenceVo" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                sensitivity
+            where 1=1                
+        ]]>                
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+        <![CDATA[			
+				datetime between #sdate# and #edate#
+        ]]>				
+        	</isEqual>
+			</isNotEmpty>                  
+
+
+
+    </select>
+
+    <select id="w_familyViolence.getList" parameterClass="WFamilyViolenceVo" resultClass="WFamilyViolenceVo">
+        <![CDATA[
+        
+            select
+				CASE num_1
+				WHEN '1' THEN '그렇다'
+				WHEN '2' THEN '아니다' END AS num_1,
+				
+				CASE num_2
+				WHEN '1' THEN '그렇다'
+				WHEN '2' THEN '아니다' END AS num_2,
+				
+				CASE num_3
+				WHEN '1' THEN '그렇다'
+				WHEN '2' THEN '아니다' END AS num_3,
+				
+				CASE num_4
+				WHEN '1' THEN '그렇다'
+				WHEN '2' THEN '아니다' END AS num_4,
+				
+				CASE num_5
+				WHEN '1' THEN '그렇다'
+				WHEN '2' THEN '아니다' END AS num_5,
+				
+				CASE num_6
+				WHEN '1' THEN '그렇다'
+				WHEN '2' THEN '아니다' END AS num_6,
+				
+				CASE num_7
+				WHEN '1' THEN '그렇다'
+				WHEN '2' THEN '아니다' END AS num_7,
+				
+				CASE num_8
+				WHEN '1' THEN '그렇다'
+				WHEN '2' THEN '아니다' END AS num_8,
+				
+				CASE num_9
+				WHEN '1' THEN '그렇다'
+				WHEN '2' THEN '아니다' END AS num_9,
+				
+				CASE num_10
+				WHEN '1' THEN '그렇다'
+				WHEN '2' THEN '아니다' END AS num_10,
+
+				datetime
+				                
+            from
+                sensitivity
+            where 1=1
+            
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				datetime between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>     
+			       
+            ORDER BY
+                datetime desc
+            LIMIT #m#, #n#
+
+    </select>
+    
+    <select id="w_familyViolence.getListTotal" parameterClass="WFamilyViolenceVo" resultClass="WFamilyViolenceVo">
+        <![CDATA[
+        
+				select
+				
+				count(CASE WHEN (num_1 = '2') THEN '아니다' END) as num_1_2_count,
+				count(CASE WHEN (num_1 = '1') THEN '그렇다' END) as num_1_1_count,
+				count(CASE WHEN (num_1 = '1' or num_1 = '2') THEN 'num1Total' END) as num_1_total_count,
+				
+				count(CASE WHEN (num_2 = '2') THEN '아니다' END) as num_2_2_count,
+				count(CASE WHEN (num_2 = '1') THEN '그렇다' END) as num_2_1_count,
+				count(CASE WHEN (num_2 = '1' or num_2 = '2') THEN 'num1Total' END) as num_2_total_count,
+				
+				count(CASE WHEN (num_3 = '2') THEN '아니다' END) as num_3_2_count,
+				count(CASE WHEN (num_3 = '1') THEN '그렇다' END) as num_3_1_count,
+				count(CASE WHEN (num_3 = '1' or num_3 = '2') THEN 'num1Total' END) as num_3_total_count,
+				
+				count(CASE WHEN (num_4 = '2') THEN '아니다' END) as num_4_2_count,
+				count(CASE WHEN (num_4 = '1') THEN '그렇다' END) as num_4_1_count,
+				count(CASE WHEN (num_4 = '1' or num_4 = '2') THEN 'num1Total' END) as num_4_total_count,
+				
+				count(CASE WHEN (num_5 = '2') THEN '아니다' END) as num_5_2_count,
+				count(CASE WHEN (num_5 = '1') THEN '그렇다' END) as num_5_1_count,
+				count(CASE WHEN (num_5 = '1' or num_5 = '2') THEN 'num1Total' END) as num_5_total_count,
+				
+				count(CASE WHEN (num_6 = '2') THEN '아니다' END) as num_6_2_count,
+				count(CASE WHEN (num_6 = '1') THEN '그렇다' END) as num_6_1_count,
+				count(CASE WHEN (num_6 = '1' or num_6 = '2') THEN 'num1Total' END) as num_6_total_count,
+				
+				count(CASE WHEN (num_7 = '2') THEN '아니다' END) as num_7_2_count,
+				count(CASE WHEN (num_7 = '1') THEN '그렇다' END) as num_7_1_count,
+				count(CASE WHEN (num_7 = '1' or num_7 = '2') THEN 'num1Total' END) as num_7_total_count,
+				
+				count(CASE WHEN (num_8 = '2') THEN '아니다' END) as num_8_2_count,
+				count(CASE WHEN (num_8 = '1') THEN '그렇다' END) as num_8_1_count,
+				count(CASE WHEN (num_8 = '1' or num_8 = '2') THEN 'num1Total' END) as num_8_total_count,
+				
+				count(CASE WHEN (num_9 = '2') THEN '아니다' END) as num_9_2_count,
+				count(CASE WHEN (num_9 = '1') THEN '그렇다' END) as num_9_1_count,
+				count(CASE WHEN (num_9 = '1' or num_9 = '2') THEN 'num1Total' END) as num_9_total_count,
+				
+				count(CASE WHEN (num_10 = '2') THEN '아니다' END) as num_10_2_count,
+				count(CASE WHEN (num_10 = '1') THEN '그렇다' END) as num_10_1_count,
+				count(CASE WHEN (num_10 = '1' or num_10 = '2') THEN 'num1Total' END) as num_10_total_count
+				
+            from
+                sensitivity
+            where 1=1
+            
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				datetime between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>     
+			       
+            ORDER BY
+                datetime desc
+            LIMIT 0, 1                
+
+    </select>
+    
+</sqlMap>

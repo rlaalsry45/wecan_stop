@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Common">
+
+	<typeAlias alias="commonVo" type="com.z5.zcms.admsys.common.domain.CommonVo"/>
+	<typeAlias alias="commonUseVo" type="com.z5.zcms.admsys.common.domain.CommonUseVo"/>
+	<resultMap id="commonVo" class="com.z5.zcms.admsys.common.domain.CommonVo"/>
+	<resultMap id="commonUseVo" class="com.z5.zcms.admsys.common.domain.CommonUseVo"/>
+	<typeAlias alias="zuserVo" type="com.z5.zcms.admsys.user.domain.ZUserVo"/>
+	<resultMap id="zuserVo" class="com.z5.zcms.admsys.user.domain.ZUserVo"/>
+	<typeAlias alias="EditHistoryVo" type="com.z5.zcms.admsys.common.domain.EditHistoryVo"/>
+	<resultMap id="EditHistoryVo" class="com.z5.zcms.admsys.common.domain.EditHistoryVo"/>
+
+
+	<select id="commonDAO.getUseMenuno" parameterClass="commonUseVo" resultClass="java.lang.Integer">
+<![CDATA[
+		select menuno
+		from $table$
+		where $cond1$ = #tablenameno#
+		  and siteno = #siteno#
+	]]>
+	</select>
+
+	<select id="commonDAO.getCountUseTable" parameterClass="commonUseVo" resultClass="java.lang.Integer">
+
+		select count(*)
+		from $table$
+		where $cond1$ = #tablenameno#
+		  and siteno = #siteno#
+
+	</select>
+
+	<delete id="commonDAO.deleteUse" parameterClass="commonUseVo">
+		        DELETE
+		    		FROM $table$
+		  			where $cond1$ = #tablenameno#
+			          and siteno = #siteno#
+
+	</delete>
+
+	<insert id="commonDAO.write" parameterClass="commonUseVo">
+		<![CDATA[
+			INSERT INTO $table$
+			(
+				$cond1$
+				,siteno
+				,sitetitle
+				,userid
+		]]>
+		<isNotEqual property="menuno" prepend="," compareValue="0">
+			<![CDATA[
+				menuno
+			]]>
+		</isNotEqual>
+		<![CDATA[
+			) VALUES
+			(
+				#tablenameno#
+				,#siteno#
+				,(SELECT sitetitle FROM ZSITE WHERE siteno = #siteno#)
+				,#userid#
+		]]>
+		<isNotEqual property="menuno" prepend="," compareValue="0">
+			<![CDATA[
+				#menuno#
+			]]>
+		</isNotEqual>
+		<![CDATA[ ) ]]>
+	</insert>
+
+	<select id="commonDAO.getUseTbl" resultClass="String">
+		/*SELECT * FROM user_tables where class_name like 'Z%USE' */
+		/*select table_name from user_tables where table_name like 'Z%USE'*/
+		SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_NAME LIKE 'z%use'
+	</select>
+	<insert id="commonDAO.batchInsert" parameterClass="commonUseVo">
+		<![CDATA[
+			INSERT INTO $table$
+			(
+				sitetitle,
+				siteno,
+				userid
+		]]>
+		<isNotEqual property="menuno" prepend="," compareValue="-1">
+			<![CDATA[
+				menuno
+			]]>
+		</isNotEqual>
+		<![CDATA[
+			)
+			SELECT
+				#sitetitle#,
+				#no#,
+				#userid#
+		]]>
+		<isNotEqual property="menuno" prepend="," compareValue="-1">
+			<![CDATA[
+				menuno
+			]]>
+		</isNotEqual>
+		<![CDATA[
+			FROM $table$
+			WHERE siteno=#siteno#
+		]]>
+	</insert>
+
+
+	<update id="commonDAO.batchUpdate" parameterClass="commonUseVo">
+		<![CDATA[
+			UPDATE $table$
+			SET sitetitle=#sitetitle#,
+				userid=#userid#
+			WHERE siteno=#siteno#
+		]]>
+	</update>
+	<select id="commonDAO.getUserpasswd" resultClass="zuserVo">
+		<![CDATA[
+			SELECT
+				userno
+				,userid
+				,userpasswd
+			from
+			  olduser
+			 where userpasswd is null and rownum < 1000 order by userno
+			]]>
+	</select>
+	<update id="commonDAO.updateUserpasswd" parameterClass="zuserVo">
+		<![CDATA[
+			UPDATE olduser
+			SET userpasswd=#userpasswd#
+			WHERE userno=#userno#
+		]]>
+	</update>
+
+	<!-- <select id="zcssDAO.listAll"  resultClass="zcssVo">
+		<![CDATA[
+			SELECT
+				cssno
+				, csstitle
+				, cssfilesave
+			FROM ZCSS
+			ORDER BY cssno DESC
+		]]>
+
+	</select>
+
+	<select id="zcssDAO.list" parameterClass="zcssVo" resultClass="zcssVo">
+		<![CDATA[
+			SELECT
+				 cssno
+				,csstitle
+				,cssuse
+				,sitetitle
+				,cssfilesave
+				,cssdatereg
+				,cssdatemod
+			from
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        a.*
+						        , get_sitetitle('zcssuse','cssno', a.cssno) as sitetitle
+				    	   from
+						        zcss a
+						   where 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# and $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ upper($cond2$) like '%'||#keyword#||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							order by cssno desc
+					 	) row_
+					where
+						rownum <= #n#
+				)
+			where
+				rownum_ > #m#
+			]]>
+	</select>
+
+
+	<select id="zcssDAO.listCount" parameterClass="zcssVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				zcss
+			where 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# and $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					upper($cond2$) like '%'||upper(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+
+
+
+	<delete id="zcssDAO.delete" parameterClass="java.util.List">
+		        DELETE
+		    		FROM ZCSS
+		  			where cssno in
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+
+	</delete>
+
+	<select id="zcssDAO.selectbypk"  parameterClass="zcssVo" resultClass="zcssVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM ZCSS
+						WHERE CSSNO=#cssno#
+				]]>
+	</select>
+
+	<update id="zcssDAO.update">
+		<![CDATA[
+			UPDATE ZCSS
+			SET   csstitle=#csstitle#
+				, csstype=#csstype#
+				, cssfileorg=#cssfileorg#
+				, cssfilesave=#cssfilesave#
+				, cssconts=#cssconts#
+				, cssmemo=#cssmemo#
+				, csshis=#csshis#
+				, userid=#userid#
+				, cssdatemod=now()
+			WHERE cssno=#cssno#
+		]]>
+	</update> -->
+
+
+	
+	<insert id="commonDAO.registrationEditHistory" parameterClass="EditHistoryVo">
+		<![CDATA[
+			INSERT INTO W_CONSULTING_HISTORY_MASTER_EDIT_HISTORY
+			(
+					consulting_action_no
+				,	edit_history_no
+				,	edit_contents
+				,	create_user
+				,	create_date
+				,	delete_yn
+			)
+			VALUES
+			(		#consulting_action_no#
+				,	(	SELECT
+								IFNULL(MAX(edit_history_no),0)+1 
+						FROM	W_CONSULTING_HISTORY_MASTER_EDIT_HISTORY A
+						WHERE	consulting_action_no = #consulting_action_no#)
+				,	#edit_contents#
+				,	#create_user#
+				,	NOW()
+				,	'N'
+			)	
+		]]>
+	</insert>
+	
+	<select id="commonDAO.retrieveEditHistory" parameterClass="EditHistoryVo" resultClass="EditHistoryVo">
+		<![CDATA[
+			SELECT
+					edit_history_no
+				,	create_date
+				,	edit_contents
+			FROM
+					W_CONSULTING_HISTORY_MASTER_EDIT_HISTORY
+			WHERE
+					consulting_action_no = #consulting_action_no#
+				AND	delete_yn = 'N'
+			ORDER BY edit_history_no DESC
+		]]>
+	</select>
+</sqlMap>

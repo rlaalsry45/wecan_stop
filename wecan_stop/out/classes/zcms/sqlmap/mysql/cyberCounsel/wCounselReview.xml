@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="w_counselReview">
+    <typeAlias alias="WCounselReviewVo" type="com.z5.zcms.admsys.cyberCounsel.domain.WCounselReviewVo" />
+	<resultMap id="WCounselReviewVo" class="com.z5.zcms.admsys.cyberCounsel.domain.WCounselReviewVo"/>
+	
+	
+
+    <select id="w_counselReview.listCount" parameterClass="WCounselReviewVo" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                survey
+            where 1=1                
+        ]]>                
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+        <![CDATA[			
+				datetime between #sdate# and #edate#
+        ]]>				
+        	</isEqual>
+			</isNotEmpty>                  
+
+
+
+    </select>
+
+    <select id="w_counselReview.getList" parameterClass="WCounselReviewVo" resultClass="WCounselReviewVo">
+        <![CDATA[
+        
+            select
+				CASE num_1
+				WHEN '5' THEN '매우 그렇다'
+				WHEN '4' THEN '그렇다'
+				WHEN '3' THEN '보통이다'
+				WHEN '2' THEN '그렇지 않다'
+				WHEN '1' THEN '전혀 그렇지 않다' END AS num_1,
+				
+				CASE num_2
+				WHEN '1' THEN '상담내용'
+				WHEN '2' THEN '상담사의 태도'
+				WHEN '3' THEN '상담 시스템'
+				WHEN '4' THEN '기타' END AS num_2,
+				
+				num_3,
+				datetime
+				                
+            from
+                survey
+            where 1=1
+            
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				datetime between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>     
+			       
+            ORDER BY
+                datetime desc
+            LIMIT #m#, #n#
+
+    </select>
+    
+    <select id="w_counselReview.getListTotal" parameterClass="WCounselReviewVo" resultClass="WCounselReviewVo">
+        <![CDATA[
+        
+				select
+				
+				count(CASE WHEN (num_1 = '5') THEN '매우 그렇다' END) as num_1_5_count,
+				count(CASE WHEN (num_1 = '4') THEN '그렇다' END) as num_1_4_count,
+				count(CASE WHEN (num_1 = '3') THEN '보통이다' END) as num_1_3_count,
+				count(CASE WHEN (num_1 = '2') THEN '그렇지 않다' END) as num_1_2_count,
+				count(CASE WHEN (num_1 = '1') THEN '전혀 그렇지 않다' END) as num_1_1_count,
+				count(CASE WHEN (num_1 = '1' or num_1 = '2' or num_1 = '3' or num_1 = '4' or num_1 = '5') THEN 'num1Total' END) as num_1_total_count,
+				
+				count(CASE WHEN (num_2 = '1') THEN '상담내용' END) as num_2_1_count,
+				count(CASE WHEN (num_2 = '2') THEN '상담사의 태도' END) as num_2_2_count,
+				count(CASE WHEN (num_2 = '3') THEN '상담 시스템' END) as num_2_3_count,
+				count(CASE WHEN (num_2 = '4') THEN '기타' END) as num_2_4_count,
+				count(CASE WHEN (num_2 = '1' or num_2 = '2' or num_2 = '3' or num_2 = '4') THEN 'num2Total' END) as num_2_total_count,
+				
+				sum(num_1) as num_1_sum,
+				count(num_1) as num_1_count,
+				sum(num_1)/count(num_1) as fivePoint
+				                
+            from
+                survey
+            where 1=1
+            
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				datetime between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>     
+			       
+            ORDER BY
+                datetime desc
+            LIMIT 0, 1                
+
+    </select>
+    
+</sqlMap>

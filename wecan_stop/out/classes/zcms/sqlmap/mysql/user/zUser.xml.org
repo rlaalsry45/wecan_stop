@@ -1,0 +1,2405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZUser">
+    <typeAlias alias="ZUser" type="com.z5.zcms.admsys.user.domain.ZUser" />
+    <typeAlias alias="ZUserVo" type="com.z5.zcms.admsys.user.domain.ZUserVo" />
+    <typeAlias alias="ZUser2Vo" type="com.z5.zcms.admsys.user.domain.ZUser2Vo" />
+    <typeAlias alias="ZUserOrgVo" type="com.z5.zcms.admsys.user.domain.ZUserOrgVo" />
+    <resultMap id="ZUser" class="com.z5.zcms.admsys.user.domain.ZUser"/>
+    <resultMap id="ZUserVo" class="com.z5.zcms.admsys.user.domain.ZUserVo"/>
+    <resultMap id="ZUser2Vo" class="com.z5.zcms.admsys.user.domain.ZUser2Vo"/>
+    <resultMap id="ZUserOrgVo" class="com.z5.zcms.admsys.user.domain.ZUserOrgVo"/>
+    <typeAlias alias="MenuStaffVO" type="com.z5.zcms.frontsys.front.domain.MenuStaffVO" />
+    <resultMap id="MenuStaffVO" class="com.z5.zcms.frontsys.front.domain.MenuStaffVO"/>
+
+    <typeAlias alias="SearchUser" type="com.z5.zcms.admsys.user.domain.SearchUser" />
+    <resultMap id="SearchUser" class="com.z5.zcms.admsys.user.domain.SearchUser"/>
+
+    <insert id="ZUser.write">
+        <![CDATA[
+             insert into zuser(
+                userid,
+                userbirth,
+                userpasswd,
+                usercate,
+                username,
+                username2,
+                usernick,
+                useremail,
+                userdatereg,
+                usermemo,
+                usertype,
+                useranswer,
+                enabled,
+                newsletter1,
+                usersocialno,
+                useraddr,
+                useraddr2,
+                usersex,
+                usertel,
+                usermobile,
+                useraddrno,
+                userfax,
+                work_grade,
+                work_title,
+                dept_nm,
+                userconfirm,
+                foreigner,
+                licenseeno,
+                comname,
+                comtel,
+                comaddrno,
+                comaddr,
+                comaddr2,
+                chargername,
+                chargemobile,
+                chargeremail,
+                duesjoin
+             ) values(
+                #userid#,
+                #userbirth#,
+                #userpasswd#,
+                #usercate#,
+                #username#,
+                #username2#,
+                #usernick#,
+                #useremail#,
+                now(),
+                #usermemo#,
+                #usertype#,
+                #useranswer#,
+                #enabled#,
+                #newsletter1#,
+                #usersocialno#,
+                #useraddr#,
+                #useraddr2#,
+                #usersex#,
+                #usertel#,
+                #usermobile#,
+                #useraddrno#,
+                #userfax#,
+                #work_grade#,
+                #work_title#,
+                #dept_nm#,
+                #userconfirm#,
+                #foreigner#,
+                #licenseeno#,
+                #comname#,
+                #comtel#,
+                #comaddrno#,
+                #comaddr#,
+                #comaddr2#,
+                #chargername#,
+                #chargemobile#,
+                #chargeremail#,
+                #duesjoin#
+             )
+        ]]>
+    </insert>
+    <insert id="ZUser.insertAuth">
+        <![CDATA[
+             insert into zauthorities(
+                 userid,
+                authority
+             ) values(
+                 #userid#,
+                 #authority#
+             )
+        ]]>
+    </insert>
+
+
+    <select id="ZUser.total" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+        select
+            count(1) total
+        from
+            zuser
+        where
+            userauth = #userauth#
+        <isNotEmpty prepend="and" property="cond1">
+                <![CDATA[ $cond1$ >= #sdate# and $cond1$ <= #edate# ]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="cond2">
+                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+        </isNotEmpty>
+    </select>
+
+    <select id="ZUser.getInfo" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+            select
+                a.*
+                ,(select hq_cd from zauth_emp where emp_no = a.userno) as hq_cd    /*기관코드*/
+                ,(select hq_nm from zauth_emp where emp_no = a.userno) as hq_nm    /*기관명*/
+                ,(select dept_cd from zauth_emp where emp_no = a.userno) as dept_cd    /*부서코드*/
+                ,(select dept_nm from zauth_emp where emp_no = a.userno) as dept_nm    /*부서코드명*/
+                /*,(select dept_full_nm from zauth_emp where emp_no = a.userno) as dept_full_nm    부서전체명*/
+                ,(select holoff_cls from zauth_emp where emp_no = a.userno) as holoff_cls    /*재직여부*/
+                ,(select tel_offc from zauth_emp where emp_no = a.userno) as tel_offc    /*전화번호*/
+            from zuser a
+            where 1=1
+            ]]>
+            <isNotEmpty prepend="and" property="userid">
+                <![CDATA[ a.userid = #userid# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="userno">
+                <![CDATA[ a.userno = #userno# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="useremail">
+                <![CDATA[ a.useremail = #useremail# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="duesjoin">
+                <![CDATA[ a.duesjoin = #duesjoin# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="licenseeno">
+                <![CDATA[ a.licenseeno = #licenseeno# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="usertype">
+                <![CDATA[ a.usertype = #usertype# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="usercate">
+                <![CDATA[ a.usercate = #usercate# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="chargeremail">
+                <![CDATA[ a.chargeremail = #chargeremail# ]]>
+            </isNotEmpty>
+    </select>
+
+    <select id="ZUser.listCountUser" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                zuser a
+            where
+                (userauth is null or userauth = '')
+        ]]>
+            <!-- <isNotEmpty prepend="and" property="cond1">
+                <![CDATA[
+                        date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d")
+                    and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d")
+                ]]>
+            </isNotEmpty> -->
+            <isNotEmpty prepend="and" property="cond2">
+                <![CDATA[ upper($cond2$) like '%' || upper(#keyword#) || '%' ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="work_grade">
+                <![CDATA[ work_grade = #work_grade# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="usercate">
+                <![CDATA[ usercate = #usercate# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="userstatus">
+                <![CDATA[ userstatus = #userstatus# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="licenseeno">
+                <![CDATA[ licenseeno = #licenseeno# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="usernick">
+                <![CDATA[ usernick = #usernick# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="comtype">
+                <![CDATA[ comtype = #comtype# ]]>
+            </isNotEmpty>
+    </select>
+
+    <select id="ZUser.getListUser" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+            SELECT
+                t.*
+               /* ,get_authorities(t.userid) as authority*/
+            from
+            zuser t,
+                (
+                    select
+                        row_.*
+                        , @rownum := @rownum + 1 AS rownum_
+                    from
+                        (
+                            select
+                                a.userno
+                           from
+                                zuser a, (SELECT @rownum := #m#) R
+                           where 1 = 1
+                           and (userauth is null or userauth = '')
+            ]]>
+                            <!-- <isNotEmpty property="cond5">
+                                and b.authority =#cond5#
+                            </isNotEmpty> -->
+
+                            <!-- <isNotEmpty prepend="and" property="cond1">
+                                <![CDATA[
+                                        date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d")
+                                    and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d")
+                                ]]>
+                            </isNotEmpty> -->
+                            <isNotEmpty prepend="and" property="cond2">
+                                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="useremail">
+                                <![CDATA[ useremail = #useremail# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="work_grade">
+                                <![CDATA[ work_grade = #work_grade# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="userstatus">
+                                <![CDATA[ userstatus = #userstatus# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="licenseeno">
+                                <![CDATA[ licenseeno = #licenseeno# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="usercate">
+                                <![CDATA[ usercate = #usercate# ]]>
+                            </isNotEmpty>
+            <![CDATA[
+                            order by userno desc
+                         ) row_
+                    where
+                        @rownum < (#n#+#m#)
+                )re
+            where
+                re.userno = t.userno
+            order by t.userno desc
+            ]]>
+    </select>
+
+    <select id="ZUser.getUsers" resultClass="ZUserVo">
+            SELECT
+                t.*/*, get_authorities(t.userid) as authority*/
+            FROM
+                zuser t,
+                (
+                    SELECT
+                        row_.*, @rownum := @rownum + 1 AS rownum_
+                    FROM
+                        (
+                            SELECT
+                                a.userno
+                            FROM
+                                zuser a
+                            WHERE userauth is null ORDER BY username ASC
+                         ) row_
+                )re
+            WHERE re.userno = t.userno ORDER BY t.useranswer ASC
+        <!--WHERE re.userno = t.userno ORDER BY t.userno ASC-->
+    </select>
+
+    <!-- 메일을 보내기 위한 검색 쿼리 -->
+    <select id="ZUser.searchListUser" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+            select *
+            from
+                zuser a
+            where 1 = 1
+        ]]>
+            <isNotEmpty prepend="and" property="userno">
+                userno = #userno#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="cond2">
+                    <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+                </isNotEmpty>
+                <isNotEmpty prepend="and" property="cond3">
+                    <![CDATA[ upper(a.$cond3$) =#work_grade# ]]>
+                </isNotEmpty>
+                <!-- <isNotEmpty prepend="and" property="cond4">
+                    <![CDATA[ a.$cond4$ =#sitedivision# ]]>
+                </isNotEmpty> -->
+
+                <!--<isEmpty property="userType">-->
+                    <!--<![CDATA[-->
+                    <!--and (a.work_grade <> '4'  and a.work_grade <> '6' and a.work_grade <> '7' and a.work_grade <> '8')-->
+                     <!--]]>-->
+                <!--</isEmpty>-->
+                <!--<isNotEmpty property="userType">-->
+                    <!--<isEqual property="userType" compareValue="outside">-->
+                        <!--<![CDATA[-->
+                        <!--and a.work_grade = '6'-->
+                         <!--]]>-->
+                    <!--</isEqual>-->
+                    <!--<isEqual property="userType" compareValue="judge">-->
+                    <!--<![CDATA[-->
+                    <!--and (a.work_grade <> '4' and a.work_grade <> '7' and a.work_grade <> '8')-->
+                    <!--and a.userstatus = 1-->
+                     <!--]]>-->
+                <!--</isEqual>-->
+                <!--</isNotEmpty>-->
+                <!-- 검색어 -->
+                <isNotEmpty property="cond6">
+                    <isEqual prepend="and" property="cond6" compareValue="useridx">
+                        <![CDATA[ a.$cond6$ = #keyword#]]>
+                    </isEqual>
+                    <isNotEqual prepend="and" property="cond6" compareValue="useridx">
+                        <![CDATA[ upper($cond6$) like '%'||upper(#keyword#)||'%' ]]>
+                    </isNotEqual>
+                </isNotEmpty>
+                <!-- 승인조회 -->
+                <isEqual property="cond7" compareValue="1">
+                    <![CDATA[
+                            and a.userstatus =#cond7#
+                            and (a.useroutrequest IS NULL or a.useroutrequest <> 0)
+                    ]]>
+                </isEqual>
+                <!-- 승인대기조회 -->
+                <isEqual property="cond7" compareValue="0">
+                    <![CDATA[
+                            and a.userstatus =#cond7#
+                            and (a.useroutrequest IS NULL or a.useroutrequest <> 0)
+                    ]]>
+                    <isEqual property="userconfirm" compareValue="Y">
+                        <![CDATA[  and a.userno in (select userno from tbl_dues where payconfirm = 1 and LIMITYEARMONTH is not null)    ]]>
+                    </isEqual>
+                    <isNotEqual property="userconfirm" compareValue="Y">
+
+                        <isNotEmpty property="approve">
+                            <![CDATA[  and substr(userdatereg,1,8) = #approve# ]]>
+                        </isNotEmpty>
+                        <isEmpty property="approve">
+                            <![CDATA[  and a.userno not in (select userno from tbl_dues where payconfirm = 1 and LIMITYEARMONTH is not null)    ]]>
+                        </isEmpty>
+                    </isNotEqual>
+                </isEqual>
+                <!-- 탈퇴조회 -->
+                <isEqual property="cond7" compareValue="9">
+                    <![CDATA[
+                            and a.userstatus =#cond7#
+                    ]]>
+                </isEqual>
+                <!-- 탈퇴대기조회 -->
+                <isEqual property="cond7" compareValue="3">
+                    <![CDATA[
+                            and a.useroutrequest = 0
+                            and a.enabled = 1
+                    ]]>
+                </isEqual>
+
+                <!-- 회원통계 시작 -->
+                <isNotEmpty prepend="and" property="workGrade">
+                    <![CDATA[
+                            a.work_grade =#workGrade#
+                    ]]>
+                </isNotEmpty>
+                <isNotEmpty property="branch">
+                    <![CDATA[
+                            and a.userno in (select userno from tbl_zuser_plus where branch = #branch#)
+                    ]]>
+                </isNotEmpty>
+
+                <isNotEmpty property="st_sec3"><!-- 결제회원 우선으로 할경우 -->
+                        <![CDATA[ order by userno asc ]]>
+                </isNotEmpty>
+                <isEmpty  property="st_sec3">
+                    <isEqual property="st_sec2" compareValue="1">
+                        <![CDATA[ order by $st_sec1$ asc ]]>
+                    </isEqual>
+                    <isEqual property="st_sec2" compareValue="2">
+                        <![CDATA[ order by $st_sec1$ desc ]]>
+                    </isEqual>
+                </isEmpty>
+
+                <isNotEmpty property="cond4">
+                    <isEqual property="sort" compareValue="asc">
+                        <![CDATA[ order by $cond4$ asc ]]>
+                    </isEqual>
+                    <isEqual property="sort" compareValue="desc">
+                        <![CDATA[ order by $cond4$ desc ]]>
+                    </isEqual>
+                </isNotEmpty>
+    </select>
+    <select id="ZUser.listCountAdmin" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                zuser a
+            where 1 = 1
+            and a.userauth = '1'
+        ]]>
+            <!-- <isNotEmpty property="cond5">
+                and b.authority =#cond5#
+            </isNotEmpty> -->
+
+            <isNotEmpty prepend="and" property="cond1">
+                <![CDATA[
+                        date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d")
+                    and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d")
+                ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="cond2">
+                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+            </isNotEmpty>
+            <!-- <isNotEmpty prepend="and" property="cond3">
+                <![CDATA[ upper(a.$cond3$) =#enabled# ]]>
+            </isNotEmpty> -->
+            <!-- <isNotEmpty prepend="and" property="cond4">
+                <![CDATA[ a.$cond4$ =#sitedivision# ]]>
+            </isNotEmpty> -->
+    </select>
+
+    <select id="ZUser.getListAdmin" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+            SELECT
+                re.username as username
+                ,re.userid as userid
+                ,re.userno as userno
+                ,re.userdatereg as userdatereg
+                ,(select dept_nm from vi_user_kfhomenew where cs_id = re.userid) as dept_nm
+                ,(select work_title from vi_user_kfhomenew where cs_id = re.userid) as work_title
+                ,(select work_grade from vi_user_kfhomenew where cs_id = re.userid) as work_grade
+                /*,get_authorities(re.userid) as authority*/
+                ,(select holoff from vi_user_kfhomenew where cs_id = re.userid) as holoff
+            from
+                (
+                    select
+                        row_.*
+                        , @rownum := @rownum + 1 AS rownum_
+                    from
+                        (
+                            select
+                                a.*
+                           from
+                                zuser a,   (SELECT @rownum := #m#) R
+                           where 1 = 1
+                            and userauth = '1'
+            ]]>
+                            <!-- <isNotEmpty property="cond5">
+                                and b.authority =#cond5#
+                            </isNotEmpty> -->
+
+                            <isNotEmpty prepend="and" property="cond1">
+                                <![CDATA[
+                                        date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d")
+                                    and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d")
+                                ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="cond2">
+                                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+                            </isNotEmpty>
+                            <!-- <isNotEmpty prepend="and" property="cond3">
+                                <![CDATA[ upper(a.$cond3$) =#enabled# ]]>
+                            </isNotEmpty> -->
+                            <!-- <isNotEmpty prepend="and" property="cond4">
+                                <![CDATA[ a.$cond4$ =#sitedivision# ]]>
+                            </isNotEmpty> -->
+            <![CDATA[
+                            order by userno asc
+                         ) row_
+                    where
+                        @rownum < (#n#+#m#)
+                )re
+
+            ]]>
+    </select>
+
+    <select id="getFindId" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+            SELECT userid
+            from zuser
+            where useremail=#useremail#
+            and username=#username#
+            ]]>
+    </select>
+
+    <select id="getFindPw" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+            SELECT userno,userpasswd
+            from zuser
+            where useremail=#useremail#
+            and username=#username#
+            and userid=#userid#
+            ]]>
+    </select>
+
+    <!-- <select id="ZUser.listCountKF" parameterClass="KfuserVO" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                vi_user_kfhomenew a
+            where 1 = 1
+        ]]>
+
+            <isNotEmpty prepend="and" property="cond1">
+                <![CDATA[
+                        date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d")
+                    and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d")
+                ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="cond2">
+                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="cond3">
+                <![CDATA[ upper(a.$cond3$) =#enabled# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="cond4">
+                <![CDATA[ a.$cond4$ =#sitedivision# ]]>
+            </isNotEmpty>
+    </select> -->
+
+    <!-- <select id="ZUser.getListKF" parameterClass="KfuserVO" resultClass="KfuserVO">
+        <![CDATA[
+            SELECT
+                re.*
+                ,(select userid from zuser where userid=re.cs_id) as iskfadmin
+                ,(select dept_tel from kf_dept_info where dept_nm = re.dept_nm) as menustafftel
+                ,(select dept_fax from kf_dept_info where dept_nm = re.dept_nm) as menustafffax
+            from
+                (
+                    select
+                        row_.*
+                        , @rownum := @rownum + 1 AS rownum_
+                    from
+                        (
+                            select
+                                a.*
+                           from
+                                vi_user_kfhomenew a
+                           where 1 = 1
+            ]]>
+
+                            <isNotEmpty prepend="and" property="cond1">
+                                <![CDATA[
+                                        date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d")
+                                    and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d")
+                                ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="cond2">
+                                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+                            </isNotEmpty>
+
+            <![CDATA[
+                            order by cs_name asc
+                         ) row_
+                    where
+                        @rownum < (#n#+#m#)
+                )re
+            where
+                rownum_ > #m#
+            ]]>
+    </select> -->
+
+    <!-- <select id="ZUser.getInfoKFUser" parameterClass="KfuserVO" resultClass="KfuserVO">
+        <![CDATA[
+            select *
+            from vi_user_kfhomenew
+            where cs_id=#cs_id#
+        ]]>
+    </select> -->
+
+    <insert id="ZUser.add_admin_from_kfuser">
+        <![CDATA[
+             insert into zuser (
+                 userno
+                 ,userid
+                 ,userpasswd
+                 ,username
+                 ,useremail
+                 ,usertel
+                 ,userdatereg
+                 ,enabled
+                 ,dept_nm
+                 ,work_grade
+                 ,work_title
+                 ,userauth
+             )
+            select
+                ZUSER_NO_SEQ.nextval
+                ,cs_id
+                ,cs_password
+                ,cs_name
+                ,cs_email
+                ,tel_no
+                ,d_join
+                ,'1'
+                ,dept_nm
+                ,work_grade
+                ,work_title
+                ,'1'
+            from vi_user_kfhomenew
+            where cs_id =#cs_id#
+        ]]>
+    </insert>
+
+    <!-- <select id="ZUser.getList" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+            SELECT
+                *
+            from
+                zuser
+            where userid in (select userid from zauthorities where authority not in ('ROLE_ADMIN'))
+           ]]>
+                   <isNotEmpty prepend="and" property="cond1">
+                    <![CDATA[
+                            date_format($cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d")
+                        and date_format($cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d")
+                    ]]>
+                </isNotEmpty>
+                <isNotEmpty prepend="and" property="cond2">
+                    <![CDATA[
+                        upper($cond2$) like concat('%',upper(#keyword#),'%')
+                    ]]>
+                </isNotEmpty>
+                <isNotEmpty prepend="and" property="cond3">
+                    <![CDATA[ upper($cond3$) =#userstatus# ]]>
+                </isNotEmpty>
+           <![CDATA[
+            ORDER BY userno desc
+            LIMIT #m#, #n#
+            ]]>
+    </select> -->
+
+
+    <select id="ZUser.getSameUserIdCount"  resultClass="java.lang.Integer">
+        <![CDATA[
+            select count(*) cnt
+            from   zuser
+            where userid=#userid#
+        ]]>
+    </select>
+
+    <select id="ZUser.getSameUseremailCount"  resultClass="java.lang.Integer">
+        <![CDATA[
+            select count(*) cnt
+            from   zuser
+            where useremail=#useremail#
+        ]]>
+    </select>
+
+    <select id="ZUser.isUserInEpms"  resultClass="java.lang.String">
+        <![CDATA[
+            select  epms.F_USR_PSWD_CHECK(#userid#,#userpasswd#) from dual
+        ]]>
+    </select>
+
+    <update id="ZUser.updateEnabledToOne">
+        <![CDATA[
+        update zuser
+        set enabled = 1
+        where userid =#userid#
+        ]]>
+    </update>
+    <update id="ZUser.userCommitForStudent">
+        <![CDATA[
+        update zuser
+        set userconfirm = 1
+            ,userconfirmdate = now()
+        where userid =#userid#
+        ]]>
+    </update>
+    <update id="ZUser.updateIsTmpPasswdFlagY">
+        <![CDATA[
+        update zuser
+        set istmppasswd = 'Y'
+        where userid =#userid#
+        ]]>
+    </update>
+    <update id="ZUser.updateIsTmpPasswdFlagN">
+        <![CDATA[
+        update zuser
+        set istmppasswd = 'N'
+        where userid =#userid#
+        ]]>
+    </update>
+    <update id="ZUser.updateUserPasswd">
+        <![CDATA[
+        update zuser
+        set
+            userpasswd = #userpasswd#
+            ,userpasswdtmp = null
+            ,istmppasswd = 'N'
+            ,logincount =0
+        where userid =#userid#
+        ]]>
+    </update>
+
+    <select id="ZUser.login" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+            select *
+            from   zuser
+            where  userid = #userid#
+            and    userpasswd = #userpasswd#
+        ]]>
+    </select>
+
+    <update id="ZUser.update" parameterClass="ZUserVo">
+        UPDATE zuser SET
+            userdatemod=now()
+        <isNotEmpty property="useremail">
+            ,useremail=#useremail#
+        </isNotEmpty>
+        <isNotEmpty property="usertel">
+            ,usertel=#usertel#
+        </isNotEmpty>
+        <isNotEmpty property="usermobile">
+            ,usermobile=#usermobile#
+        </isNotEmpty>
+        <isNotEmpty property="userbirth">
+            ,userbirth=#userbirth#
+        </isNotEmpty>
+        <isNotEmpty property="userfax">
+            ,userfax=#userfax#
+        </isNotEmpty>
+        <isNotEmpty property="useraddrno">
+            ,useraddrno=#useraddrno#
+        </isNotEmpty>
+        <isNotEmpty property="useraddr">
+            ,useraddr=#useraddr#
+        </isNotEmpty>
+        <isNotEmpty property="useraddr2">
+            ,useraddr2=#useraddr2#
+        </isNotEmpty>
+        <isNotEmpty property="username2">
+            ,username2=#username2#
+        </isNotEmpty>
+        <isNotEmpty property="usernick">
+            ,usernick=#usernick#
+        </isNotEmpty>
+        <isNotEmpty property="dept_nm">
+            ,dept_nm=#dept_nm#
+        </isNotEmpty>
+        <isNotEmpty property="comtel">
+            ,comtel = #comtel#
+        </isNotEmpty>
+        <isNotEmpty property="comaddrno">
+            ,comaddrno = #comaddrno#
+        </isNotEmpty>
+        <isNotEmpty property="comaddr">
+            ,comaddr = #comaddr#
+        </isNotEmpty>
+        <isNotEmpty property="comaddr2">
+            ,comaddr2 = #comaddr2#
+        </isNotEmpty>
+        <isNotEmpty property="chargername">
+            ,chargername = #chargername#
+        </isNotEmpty>
+        <isNotEmpty property="chargemobile">
+            ,chargemobile = #chargemobile#
+        </isNotEmpty>
+        <isNotEmpty property="chargeremail">
+            ,chargeremail = #chargeremail#
+        </isNotEmpty>
+        <isNotEmpty property="userpasswd">
+            ,userpasswd = #userpasswd#
+        </isNotEmpty>
+        <isNotEmpty property="userstatus">
+            ,userstatus = #userstatus#
+        </isNotEmpty>
+        <isNotEmpty property="usertype">
+            ,usertype = #usertype#
+        </isNotEmpty>
+        <isNotEmpty property="work_title">
+            ,work_title = #work_title#
+        </isNotEmpty>
+        <isNotEmpty property="enabled">
+            ,enabled = #enabled#
+        </isNotEmpty>
+        <isNotEmpty property="usermemo">
+            ,usermemo = #usermemo#
+        </isNotEmpty>
+        <isNotEmpty property="userconfirm">
+            ,userconfirm = #userconfirm#
+            ,userconfirmdate = date_format(now(),'%Y%m%d%H%i%s')
+        </isNotEmpty>
+        <isNotEmpty property="useroutrequest">
+            ,useroutrequest = #useroutrequest#
+        </isNotEmpty>
+        <isNotEmpty property="istmppasswd">
+            ,istmppasswd = #istmppasswd#
+        </isNotEmpty>
+        WHERE userno = #userno#
+    </update>
+
+    <delete id="ZUser.deleteOneUser">
+        delete
+        from zuser
+        where userid = #userid#
+    </delete>
+    <delete id="ZUser.deleteOneAuth">
+        delete
+        from zauthorities
+        where userid = #userid#
+        <isNotEmpty prepend="and" property="authority">
+            authority = #authority#
+        </isNotEmpty>
+    </delete>
+
+    <delete id="ZUser.delete" parameterClass="java.util.List">
+        delete
+        from zuser
+        where userno in
+        <iterate open="(" close=")" conjunction=",">
+            #arrDeleteNo[]#
+        </iterate>
+    </delete>
+
+    <delete id="ZUser.deleteAuth" parameterClass="java.util.List">
+        delete
+        from zauthorities
+        where userid in (select userid from zuser where userno in
+        <iterate open="(" close=")" conjunction=",">
+            #arrDeleteNo[]#
+        </iterate>
+        )
+    </delete>
+
+
+    <select id="ZUser.selectbypk"  parameterClass="ZUserVo" resultClass="ZUserVo">
+        SELECT
+            *
+        FROM zuser
+        WHERE 1=1
+        <isNotEmpty prepend="and" property="userno">
+            userno = #userno#
+        </isNotEmpty>
+    </select>
+
+    <!--kap추가 회원정보  -->
+    <select id="getuserno"  parameterClass="java.lang.String" resultClass="java.lang.String">
+        <![CDATA[
+            SELECT $string$ from dual
+        ]]>
+    </select>
+
+
+    <select id="getusercount"  parameterClass="ZUserVo" resultClass="java.lang.Integer">
+        <![CDATA[
+            select count(*)
+            from   zuser
+            where duesjoin=#duesjoin#
+              and enabled=1
+        ]]>
+    </select>
+
+    <update id="ZUser.updateuseroutrequestToZero">
+        <![CDATA[
+        update zuser
+        set useroutrequest=0,
+              useroutreason = #useroutreason#
+        where userno =#userno#
+        ]]>
+    </update>
+
+    <update id="ZUser.updateEnabledToZero">
+        <![CDATA[
+        update zuser
+        set enabled = 0,
+              userstatus = 9,
+              useridx = zuser_idx_delete_seq.nextval
+        where userno =#userno#
+        ]]>
+    </update>
+
+    <update id="ZUser.updateRequestEnabledToNomal">
+        <![CDATA[
+        update zuser
+        set useroutrequest=null,
+        enabled = 1,
+        cancelreason = null
+        where userno =#userno#
+        ]]>
+    </update>
+
+
+    <!-- 회원승인 -->
+    <update id="ZUser.updateUserStatus" parameterClass="ZUserVo" >
+        <![CDATA[
+            update zuser set
+                userstatus = '1'
+                ,useridx = zuser_idx_person_seq.nextval
+                ,admission_date = DATE_FORMAT(now(), 'YY%Y%m%d')
+                ,admission_month = DATE_FORMAT(now(), 'MM')
+            where userno=#userno#
+        ]]>
+    </update>
+
+    <!-- SearchUserCount -->
+    <select id="ZUser.listCountSearch" parameterClass="SearchUser" resultClass="java.lang.Integer">
+        select
+            count(1) total
+        from
+            searchuser
+        where
+            1=1
+
+        <isEmpty property="sc_sec1_val">
+            <isNotEmpty property="work_grade">
+                    <![CDATA[ $sd_sec1$ work_grade = #work_grade# ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec1_val">
+            <![CDATA[ $sd_sec1$ work_grade in( $sc_sec1_val$) ]]>
+        </isNotEmpty>
+
+        <isEmpty property="sc_sec2_val">
+            <isNotEmpty property="branch">
+                    <![CDATA[ $sd_sec2$ branch = #branch# ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec2_val">
+            <![CDATA[ $sd_sec2$ branch in( $sc_sec2_val$) ]]>
+        </isNotEmpty>
+        <isNotEmpty property="annualpause">
+            <isEqual property="annualpause" compareValue="1">
+                <![CDATA[ and annualpause = #annualpause# ]]>
+            </isEqual>
+            <isEqual property="annualpause" compareValue="2">
+                <![CDATA[ and (annualpause = #annualpause# or annualpause is null)]]>
+            </isEqual>
+        </isNotEmpty>
+        <isNotEmpty property="usersex">
+                <![CDATA[ and usersex = #usersex# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="semimemberconfirm">
+                <![CDATA[ and semimemberconfirm = #semimemberconfirm# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="useroutrequest">
+                <![CDATA[ and useroutrequest = #useroutrequest# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="searchtype">
+                <isEqual property="searchtype" compareValue="1">
+                    <![CDATA[ and useridx = #keyword# ]]>
+                </isEqual>
+                <isEqual property="searchtype" compareValue="2">
+                    <![CDATA[ and upper(username) like '%'||upper(#keyword#)||'%' ]]>
+                </isEqual>
+                <isEqual property="searchtype" compareValue="3">
+                    <![CDATA[ and upper(userid) like '%'||upper(#keyword#)||'%' ]]>
+                </isEqual>
+                <isEqual property="searchtype" compareValue="4">
+                    <![CDATA[ and upper(dept_nm) like '%'||upper(#keyword#)||'%' ]]>
+                </isEqual>
+        </isNotEmpty>
+        <isNotEmpty property="usernostart">
+                <![CDATA[ and useridx >= #usernostart# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="usernoend">
+                <![CDATA[ and useridx <= #usernoend# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="sdatetype">
+                <isEqual property="sdatetype" compareValue="1">
+                    <![CDATA[ and substr(userdatereg,0,8) >= #sdateys#||#sdatems#||#sdateds#
+                              and substr(userdatereg,0,8) <= #sdateye#||#sdateme#||#sdatede#
+                     ]]>
+                </isEqual>
+                <isEqual property="sdatetype" compareValue="2">
+                    <![CDATA[ and substr(userbirth,0,8) >= #sdateys#||#sdatems#||#sdateds#
+                              and substr(userbirth,0,8) <= #sdateye#||#sdateme#||#sdatede#
+                    ]]>
+                </isEqual>
+        </isNotEmpty>
+        <isEmpty property="sc_sec4_val">
+            <isNotEmpty property="workplace">
+                    <![CDATA[ $sd_sec4$ workplace = #workplace# ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec4_val">
+            <![CDATA[ $sd_sec4$ workplace in( $sc_sec4_val$) ]]>
+        </isNotEmpty>
+
+
+        <isEmpty property="sc_sec5_val">
+            <isNotEmpty property="executive">
+                    <![CDATA[ $sd_sec5$ executive like '%'||upper(#executive#)||'%' ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec5_val">
+            $sd_sec5$
+            (
+            <iterate conjunction=" or " property="executiveArr" >
+                <![CDATA[  executive like '%'||#executiveArr[]#||'%' ]]>
+            </iterate>
+            )
+        </isNotEmpty>
+
+        <isEmpty property="sc_sec11_val">
+            <isNotEmpty property="committee">
+                    <![CDATA[ $sd_sec11$ committee like '%'||upper(#committee#)||'%' ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec11_val">
+            $sd_sec11$
+            (
+            <iterate conjunction=" or " property="committeeArr" >
+                <![CDATA[  committee ike '%'||#committeeArr[]#||'%' ]]>
+            </iterate>
+            )
+        </isNotEmpty>
+
+
+        <isEmpty property="sc_sec12_val">
+            <isNotEmpty property="lasteducation">
+                    <![CDATA[ and lasteducation like '%'||#lasteducation#||'%' ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec12_val">
+            $sd_sec12$ (
+                <iterate conjunction=" or " property="lasteducationArr" >
+                    <![CDATA[ (lasteducation like '%'||#lasteducationArr[]#||'%') ]]>
+                </iterate>
+            )
+        </isNotEmpty>
+
+
+        <isNotEmpty property="university">
+            and
+            (
+            <iterate conjunction=" or " property="universityArr" >
+                <![CDATA[
+                    (university0 like '%'||#universityArr[]#||'%' or
+                     university1 like '%'||#universityArr[]#||'%' or
+                     university2 like '%'||#universityArr[]#||'%')
+                ]]>
+            </iterate>
+            )
+        </isNotEmpty>
+
+        <isNotEmpty property="degrees">
+                <![CDATA[ and (     degrees0 = #degrees#
+                                or     degrees1 = #degrees#
+                                or  degrees2 = #degrees#)
+                 ]]>
+        </isNotEmpty>
+
+
+        <isNotEmpty property="duetype">
+            <isEqual property="duetype" compareValue="1">
+                <isEqual property="duepaytype" compareValue="1">
+                    and
+                    (
+                    <iterate conjunction=" or " property="dueYearArr" >
+                        <![CDATA[
+                            ($dueYearArr[]$ $duepayquery$)
+                        ]]>
+                    </iterate>
+                    )
+                </isEqual>
+                <isEqual property="duepaytype" compareValue="0">
+                    and work_grade in (1,3)
+                    and
+                    (
+                    <iterate conjunction=" or " property="dueYearArr" >
+                        <![CDATA[
+                            ($dueYearArr[]$ $duepayquery$)
+                        ]]>
+                    </iterate>
+                    )
+                </isEqual>
+            </isEqual>
+            <isEqual property="duetype" compareValue="2">
+                <isEqual property="duepaytype" compareValue="1">
+                    and
+                    (
+                    <iterate conjunction=" or " property="dueYearArr" >
+                        <![CDATA[
+                            ($dueYearArr[]$ $duepayquery$)
+                        ]]>
+                    </iterate>
+                    )
+                </isEqual>
+                <isEqual property="duepaytype" compareValue="0">
+                    and societytype is not null
+                    and
+                    (
+                    <iterate conjunction=" or " property="dueYearArr" >
+                        <![CDATA[
+                            ($dueYearArr[]$ $duepayquery$)
+                        ]]>
+                    </iterate>
+                    )
+                </isEqual>
+            </isEqual>
+        </isNotEmpty>
+
+        <isNotEmpty property="groupuser">
+                <![CDATA[ and groupuser = #groupuser# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="paytype">
+                <![CDATA[ and paytype = #paytype# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="postal">
+                <![CDATA[ and postal = #postal# ]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="cond2">
+                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+        </isNotEmpty>
+    </select>
+
+    <select id="ZUser.getListSearch" parameterClass="SearchUser" resultClass="SearchUser">
+        <![CDATA[
+            SELECT
+                t.*
+            from
+            searchuser t,
+                (
+                    select
+                        row_.*
+                        , @rownum := @rownum + 1 AS rownum_
+                    from
+                        (
+                            select
+                                a.userno
+                           from
+                                searchuser a,   (SELECT @rownum := #m#) R
+                           where 1 = 1
+                           and a.work_grade in ('1','2','3','6')
+            ]]>
+                            <isEmpty property="sc_sec1_val">
+                                <isNotEmpty property="work_grade">
+                                        <![CDATA[ $sd_sec1$ work_grade = #work_grade# ]]>
+                                </isNotEmpty>
+                            </isEmpty>
+                            <isNotEmpty property="sc_sec1_val">
+                                <![CDATA[ $sd_sec1$ work_grade in( $sc_sec1_val$) ]]>
+                            </isNotEmpty>
+
+                            <isEmpty property="sc_sec2_val">
+                                <isNotEmpty property="branch">
+                                        <![CDATA[ $sd_sec2$ branch = #branch# ]]>
+                                </isNotEmpty>
+                            </isEmpty>
+                            <isNotEmpty property="sc_sec2_val">
+                                <![CDATA[ $sd_sec2$ branch in( $sc_sec2_val$) ]]>
+                            </isNotEmpty>
+
+                            <isNotEmpty property="annualpause">
+                                <isEqual property="annualpause" compareValue="1">
+                                    <![CDATA[ and annualpause = #annualpause# ]]>
+                                </isEqual>
+                                <isEqual property="annualpause" compareValue="2">
+                                    <![CDATA[ and (annualpause = #annualpause# or annualpause is null)]]>
+                                </isEqual>
+                            </isNotEmpty>
+                            <isNotEmpty property="usersex">
+                                    <![CDATA[ and usersex = #usersex# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty property="semimemberconfirm">
+                                    <![CDATA[ and semimemberconfirm = #semimemberconfirm# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty property="useroutrequest">
+                                    <![CDATA[ and useroutrequest = #useroutrequest# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty property="searchtype">
+                                    <isEqual property="searchtype" compareValue="1">
+                                        <![CDATA[ and useridx = #keyword# ]]>
+                                    </isEqual>
+                                    <isEqual property="searchtype" compareValue="2">
+                                        <![CDATA[ and upper(username) like '%'||upper(#keyword#)||'%' ]]>
+                                    </isEqual>
+                                    <isEqual property="searchtype" compareValue="3">
+                                        <![CDATA[ and upper(userid) like '%'||upper(#keyword#)||'%' ]]>
+                                    </isEqual>
+                                    <isEqual property="searchtype" compareValue="4">
+                                        <![CDATA[ and upper(dept_nm) like '%'||upper(#keyword#)||'%' ]]>
+                                    </isEqual>
+                            </isNotEmpty>
+                            <isNotEmpty property="usernostart">
+                                    <![CDATA[ and useridx >= #usernostart# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty property="usernoend">
+                                    <![CDATA[ and useridx <= #usernoend# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty property="sdatetype">
+                                    <isEqual property="sdatetype" compareValue="1">
+                                        <![CDATA[ and substr(userdatereg,0,8) >= #sdateys#||#sdatems#||#sdateds#
+                                                  and substr(userdatereg,0,8) <= #sdateye#||#sdateme#||#sdatede#
+                                         ]]>
+                                    </isEqual>
+                                    <isEqual property="sdatetype" compareValue="2">
+                                        <![CDATA[ and substr(userbirth,0,8) >= #sdateys#||#sdatems#||#sdateds#
+                                                  and substr(userbirth,0,8) <= #sdateye#||#sdateme#||#sdatede#
+                                        ]]>
+                                    </isEqual>
+                            </isNotEmpty>
+                            <isEmpty property="sc_sec4_val">
+                                <isNotEmpty property="workplace">
+                                        <![CDATA[ $sd_sec4$ workplace = #workplace# ]]>
+                                </isNotEmpty>
+                            </isEmpty>
+                            <isNotEmpty property="sc_sec4_val">
+                                <![CDATA[ $sd_sec4$ workplace in( $sc_sec4_val$) ]]>
+                            </isNotEmpty>
+
+                            <isEmpty property="sc_sec5_val">
+                                <isNotEmpty property="executive">
+                                        <![CDATA[ $sd_sec5$ executive like '%'||upper(#executive#)||'%' ]]>
+                                </isNotEmpty>
+                            </isEmpty>
+                            <isNotEmpty property="sc_sec5_val">
+                                $sd_sec5$
+                                (
+                                <iterate conjunction=" or " property="executiveArr" >
+                                    <![CDATA[  executive like '%'||#executiveArr[]#||'%' ]]>
+                                </iterate>
+                                )
+                            </isNotEmpty>
+
+                            <isEmpty property="sc_sec11_val">
+                                <isNotEmpty property="committee">
+                                        <![CDATA[ $sd_sec11$ committee like '%'||upper(#committee#)||'%' ]]>
+                                </isNotEmpty>
+                            </isEmpty>
+                            <isNotEmpty property="sc_sec11_val">
+                                $sd_sec11$
+                                (
+                                <iterate conjunction=" or " property="committeeArr" >
+                                    <![CDATA[  committee ike '%'||#committeeArr[]#||'%' ]]>
+                                </iterate>
+                                )
+                            </isNotEmpty>
+                            <isEmpty property="sc_sec12_val">
+                                <isNotEmpty property="lasteducation">
+                                        <![CDATA[ and lasteducation like '%'||#lasteducation#||'%' ]]>
+                                </isNotEmpty>
+                            </isEmpty>
+                            <isNotEmpty property="sc_sec12_val">
+                                $sd_sec12$ (
+                                    <iterate conjunction=" or " property="lasteducationArr" >
+                                        <![CDATA[ (lasteducation like '%'||#lasteducationArr[]#||'%') ]]>
+                                    </iterate>
+                                )
+                            </isNotEmpty>
+                            <isNotEmpty property="university">
+                                and
+                                (
+                                <iterate conjunction=" or " property="universityArr" >
+                                    <![CDATA[
+                                        (university0 like '%'||#universityArr[]#||'%' or
+                                         university1 like '%'||#universityArr[]#||'%' or
+                                         university2 like '%'||#universityArr[]#||'%')
+                                    ]]>
+                                </iterate>
+                                )
+                            </isNotEmpty>
+
+                            <isNotEmpty property="degrees">
+                                    <![CDATA[ and (     degrees0 = #degrees#
+                                                    or     degrees1 = #degrees#
+                                                    or  degrees2 = #degrees#)
+                                     ]]>
+                            </isNotEmpty>
+
+                            <isNotEmpty property="duetype">
+                                <isEqual property="duetype" compareValue="1">
+                                    <isEqual property="duepaytype" compareValue="1">
+                                        and
+                                        (
+                                        <iterate conjunction=" or " property="dueYearArr" >
+                                            <![CDATA[
+                                                ($dueYearArr[]$ $duepayquery$)
+                                            ]]>
+                                        </iterate>
+                                        )
+                                    </isEqual>
+                                    <isEqual property="duepaytype" compareValue="0">
+                                        and work_grade in (1,3)
+                                        and
+                                        (
+                                        <iterate conjunction=" or " property="dueYearArr" >
+                                            <![CDATA[
+                                                ($dueYearArr[]$ $duepayquery$)
+                                            ]]>
+                                        </iterate>
+                                        )
+                                    </isEqual>
+                                </isEqual>
+                                <isEqual property="duetype" compareValue="2">
+                                    <isEqual property="duepaytype" compareValue="1">
+                                        and
+                                        (
+                                        <iterate conjunction=" or " property="dueYearArr" >
+                                            <![CDATA[
+                                                ($dueYearArr[]$ $duepayquery$)
+                                            ]]>
+                                        </iterate>
+                                        )
+                                    </isEqual>
+                                    <isEqual property="duepaytype" compareValue="0">
+                                        and societytype is not null
+                                        and
+                                        (
+                                        <iterate conjunction=" or " property="dueYearArr" >
+                                            <![CDATA[
+                                                ($dueYearArr[]$ $duepayquery$)
+                                            ]]>
+                                        </iterate>
+                                        )
+                                    </isEqual>
+                                </isEqual>
+                            </isNotEmpty>
+
+
+                            <isNotEmpty property="groupuser">
+                                    <![CDATA[ and groupuser = #groupuser# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty property="paytype">
+                                    <![CDATA[ and paytype = #paytype# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty property="postal">
+                                    <![CDATA[ and postal = #postal# ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="cond2">
+                                    <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="cond1">
+                                <![CDATA[
+                                        date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d")
+                                    and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d")
+                                ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="cond2">
+                                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+                            </isNotEmpty>
+                            <isEqual property="st_sec2" compareValue="1">
+                                <![CDATA[ order by $st_sec1$ asc ]]>
+                            </isEqual>
+                            <isEqual property="st_sec2" compareValue="2">
+                                <![CDATA[ order by $st_sec1$ desc ]]>
+                            </isEqual>
+                            <isNotEmpty property="st_sec3">
+                                <isEqual property="st_sec4" compareValue="1">
+                                    <![CDATA[ , $st_sec3$ asc ]]>
+                                </isEqual>
+                                <isEqual property="st_sec4" compareValue="2">
+                                    <![CDATA[ , $st_sec3$ desc ]]>
+                                </isEqual>
+                            </isNotEmpty>
+                            <isNotEmpty property="st_sec5">
+                                <isEqual property="st_sec6" compareValue="1">
+                                    <![CDATA[ , $st_sec5$ asc ]]>
+                                </isEqual>
+                                <isEqual property="st_sec6" compareValue="2">
+                                    <![CDATA[ , $st_sec5$ desc ]]>
+                                </isEqual>
+                            </isNotEmpty>
+
+
+            <![CDATA[
+                         ) row_
+                    where
+                        @rownum < (#n#+#m#)
+                )re
+            where
+                re.userno = t.userno
+
+
+            ]]>
+            <isEqual property="st_sec2" compareValue="1">
+                <![CDATA[ order by t.$st_sec1$ asc ]]>
+            </isEqual>
+            <isEqual property="st_sec2" compareValue="2">
+                <![CDATA[ order by t.$st_sec1$ desc ]]>
+            </isEqual>
+            <isNotEmpty property="st_sec3">
+                <isEqual property="st_sec4" compareValue="1">
+                    <![CDATA[ , t.$st_sec3$ asc ]]>
+                </isEqual>
+                <isEqual property="st_sec4" compareValue="2">
+                    <![CDATA[ , t.$st_sec3$ desc ]]>
+                </isEqual>
+            </isNotEmpty>
+            <isNotEmpty property="st_sec5">
+                <isEqual property="st_sec6" compareValue="1">
+                    <![CDATA[ , t.$st_sec5$ asc ]]>
+                </isEqual>
+                <isEqual property="st_sec6" compareValue="2">
+                    <![CDATA[ , t.$st_sec5$ desc ]]>
+                </isEqual>
+            </isNotEmpty>
+    </select>
+
+
+    <select id="ZUser.getListSearchAll" parameterClass="SearchUser" resultClass="SearchUser">
+        select *
+        from
+            searchuser
+        where
+            1=1
+
+        <isNotEmpty property="userno">
+            <![CDATA[and userno = #userno# ]]>
+        </isNotEmpty>
+        <isEmpty property="sc_sec1_val">
+            <isNotEmpty property="work_grade">
+                    <![CDATA[ $sd_sec1$ work_grade = #work_grade# ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec1_val">
+            <![CDATA[ $sd_sec1$ work_grade in( $sc_sec1_val$) ]]>
+        </isNotEmpty>
+
+        <isEmpty property="sc_sec2_val">
+            <isNotEmpty property="branch">
+                    <![CDATA[ $sd_sec2$ branch = #branch# ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec2_val">
+            <![CDATA[ $sd_sec2$ branch in( $sc_sec2_val$) ]]>
+        </isNotEmpty>
+        <isNotEmpty property="annualpause">
+            <isEqual property="annualpause" compareValue="1">
+                <![CDATA[ and annualpause = #annualpause# ]]>
+            </isEqual>
+            <isEqual property="annualpause" compareValue="2">
+                <![CDATA[ and (annualpause = #annualpause# or annualpause is null)]]>
+            </isEqual>
+        </isNotEmpty>
+        <isNotEmpty property="usersex">
+                <![CDATA[ and usersex = #usersex# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="semimemberconfirm">
+                <![CDATA[ and semimemberconfirm = #semimemberconfirm# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="useroutrequest">
+                <![CDATA[ and useroutrequest = #useroutrequest# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="searchtype">
+                <isEqual property="searchtype" compareValue="1">
+                    <![CDATA[ and useridx = #keyword# ]]>
+                </isEqual>
+                <isEqual property="searchtype" compareValue="2">
+                    <![CDATA[ and upper(username) like '%'||upper(#keyword#)||'%' ]]>
+                </isEqual>
+                <isEqual property="searchtype" compareValue="3">
+                    <![CDATA[ and upper(userid) like '%'||upper(#keyword#)||'%' ]]>
+                </isEqual>
+                <isEqual property="searchtype" compareValue="4">
+                    <![CDATA[ and upper(dept_nm) like '%'||upper(#keyword#)||'%' ]]>
+                </isEqual>
+        </isNotEmpty>
+        <isNotEmpty property="usernostart">
+                <![CDATA[ and useridx >= #usernostart# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="usernoend">
+                <![CDATA[ and useridx <= #usernoend# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="sdatetype">
+                <isEqual property="sdatetype" compareValue="1">
+                    <![CDATA[ and substr(userdatereg,0,8) >= #sdateys#||#sdatems#||#sdateds#
+                              and substr(userdatereg,0,8) <= #sdateye#||#sdateme#||#sdatede#
+                     ]]>
+                </isEqual>
+                <isEqual property="sdatetype" compareValue="2">
+                    <![CDATA[ and substr(userbirth,0,8) >= #sdateys#||#sdatems#||#sdateds#
+                              and substr(userbirth,0,8) <= #sdateye#||#sdateme#||#sdatede#
+                    ]]>
+                </isEqual>
+        </isNotEmpty>
+        <isEmpty property="sc_sec4_val">
+            <isNotEmpty property="workplace">
+                    <![CDATA[ $sd_sec4$ workplace = #workplace# ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec4_val">
+            <![CDATA[ $sd_sec4$ workplace in( $sc_sec4_val$) ]]>
+        </isNotEmpty>
+
+
+        <isEmpty property="sc_sec5_val">
+            <isNotEmpty property="executive">
+                    <![CDATA[ $sd_sec5$ executive like '%'||upper(#executive#)||'%' ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec5_val">
+            $sd_sec5$
+            (
+            <iterate conjunction=" or " property="executiveArr" >
+                <![CDATA[  executive like '%'||#executiveArr[]#||'%' ]]>
+            </iterate>
+            )
+        </isNotEmpty>
+
+        <isEmpty property="sc_sec11_val">
+            <isNotEmpty property="committee">
+                    <![CDATA[ $sd_sec11$ committee like '%'||upper(#committee#)||'%' ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec11_val">
+            $sd_sec11$
+            (
+            <iterate conjunction=" or " property="committeeArr" >
+                <![CDATA[  committee ike '%'||#committeeArr[]#||'%' ]]>
+            </iterate>
+            )
+        </isNotEmpty>
+
+
+        <isEmpty property="sc_sec12_val">
+            <isNotEmpty property="lasteducation">
+                    <![CDATA[ and lasteducation like '%'||#lasteducation#||'%' ]]>
+            </isNotEmpty>
+        </isEmpty>
+        <isNotEmpty property="sc_sec12_val">
+            $sd_sec12$ (
+                <iterate conjunction=" or " property="lasteducationArr" >
+                    <![CDATA[ (lasteducation like '%'||#lasteducationArr[]#||'%') ]]>
+                </iterate>
+            )
+        </isNotEmpty>
+
+
+        <isNotEmpty property="university">
+            and
+            (
+            <iterate conjunction=" or " property="universityArr" >
+                <![CDATA[
+                    (university0 like '%'||#universityArr[]#||'%' or
+                     university1 like '%'||#universityArr[]#||'%' or
+                     university2 like '%'||#universityArr[]#||'%')
+                ]]>
+            </iterate>
+            )
+        </isNotEmpty>
+
+        <isNotEmpty property="degrees">
+                <![CDATA[ and (     degrees0 = #degrees#
+                                or     degrees1 = #degrees#
+                                or  degrees2 = #degrees#)
+                 ]]>
+        </isNotEmpty>
+
+        <isNotEmpty property="duetype">
+            <isEqual property="duetype" compareValue="1">
+                <isEqual property="duepaytype" compareValue="1">
+                    and
+                    (
+                    <iterate conjunction=" or " property="dueYearArr" >
+                        <![CDATA[
+                            ($dueYearArr[]$ $duepayquery$)
+                        ]]>
+                    </iterate>
+                    )
+                </isEqual>
+                <isEqual property="duepaytype" compareValue="0">
+                    and work_grade in (1,3)
+                    and
+                    (
+                    <iterate conjunction=" or " property="dueYearArr" >
+                        <![CDATA[
+                            ($dueYearArr[]$ $duepayquery$)
+                        ]]>
+                    </iterate>
+                    )
+                </isEqual>
+            </isEqual>
+            <isEqual property="duetype" compareValue="2">
+                <isEqual property="duepaytype" compareValue="1">
+                    and
+                    (
+                    <iterate conjunction=" or " property="dueYearArr" >
+                        <![CDATA[
+                            ($dueYearArr[]$ $duepayquery$)
+                        ]]>
+                    </iterate>
+                    )
+                </isEqual>
+                <isEqual property="duepaytype" compareValue="0">
+                    and societytype is not null
+                    and
+                    (
+                    <iterate conjunction=" or " property="dueYearArr" >
+                        <![CDATA[
+                            ($dueYearArr[]$ $duepayquery$)
+                        ]]>
+                    </iterate>
+                    )
+                </isEqual>
+            </isEqual>
+        </isNotEmpty>
+        <isNotEmpty property="groupuser">
+                <![CDATA[ and groupuser = #groupuser# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="paytype">
+                <![CDATA[ and paytype = #paytype# ]]>
+        </isNotEmpty>
+        <isNotEmpty property="postal">
+                <![CDATA[ and postal = #postal# ]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="cond2">
+                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+        </isNotEmpty>
+    </select>
+
+
+    <insert id="ZUser.insertOrgUser">
+        <![CDATA[
+             INSERT INTO TBL_ZUSER_ORG (
+                orgNo,
+                orgUserNo,
+                orgUserType,
+                orgName,
+                orgDelegate,
+                orgDelegateJob,
+                orgOfficer,
+                orgMemberType,
+                orgCopyofUIS,
+                orgCopyofJKPA,
+                orgReceiveAddr,
+                orgNote,
+                orgCorpRegisNo,
+                orgBizType,
+                orgBizCondition,
+                orgWebsite,
+                adr1Dept,
+                adr1Officer,
+                adr1Job,
+                adr1Email,
+                adr1PostCode,
+                adr1Addr,
+                adr1AddrDetail,
+                adr1Phone,
+                adr1Fax,
+                adr2Dept,
+                adr2Officer,
+                adr2Job,
+                adr2PostCode,
+                adr2Addr,
+                adr2AddrDetail,
+                adr2Phone,
+                adr2Fax,
+                orgMemo
+             ) VALUES (
+                 zuser_org_seq.nextval,
+                #orgUserNo#,
+                #orgUserType#,
+                #orgName#,
+                #orgDelegate#,
+                #orgDelegateJob#,
+                #orgOfficer#,
+                #orgMemberType#,
+                #orgCopyofUIS#,
+                #orgCopyofJKPA#,
+                #orgReceiveAddr#,
+                #orgNote#,
+                #orgCorpRegisNo#,
+                #orgBizType#,
+                #orgBizCondition#,
+                #orgWebsite#,
+                #adr1Dept#,
+                #adr1Officer#,
+                #adr1Job#,
+                #adr1Email#,
+                #adr1PostCode#,
+                #adr1Addr#,
+                #adr1AddrDetail#,
+                #adr1Phone#,
+                #adr1Fax#,
+                #adr2Dept#,
+                #adr2Officer#,
+                #adr2Job#,
+                #adr2PostCode#,
+                #adr2Addr#,
+                #adr2AddrDetail#,
+                #adr2Phone#,
+                #adr2Fax#,
+                #orgMemo#
+             )
+        ]]>
+    </insert>
+
+    <select id="ZUser.getOrgUserListCount" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                zuser a, tbl_zuser_org ot
+            where 1 = 1
+            and a.userauth is null
+            and a.userno = ot.orguserno
+            and (a.work_grade = '7' or a.work_grade = '8')
+        ]]>
+            <isNotEmpty prepend="and" property="orgUserType">
+                <![CDATA[ ot.orgUserType = #orgUserType# ]]>
+            </isNotEmpty>
+            <isNotEmpty property="cond6">
+                <isEqual prepend="and" property="cond6" compareValue="1"><!-- 기관명--><!-- 회사명-->
+                    <![CDATA[
+                        a.userno in (SELECT ORGUSERNO
+                               FROM TBL_ZUSER_ORG
+                                   where upper(ORGNAME) like '%'||upper(#keyword#)||'%')
+                    ]]>
+                </isEqual>
+                <isEqual prepend="and" property="cond6" compareValue="3"><!-- 회원번호 -->
+                    <![CDATA[
+                        a.useridx = #keyword#
+                    ]]>
+                </isEqual>
+            </isNotEmpty>
+
+            <isEqual property="orgUserType" compareValue="1"> <!-- 단체회원 -->
+                <isNotEmpty property="cond6">
+                    <isEqual prepend="and" property="cond6" compareValue="2"><!--대표자명 -->
+                        <![CDATA[
+                            a.userno in (SELECT ORGUSERNO
+                                FROM TBL_ZUSER_ORG
+                                    where upper(ORGDELEGATE) like '%'||upper(#keyword#)||'%')
+                        ]]>
+                    </isEqual>
+                </isNotEmpty>
+            </isEqual>
+            <isEqual property="orgUserType" compareValue="2"> <!-- 기증회원 -->
+                <isNotEmpty property="cond6">
+                    <isEqual prepend="and" property="cond6" compareValue="2"><!--담당자명 -->
+                        <![CDATA[
+                            a.userno in (SELECT ORGUSERNO
+                                FROM TBL_ZUSER_ORG
+                                    where upper(ORGOFFICER) like '%'||upper(#keyword#)||'%')
+                        ]]>
+                    </isEqual>
+                </isNotEmpty>
+            </isEqual>
+
+            <isNotEmpty prepend="and" property="cond7"><!-- 회원번호 -->
+                a.useridx BETWEEN #cond7# and #cond8#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="cond9"><!-- 회원종류 -->
+                a.userno in (SELECT ORGUSERNO
+                               FROM TBL_ZUSER_ORG
+                                   where ORGMEMBERTYPE =#cond9#)
+            </isNotEmpty>
+
+            <isNotEmpty property="cond10"><!-- 회원상태:정상(1)탈퇴(9) 회원중지 (0) -->
+                <isEqual prepend="and" property="cond10" compareValue="1">
+                    <![CDATA[
+                        a.userstatus =#cond10#
+                        and (a.useroutrequest IS NULL or a.useroutrequest <> 0)
+                    ]]>
+                </isEqual>
+                <isEqual prepend="and" property="cond10" compareValue="9">
+                    <![CDATA[
+                        a.userstatus =#cond10#
+                    ]]>
+                </isEqual>
+                <isEqual prepend="and" property="cond10" compareValue="0">
+                    <![CDATA[ a.annualPause = '1' ]]>
+                </isEqual>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="sdate">
+                <isEqual property="search" compareValue="1"> <!-- 단체회원 검색 -->
+                    <![CDATA[
+                        a.userno in (SELECT userno
+                                             FROM tbl_dues
+                                            WHERE REGYEAR between #sdate# and #edate#
+                                            and isannual = 'P'
+                    ]]>
+                                           <isEqual prepend="and" property="paytype" compareValue="1"> <!-- 납부 -->
+                                                <![CDATA[   payconfirm = '1' ]]>
+                                           </isEqual>
+                                            <isEqual prepend="and" property="paytype" compareValue="2"><!-- 미납 -->
+                                                <![CDATA[   payconfirm <> '1' ]]>
+                                           </isEqual>
+                    <![CDATA[ ) ]]>
+                </isEqual>
+
+                <isEqual property="search" compareValue="2"> <!-- 단체회원 회비 검색 -->
+                    <isEqual property="andOr" compareValue="or"><!-- or일때 -->
+                        <![CDATA[
+                         a.userno in (select userno
+                                              from tbl_dues
+                                            where ((
+                        ]]>
+                                <![CDATA[ REGYEAR = #sdate# ]]>
+                                <isEqual prepend="and" property="paytype" compareValue="1"> <!-- 납부 -->
+                                    <![CDATA[   payconfirm = '1' ]]>
+                                </isEqual>
+                                <isEqual prepend="and" property="paytype" compareValue="2"><!-- 미납 -->
+                                    <![CDATA[   payconfirm <> '1' ]]>
+                                </isEqual>
+                                <![CDATA[
+                                        ) OR (
+                                   ]]>
+                                <![CDATA[ REGYEAR = #edate# ]]>
+                                <isEqual prepend="and" property="paytype2" compareValue="1"> <!-- 납부 -->
+                                    <![CDATA[   payconfirm = '1' ]]>
+                                </isEqual>
+                                <isEqual prepend="and" property="paytype2" compareValue="2"><!-- 미납 -->
+                                    <![CDATA[   payconfirm <> '1' ]]>
+                                </isEqual>
+                                 <![CDATA[
+                                                        ))
+                                            and isannual = 'P'
+                                            and userno = a.userno)
+                        ]]>
+
+                    </isEqual>
+                    <isEqual property="andOr" compareValue="and"><!-- and일때 -->
+                        <![CDATA[
+                        (SELECT count(*)
+                                             FROM tbl_dues
+                                            WHERE (
+                        ]]>
+                                            <![CDATA[ regyear = #sdate# ]]>
+                                            <isEqual prepend="and" property="paytype" compareValue="1"> <!-- 납부 -->
+                                                <![CDATA[   payconfirm = '1' ]]>
+                                            </isEqual>
+                                            <isEqual prepend="and" property="paytype" compareValue="2"><!-- 미납 -->
+                                                <![CDATA[   payconfirm <> '1' ]]>
+                                            </isEqual>
+                              <![CDATA[
+                                                     )
+                                                     and isannual = 'P'
+                                                                   and userno = a.userno) > 0
+
+                                      and (SELECT count(*)
+                                             FROM tbl_dues
+                                            WHERE (
+                                    ]]>
+                                             <![CDATA[ regyear = #edate# ]]>
+                                            <isEqual prepend="and" property="paytype2" compareValue="1"> <!-- 납부 -->
+                                                <![CDATA[   payconfirm = '1' ]]>
+                                            </isEqual>
+                                            <isEqual prepend="and" property="paytype2" compareValue="2"><!-- 미납 -->
+                                                <![CDATA[   payconfirm <> '1' ]]>
+                                            </isEqual>
+                              <![CDATA[
+                                                     )
+                                                     and isannual = 'P'
+                                                                   and userno = a.userno) > 0
+                                    ]]>
+                          </isEqual>
+                </isEqual>
+            </isNotEmpty>
+    </select>
+
+    <select id="ZUser.getOrgUserList" parameterClass="ZUserVo" resultClass="ZUserVo">
+        <![CDATA[
+            SELECT
+                t.*
+                , ot.orgDelegate as orgUserDelegate
+                , ot.orgOfficer
+                , ot.adr1Officer as orgUserOfficer
+                , ot.adr1Dept as orgUserDept
+                , ot.adr1Email as orgUserEmail
+                , ot.adr1Phone as orgUserPhone
+            from
+            zuser t,
+                (
+                    select
+                        row_.*
+                        , @rownum := @rownum + 1 AS rownum_
+                    from
+                        (
+                            select
+                                a.userno
+                           from
+                                zuser a, tbl_zuser_org ot1,   (SELECT @rownum := #m#) R
+                           where 1 = 1
+                           and userauth is null
+                           and a.userno=ot1.orguserno
+            ]]>
+                            <isNotEmpty property="orgUserType">
+                                <isEqual prepend="and" property="orgUserType" compareValue="1">
+                                    <![CDATA[ a.work_grade = '7' ]]>
+                                </isEqual>
+                                <isEqual prepend="and" property="orgUserType" compareValue="2">
+                                    <![CDATA[ a.work_grade = '8' ]]>
+                                </isEqual>
+                            </isNotEmpty>
+                            <isNotEmpty property="cond6">
+                                <isEqual prepend="and" property="cond6" compareValue="1"><!-- 기관명--><!-- 회사명-->
+                                    <![CDATA[
+                                        a.userno in (SELECT ORGUSERNO
+                                         FROM TBL_ZUSER_ORG
+                                             where upper(ORGNAME) like '%'||upper(#keyword#)||'%')
+                                    ]]>
+                                </isEqual>
+                                <isEqual prepend="and" property="cond6" compareValue="3"><!-- 회원번호 -->
+                                    <![CDATA[
+                                        a.useridx = #keyword#
+                                    ]]>
+                                </isEqual>
+                            </isNotEmpty>
+
+                            <isEqual property="orgUserType" compareValue="1"> <!-- 단체회원 -->
+                                <isNotEmpty property="cond6">
+                                    <isEqual prepend="and" property="cond6" compareValue="2"><!--대표자명 -->
+                                        <![CDATA[
+                                            a.userno in (SELECT ORGUSERNO
+                                             FROM TBL_ZUSER_ORG
+                                                 where upper(ORGDELEGATE) like '%'||upper(#keyword#)||'%')
+                                        ]]>
+                                    </isEqual>
+                                </isNotEmpty>
+                            </isEqual>
+                            <isEqual property="orgUserType" compareValue="2"> <!-- 기증회원 -->
+                                <isNotEmpty property="cond6">
+                                    <isEqual prepend="and" property="cond6" compareValue="2"><!--담당자명 -->
+                                        <![CDATA[
+                                            a.userno in (SELECT ORGUSERNO
+                                             FROM TBL_ZUSER_ORG
+                                                 where upper(ORGOFFICER) like '%'||upper(#keyword#)||'%')
+                                        ]]>
+                                    </isEqual>
+                                </isNotEmpty>
+                            </isEqual>
+
+                            <isNotEmpty prepend="and" property="cond7"><!-- 회원번호 -->
+                                a.useridx BETWEEN #cond7# and #cond8#
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="cond9"><!-- 회원종류 -->
+                                a.userno in (SELECT ORGUSERNO
+                                         FROM TBL_ZUSER_ORG
+                                             where ORGMEMBERTYPE =#cond9#)
+                            </isNotEmpty>
+
+                            <isNotEmpty property="cond10"><!-- 회원상태:정상(1)탈퇴(9) 회원중지 (0) -->
+                                <isEqual prepend="and" property="cond10" compareValue="1">
+                                    <![CDATA[
+                                        a.userstatus =#cond10#
+                                        and (a.useroutrequest IS NULL or a.useroutrequest <> 0)
+                                    ]]>
+                                </isEqual>
+                                <isEqual prepend="and" property="cond10" compareValue="9">
+                                    <![CDATA[
+                                        a.userstatus =#cond10#
+                                    ]]>
+                                </isEqual>
+                                <isEqual prepend="and" property="cond10" compareValue="0">
+                                    <![CDATA[ a.annualPause = '1' ]]>
+                                </isEqual>
+                            </isNotEmpty>
+
+                            <isNotEmpty prepend="and" property="sdate">
+                                <isEqual property="search" compareValue="1"> <!-- 단체회원 검색 -->
+                                    <![CDATA[
+                                        a.userno in (SELECT userno
+                                                             FROM tbl_dues
+                                                            WHERE REGYEAR between #sdate# and #edate#
+                                                            and isannual = 'P'
+                                    ]]>
+                                                           <isEqual prepend="and" property="paytype" compareValue="1"> <!-- 납부 -->
+                                                                <![CDATA[   payconfirm = '1' ]]>
+                                                           </isEqual>
+                                                            <isEqual prepend="and" property="paytype" compareValue="2"><!-- 미납 -->
+                                                                <![CDATA[   payconfirm <> '1' ]]>
+                                                           </isEqual>
+                                    <![CDATA[ ) ]]>
+                                </isEqual>
+
+                                <isEqual property="search" compareValue="2"> <!-- 단체회원 회비 검색 -->
+                                    <isEqual property="andOr" compareValue="or"><!-- or일때 -->
+                                        <![CDATA[
+                                         a.userno in (select userno
+                                                              from tbl_dues
+                                                            where ((
+                                        ]]>
+                                                <![CDATA[ REGYEAR = #sdate# ]]>
+                                                <isEqual prepend="and" property="paytype" compareValue="1"> <!-- 납부 -->
+                                                    <![CDATA[   payconfirm = '1' ]]>
+                                                </isEqual>
+                                                <isEqual prepend="and" property="paytype" compareValue="2"><!-- 미납 -->
+                                                    <![CDATA[   payconfirm <> '1' ]]>
+                                                </isEqual>
+                                                <![CDATA[
+                                                        ) OR (
+                                                ]]>
+                                                <![CDATA[ REGYEAR = #edate# ]]>
+                                                <isEqual prepend="and" property="paytype2" compareValue="1"> <!-- 납부 -->
+                                                    <![CDATA[   payconfirm = '1' ]]>
+                                                </isEqual>
+                                                <isEqual prepend="and" property="paytype2" compareValue="2"><!-- 미납 -->
+                                                    <![CDATA[   payconfirm <> '1' ]]>
+                                                </isEqual>
+                                        <![CDATA[
+                                                                        ))
+                                                            and isannual = 'P'
+                                                            and userno = a.userno)
+                                        ]]>
+
+                                    </isEqual>
+                                    <isEqual property="andOr" compareValue="and"><!-- and일때 -->
+                                        <![CDATA[
+                                        (SELECT count(*)
+                                                             FROM tbl_dues
+                                                            WHERE (
+                                        ]]>
+                                                            <![CDATA[ regyear = #sdate# ]]>
+                                                            <isEqual prepend="and" property="paytype" compareValue="1"> <!-- 납부 -->
+                                                                <![CDATA[   payconfirm = '1' ]]>
+                                                            </isEqual>
+                                                            <isEqual prepend="and" property="paytype" compareValue="2"><!-- 미납 -->
+                                                                <![CDATA[   payconfirm <> '1' ]]>
+                                                            </isEqual>
+                                        <![CDATA[
+                                                                     )
+                                                                     and isannual = 'P'
+                                                                       and userno = a.userno) > 0
+
+                                          and (SELECT count(*)
+                                                             FROM tbl_dues
+                                                            WHERE (
+                                        ]]>
+                                                             <![CDATA[ regyear = #edate# ]]>
+                                                            <isEqual prepend="and" property="paytype2" compareValue="1"> <!-- 납부 -->
+                                                                <![CDATA[   payconfirm = '1' ]]>
+                                                            </isEqual>
+                                                            <isEqual prepend="and" property="paytype2" compareValue="2"><!-- 미납 -->
+                                                                <![CDATA[   payconfirm <> '1' ]]>
+                                                            </isEqual>
+                                        <![CDATA[
+                                                                     )
+                                                                     and isannual = 'P'
+                                                                       and userno = a.userno) > 0
+                                        ]]>
+                                    </isEqual>
+                                </isEqual>
+                            </isNotEmpty>
+                            <isEqual property="st_sec2" compareValue="1">
+                                <![CDATA[ order by ot1.$st_sec1$ asc ]]>
+                            </isEqual>
+                            <isEqual property="st_sec2" compareValue="2">
+                                <![CDATA[ order by ot1.$st_sec1$ desc ]]>
+                            </isEqual>
+            <![CDATA[
+                         ) row_
+                    where
+                        @rownum < (#n#+#m#)
+                ) re,
+                tbl_zuser_org ot
+            where
+                re.userno = t.userno
+                and t.userno=ot.orguserno
+
+            ]]>
+            <isNotEmpty prepend="and" property="orgUserType">
+                <![CDATA[ ot.orgUserType = #orgUserType# ]]>
+            </isNotEmpty>
+            <isEqual property="st_sec2" compareValue="1">
+                <![CDATA[ order by ot.$st_sec1$ asc ]]>
+            </isEqual>
+            <isEqual property="st_sec2" compareValue="2">
+                <![CDATA[ order by ot.$st_sec1$ desc ]]>
+            </isEqual>
+    </select>
+
+    <select id="ZUser.orgSearchListUser" parameterClass="ZUserVo" resultClass="ZUserOrgVo">
+        <![CDATA[
+            select
+                a.userid
+                ,ot.*
+            from
+                zuser a, tbl_zuser_org ot
+            where 1 = 1
+            and a.userauth is null
+            and a.userno = ot.orguserno
+            and (a.work_grade = '7' or a.work_grade = '8')
+        ]]>
+            <isNotEmpty prepend="and" property="userno">
+                <![CDATA[ ot.orguserno = #userno# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="orgUserType">
+                <![CDATA[ ot.orgUserType = #orgUserType# ]]>
+            </isNotEmpty>
+            <isNotEmpty property="cond6">
+                <isEqual prepend="and" property="cond6" compareValue="1"><!-- 기관명--><!-- 회사명-->
+                    <![CDATA[
+                        a.userno in (SELECT ORGUSERNO
+                               FROM TBL_ZUSER_ORG
+                                   where upper(ORGNAME) like '%'||upper(#keyword#)||'%')
+                    ]]>
+                </isEqual>
+                <isEqual prepend="and" property="cond6" compareValue="3"><!-- 회원번호 -->
+                    <![CDATA[
+                        a.useridx = #keyword#
+                    ]]>
+                </isEqual>
+            </isNotEmpty>
+
+            <isEqual property="orgUserType" compareValue="1"> <!-- 단체회원 -->
+                <isNotEmpty property="cond6">
+                    <isEqual prepend="and" property="cond6" compareValue="2"><!--대표자명 -->
+                        <![CDATA[
+                            a.userno in (SELECT ORGUSERNO
+                                FROM TBL_ZUSER_ORG
+                                    where upper(ORGDELEGATE) like '%'||upper(#keyword#)||'%')
+                        ]]>
+                    </isEqual>
+                </isNotEmpty>
+            </isEqual>
+            <isEqual property="orgUserType" compareValue="2"> <!-- 기증회원 -->
+                <isNotEmpty property="cond6">
+                    <isEqual prepend="and" property="cond6" compareValue="2"><!--담당자명 -->
+                        <![CDATA[
+                            a.userno in (SELECT ORGUSERNO
+                                FROM TBL_ZUSER_ORG
+                                    where upper(ORGOFFICER) like '%'||upper(#keyword#)||'%')
+                        ]]>
+                    </isEqual>
+                </isNotEmpty>
+            </isEqual>
+
+            <isNotEmpty prepend="and" property="cond7"><!-- 회원번호 -->
+                a.useridx BETWEEN #cond7# and #cond8#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="cond9"><!-- 회원종류 -->
+                a.userno in (SELECT ORGUSERNO
+                               FROM TBL_ZUSER_ORG
+                                   where ORGMEMBERTYPE =#cond9#)
+            </isNotEmpty>
+
+            <isNotEmpty property="cond10"><!-- 회원상태:정상(1)탈퇴(9) 회원중지 (0) -->
+                <isEqual prepend="and" property="cond10" compareValue="1">
+                    <![CDATA[
+                        a.userstatus =#cond10#
+                        and (a.useroutrequest IS NULL or a.useroutrequest <> 0)
+                    ]]>
+                </isEqual>
+                <isEqual prepend="and" property="cond10" compareValue="9">
+                    <![CDATA[
+                        a.userstatus =#cond10#
+                    ]]>
+                </isEqual>
+                <isEqual prepend="and" property="cond10" compareValue="0">
+                    <![CDATA[ a.annualPause = '1' ]]>
+                </isEqual>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="sdate">
+                <isEqual property="search" compareValue="1"> <!-- 단체회원 검색 -->
+                    <![CDATA[
+                        a.userno in (SELECT userno
+                                             FROM tbl_dues
+                                            WHERE REGYEAR between #sdate# and #edate#
+                                            and isannual = 'P'
+                    ]]>
+                                           <isEqual prepend="and" property="paytype" compareValue="1"> <!-- 납부 -->
+                                                <![CDATA[   payconfirm = '1' ]]>
+                                           </isEqual>
+                                            <isEqual prepend="and" property="paytype" compareValue="2"><!-- 미납 -->
+                                                <![CDATA[   payconfirm <> '1' ]]>
+                                           </isEqual>
+                    <![CDATA[ ) ]]>
+                </isEqual>
+
+                <isEqual property="search" compareValue="2"> <!-- 단체회원 회비 검색 -->
+                    <isEqual property="andOr" compareValue="or"><!-- or일때 -->
+                        <![CDATA[
+                         a.userno in (select userno
+                                              from tbl_dues
+                                            where ((
+                        ]]>
+                                <![CDATA[ REGYEAR = #sdate# ]]>
+                                <isEqual prepend="and" property="paytype" compareValue="1"> <!-- 납부 -->
+                                    <![CDATA[   payconfirm = '1' ]]>
+                                </isEqual>
+                                <isEqual prepend="and" property="paytype" compareValue="2"><!-- 미납 -->
+                                    <![CDATA[   payconfirm <> '1' ]]>
+                                </isEqual>
+                                <![CDATA[
+                                        ) OR (
+                                   ]]>
+                                <![CDATA[ REGYEAR = #edate# ]]>
+                                <isEqual prepend="and" property="paytype2" compareValue="1"> <!-- 납부 -->
+                                    <![CDATA[   payconfirm = '1' ]]>
+                                </isEqual>
+                                <isEqual prepend="and" property="paytype2" compareValue="2"><!-- 미납 -->
+                                    <![CDATA[   payconfirm <> '1' ]]>
+                                </isEqual>
+                                 <![CDATA[
+                                                        ))
+                                            and isannual = 'P'
+                                            and userno = a.userno)
+                        ]]>
+
+                    </isEqual>
+                    <isEqual property="andOr" compareValue="and"><!-- and일때 -->
+                        <![CDATA[
+                        (SELECT count(*)
+                                             FROM tbl_dues
+                                            WHERE (
+                        ]]>
+                                            <![CDATA[ regyear = #sdate# ]]>
+                                            <isEqual prepend="and" property="paytype" compareValue="1"> <!-- 납부 -->
+                                                <![CDATA[   payconfirm = '1' ]]>
+                                            </isEqual>
+                                            <isEqual prepend="and" property="paytype" compareValue="2"><!-- 미납 -->
+                                                <![CDATA[   payconfirm <> '1' ]]>
+                                            </isEqual>
+                              <![CDATA[
+                                                     )
+                                                     and isannual = 'P'
+                                                                   and userno = a.userno) > 0
+
+                                      and (SELECT count(*)
+                                             FROM tbl_dues
+                                            WHERE (
+                                    ]]>
+                                             <![CDATA[ regyear = #edate# ]]>
+                                            <isEqual prepend="and" property="paytype2" compareValue="1"> <!-- 납부 -->
+                                                <![CDATA[   payconfirm = '1' ]]>
+                                            </isEqual>
+                                            <isEqual prepend="and" property="paytype2" compareValue="2"><!-- 미납 -->
+                                                <![CDATA[   payconfirm <> '1' ]]>
+                                            </isEqual>
+                              <![CDATA[
+                                                     )
+                                                     and isannual = 'P'
+                                                                   and userno = a.userno) > 0
+                                    ]]>
+                          </isEqual>
+                </isEqual>
+            </isNotEmpty>
+            <isEqual property="st_sec2" compareValue="1">
+                <![CDATA[ order by ot.$st_sec1$ asc ]]>
+            </isEqual>
+            <isEqual property="st_sec2" compareValue="2">
+                <![CDATA[ order by ot.$st_sec1$ desc ]]>
+            </isEqual>
+
+    </select>
+
+    <select id="ZUser.getOrgUserDataByNo"  parameterClass="ZUserOrgVo" resultClass="ZUserOrgVo">
+        <![CDATA[
+            select
+                *
+            from tbl_zuser_org
+            where orguserno=#orgUserNo#
+        ]]>
+    </select>
+
+    <update id="ZUser.updateOrgZUser">
+        <![CDATA[
+            update zuser
+            set username=#username#
+                ,dept_nm=#dept_nm#
+                ,userdatemod=now()
+        ]]>
+        <isNotEmpty property="userpasswd">
+        <![CDATA[
+                ,userpasswd=#userpasswd#
+        ]]>
+        </isNotEmpty>
+        <![CDATA[
+            where userno=#userno#
+        ]]>
+    </update>
+
+    <update id="ZUser.updateOrgUserInfo">
+        <![CDATA[
+        update tbl_zuser_org
+            set
+                orgName=#orgName#,
+                orgDelegate=#orgDelegate#,
+                orgDelegateJob=#orgDelegateJob#,
+                orgOfficer=#orgOfficer#,
+                orgMemberType=#orgMemberType#,
+                orgCopyofUIS=#orgCopyofUIS#,
+                orgCopyofJKPA=#orgCopyofJKPA#,
+                orgReceiveAddr=#orgReceiveAddr#,
+                orgNote=#orgNote#,
+                orgCorpRegisNo=#orgCorpRegisNo#,
+                orgBizType=#orgBizType#,
+                orgBizCondition=#orgBizCondition#,
+                orgWebsite=#orgWebsite#,
+                adr1Dept=#adr1Dept#,
+                adr1Officer=#adr1Officer#,
+                adr1Job=#adr1Job#,
+                adr1Email=#adr1Email#,
+                adr1PostCode=#adr1PostCode#,
+                adr1Addr=#adr1Addr#,
+                adr1AddrDetail=#adr1AddrDetail#,
+                adr1Phone=#adr1Phone#,
+                adr1Fax=#adr1Fax#,
+                adr2Dept=#adr2Dept#,
+                adr2Officer=#adr2Officer#,
+                adr2Job=#adr2Job#,
+                adr2PostCode=#adr2PostCode#,
+                adr2Addr=#adr2Addr#,
+                adr2AddrDetail=#adr2AddrDetail#,
+                adr2Phone=#adr2Phone#,
+                adr2Fax=#adr2Fax#,
+                orgMemo = #orgMemo#
+            where orgno=#orgNo#
+        ]]>
+    </update>
+
+    <delete id="ZUser.deleteOrgUser" parameterClass="java.util.List">
+        delete
+        from tbl_zuser_org
+        where orguserno in
+        <iterate open="(" close=")" conjunction=",">
+            #arrDeleteNo[]#
+        </iterate>
+    </delete>
+
+    <select id="ZUser.selectVote" parameterClass="ZUserVo" resultClass="java.lang.Integer">
+        <![CDATA[
+          select count(userno) cnt
+          from tbl_votelist
+          where userno =#userno#
+        ]]>
+    </select>
+
+    <select id="ZUser.listCountKF" parameterClass="MenuStaffVO" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                vi_user_kfhomenew a
+            where 1 = 1
+        ]]>
+
+            <isNotEmpty prepend="and" property="cond1">
+                <![CDATA[
+                        date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d")
+                    and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d")
+                ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="cond2">
+                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+            </isNotEmpty>
+            <!-- <isNotEmpty prepend="and" property="cond3">
+                <![CDATA[ upper(a.$cond3$) =#enabled# ]]>
+            </isNotEmpty> -->
+            <!-- <isNotEmpty prepend="and" property="cond4">
+                <![CDATA[ a.$cond4$ =#sitedivision# ]]>
+            </isNotEmpty> -->
+    </select>
+
+    <select id="ZUser.getListKF" parameterClass="MenuStaffVO" resultClass="MenuStaffVO">
+        <![CDATA[
+            SELECT
+                re.*
+                ,(select userid from zuser where userid=re.cs_id) as iskfadmin
+                ,(select dept_tel from kf_dept_info where dept_nm = re.dept_nm) as menustafftel
+                ,(select dept_fax from kf_dept_info where dept_nm = re.dept_nm) as menustafffax
+            from
+                (
+                    select
+                        row_.*
+                        , @rownum := @rownum + 1 AS rownum_
+                    from
+                        (
+                            select
+                                a.*
+                           from
+                                vi_user_kfhomenew a,   (SELECT @rownum := #m#) R
+                           where 1 = 1
+            ]]>
+
+                            <isNotEmpty prepend="and" property="cond1">
+                                <![CDATA[
+                                        date_format(a.$cond1$,"%Y%m%d") >= date_format(#sdate#,"%Y%m%d")
+                                    and date_format(a.$cond1$,"%Y%m%d") <= date_format(#edate#,"%Y%m%d")
+                                ]]>
+                            </isNotEmpty>
+                            <isNotEmpty prepend="and" property="cond2">
+                                <![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+                            </isNotEmpty>
+
+            <![CDATA[
+                            order by cs_name asc
+                         ) row_
+                    where
+                        @rownum < (#n#+#m#)
+                )re
+
+            ]]>
+    </select>
+
+    <select id="ZUser.getInfoKFUser" parameterClass="MenuStaffVO" resultClass="MenuStaffVO">
+        <![CDATA[
+            select *
+            from vi_user_kfhomenew
+            where cs_id=#cs_id#
+        ]]>
+    </select>
+
+</sqlMap>

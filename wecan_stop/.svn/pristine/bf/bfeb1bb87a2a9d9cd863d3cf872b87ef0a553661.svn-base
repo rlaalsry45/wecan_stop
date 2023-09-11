@@ -1,0 +1,197 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="java.util.*, java.text.*"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../lnb.jsp" flush="true" />
+            <div id="contents">
+                <form:form modelAttribute="AppActionMergeVo" name="OrgCDMFrm" method="post">
+                    <div class="contents_top">
+                        <div class="location">
+                            <a href="/admsys/orgculturedigmng/">HOME</a> <a href="/admsys/orgculturedigmng/picdigmng.html">성희롱방지 조직문화진단관리</a> <strong>담당관 진단 관리 </strong>
+                        </div>
+                    </div>
+                    <div id="content">
+                        <ul class="homepagebbs">
+                            <li class="bg"><h3 class="sub">담당관 진단 관리 목록</h3><!-- <a class="btmore03" href="/admsys/orgculturedigmng/picdigmng.html">+ 홈페이지등록</a> --></li>
+                            <li>
+                            	<jsp:include page="./picdigmng_search_part.jsp" flush="false" />
+                            </li>
+                            <li>
+								<div class="top_bt">
+	                                <a class="btmore07" href="javascript:checkAll(true,'actionChkBx');">전체선택</a>
+	                                <a class="btmore07" href="javascript:checkAll(false,'actionChkBx');">전체해제</a>
+	                                <span id="totalCountText">검색결과 총 ${input.total}건이 조회(검색)되었습니다.</span>
+	                                <!-- <a class="btmore05" href="javascript:del('actionChkBx');">삭제</a> -->
+	                            </div>
+                                <div class="main_table">
+                                    <!--게시판 영역-->
+                                    <input type="hidden" id="dashNO" name="dashNO" value="${dashNO}" >
+                                    <input type="hidden" id="actionNO" name="actionNO" value="${data.actionNO}" >
+                                    <input type="hidden" id="consulting_action_no" name="consulting_action_no" value="${data.consulting_action_no}" >
+                                    <input type="hidden" id="fromDetailYN" name="fromDetailYN" value="${data.fromDetailYN}" >
+                                    
+                                    <table class="main_table1" summary="번호, 그룹, 소속게시판, 그룹관리자, 관리">
+                                        <caption>관리목록</caption>
+                                        <colgroup>
+                                            <col width="5px" />
+                                            <col width="15%" />
+                                            <col width="15%" />
+                                            <col width="20%" />
+                                            <col width="15%" />
+                                            <col width="15%" />
+                                            <col width="15%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input class="bor_none" id="batch" type="checkbox" onclick="javascript:checkAll('','actionChkBx')" />
+                                                </th>
+                                                <th>진단번호</th>
+                                                <th>항목</th>
+                                                <th>담당관</th>
+                                                <th>경로</th>
+                                                <th>내용</th>
+                                                <th>등록일</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach items="${list}" var="each" varStatus="loop">
+                                                <tr>
+                                                    <td>
+														<input class="bor_none" type="checkbox" name="actionChkBx" value="${each.actionNO}">
+                                                    </td>
+                                                    <td><a href="javascript:viewDetailPage('${each.actionNO}','${each.consulting_action_no}');">${each.consulting_action_no}</a></td>
+                                                    <td>
+	                                                    <c:choose>
+	                                                    	<c:when test="${each.action_consulting_type eq 'init'}">초기상담</c:when>
+	                                                    	<c:when test="${each.action_consulting_type eq 'continuing'}">지속상담</c:when>
+	                                                    	<c:when test="${each.action_consulting_type eq 'ending'}">종결상담</c:when>
+	                                                    	<c:when test="${each.action_consulting_type eq 'monitoring1'}">모니터링(1차)</c:when>
+	                                                    	<c:when test="${each.action_consulting_type eq 'monitoring2'}">모니터링(2차)</c:when>
+	                                                    </c:choose>
+                                                    </td>
+                                                    <td>${each.manager_name}</td>
+                                                    <td>
+                                                    	<c:choose>
+	                                                    	<c:when test="${each.action_received_type eq 'tel'}">전화</c:when>
+															<c:when test="${each.action_received_type eq 'email'}">메일</c:when>
+															<c:when test="${each.action_received_type eq 'sms'}">문자</c:when>
+															<c:when test="${each.action_received_type eq 'etc'}">기타</c:when>
+                                                    	</c:choose>
+                                                    </td>
+                                                    <td>${each.action_contents}</td>
+                                                    <td>${each.registration_date}</td>
+                                                </tr>
+                                            </c:forEach>
+                                            <c:if test="${input.total==0}">
+                                                <tr>
+                                                    <td colspan="9" style="padding:20;">조치 기록이 없습니다.</td>
+                                                </tr>
+                                            </c:if>
+                                        </tbody>
+                                    </table>
+                                    <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}' />
+                                    <!--/게시판 영역-->
+	                                <div class="top_bt">
+	                                	<a class="btmore05" href="javascript:excelDownload();">엑셀 다운로드</a>
+	                                	<a class="btmore05" href="javascript:window.print();">인쇄</a>
+	                                	
+	                       				<c:forEach items="${perm}" var="p" varStatus="ini">
+											<c:if test="${p.FUNCTION_TYPE eq 'FNTYP_15' and p.ALLOW_YN eq 'Y' }">
+												<a class="btmore01" href="javascript:deleteChecked();">삭제</a>
+											</c:if>
+										</c:forEach>
+	                       				<c:forEach items="${perm}" var="p" varStatus="ini">
+											<c:if test="${p.FUNCTION_TYPE eq 'FNTYP_17' and p.ALLOW_YN eq 'Y' }">
+												<a id="consulting_action_registration" class="btmore01" href="javascript:void(0);">등록</a>
+											</c:if>
+										</c:forEach>
+	                            	</div>
+                                </div>
+                                <!--/main_table-->
+                            </li>
+                        </ul>
+                        <script>
+							$("#consulting_action_registration").click(function(){
+								$("#content").load("/admsys/orgculturedigmng/picdigmng_registration_form.html");
+							});
+
+							/*$("#content tbody > tr > td:eq(1)").click(function(){
+								console.log($(this).text());
+								$("#content").load("/admsys/orgculturedigmng/picdigmng_registration_form.html");
+							});*/
+
+							function deleteChecked(){
+								var dataList = new Array();
+
+								var chk_val = $(':checkbox[name=actionChkBx]:checked').map(function () {
+									var obj = new Object();
+									obj = parseInt($(this).val());
+									dataList.push(obj);
+								});
+
+								$.ajax({
+									  type: 'POST',
+									  url: "/admsys/orgculturedigmng/picdigmng_req_delete.html",
+									  data: {"delList":dataList},
+									  traditional:true,
+									  success: function(result){
+										  if ( result.retStatus == "SUCCESS" ) {
+											  alert("삭제 하였습니다.");
+											  location.href = "<c:url value='/admsys/orgculturedigmng/picdigmng.html' />";
+										  } else {
+											  alert("삭제에 실패 하였습니다.");
+										  }
+									  },
+									  error:function(e){
+										  alert("삭제중 오류가 발생하였습니다."+e.responseText  );
+									  }
+								});
+							}
+
+							function excelDownload(){
+								var eForm = $("#AppActionMergeVo").serialize();
+								
+								$.ajax({
+									  type: 'POST',
+									  url: "/admsys/orgculturedigmng/picdigmng_excel.html",
+									  data: eForm,
+									  traditional:true,
+									  success: function(result){
+										  var excelName = result.excelName;
+									  	document.location = "/admsys/commonFile/download.html?no=-10&excelname="+excelName;							                
+									  },
+									  error:function(e){
+										  alert("엑셀 다운로드중 오류가 발생하였습니다."+e.responseText  );
+									  }
+								});
+							}
+						</script>
+                    </div>
+                    <!--/content-->
+                </form:form>
+            </div>
+            <!--/contents-->
+			<script>
+			$(document).ready(function () {
+				var getDashNo = $("#dashNO").val();
+				var getActionNO = $("#actionNO").val();
+				var getConsulting_action_no = $("#consulting_action_no").val();
+				var getFromDetailYN = $("#fromDetailYN").val();
+				
+				if ( getDashNo != ""){
+					viewDetailPageT(getDashNo);
+				} else if ( getActionNO != "0" && getActionNO != "" && getConsulting_action_no != "" && getFromDetailYN != "Y" ) {
+					viewDetailPage(getActionNO, getConsulting_action_no);
+				}
+			});
+			
+			function viewDetailPageT(NO){
+				$("#content").load("/admsys/orgculturedigmng/picdigmng_view.html", {'NO':NO} );  
+			}
+			
+			function viewDetailPage(NO, consulting_action_no){
+				$("#content").load("/admsys/orgculturedigmng/picdigmng_view.html", {'actionNO':NO,'consulting_action_no':consulting_action_no} );  
+			}
+			</script>
+<jsp:include page="../end.jsp" flush="false" />

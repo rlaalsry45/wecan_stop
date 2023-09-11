@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Zcss">
+	
+	<typeAlias alias="zcssVo" type="com.z5.zcms.admsys.css.domain.ZcssVo"/>
+	<resultMap id="zcssVo" class="com.z5.zcms.admsys.css.domain.ZcssVo"/>
+
+	<insert id="zcssDAO.write">
+		<![CDATA[
+			INSERT INTO ZCSS
+			(
+				 csstitle
+				, csstype
+				, cssconts
+				, cssfileorg
+				, cssfilesave
+				, userid
+				, cssdatereg
+				, cssmemo
+			) 
+			VALUES
+			(
+				 #csstitle#
+				, #csstype#
+				, #cssconts#
+				, #cssfileorg#
+				, #cssfilesave#
+				, #userid#
+				, date_format(now(),'%Y%m%d%H%i%s')
+				, #cssmemo#
+			)
+		]]>
+	</insert>
+	
+	<select id="zcssDAO.listAll"  resultClass="zcssVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM ZCSS 
+			ORDER BY cssno DESC
+		]]>
+			
+	</select>
+	<select id="zcssDAO.getlistAllForUpdate"  resultClass="zcssVo">
+		<![CDATA[
+			SELECT 
+				cssno
+				,cssfilesave
+				,csstitle
+			FROM ZCSS 
+			ORDER BY cssno DESC
+		]]>
+			
+	</select>
+	
+	<select id="zcssDAO.list" parameterClass="zcssVo" resultClass="zcssVo">
+		<![CDATA[
+			SELECT
+				 cssno
+				,csstitle
+				,cssuse
+				,sitetitle
+				,cssfilesave
+				,cssdatereg
+				,cssdatemod
+			from 
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        a.*
+						        ,(SELECT GROUP_CONCAT(SITETITLE) FROM zcssuse where cssno = a.cssno) AS sitetitle
+						       /* , get_sitetitle('zcssuse','cssno', a.cssno) as sitetitle*/
+				    	   from
+						        zcss a,   (SELECT @rownum := #m#) R
+						   where 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# and $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							order by cssno desc
+							LIMIT #m#, #n#
+					 	) row_
+					where
+						@rownum < (#n#+#m#)
+				)t
+			
+			]]> 
+	</select>
+	
+	
+	<select id="zcssDAO.listCount" parameterClass="zcssVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				zcss
+			where 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# and $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					upper($cond2$) like '%'||upper(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+	
+	
+	
+	
+	<delete id="zcssDAO.delete" parameterClass="java.util.List">
+		        DELETE 
+		    		FROM ZCSS
+		  			where cssno in
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+		
+	</delete>	
+	
+	<select id="zcssDAO.selectbypk"  parameterClass="zcssVo" resultClass="zcssVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM ZCSS
+						WHERE CSSNO=#cssno#
+				]]>
+	</select>
+	
+	<update id="zcssDAO.update">
+		<![CDATA[
+			UPDATE ZCSS
+			SET   csstitle=#csstitle#
+				, csstype=#csstype#
+				, cssfileorg=#cssfileorg#
+				, cssfilesave=#cssfilesave#
+				, cssconts=#cssconts#
+				, cssmemo=#cssmemo#
+				, csshis=#csshis#
+				, userid=#userid#
+				, cssdatemod=date_format(now(),'%Y%m%d%H%i%s')
+			WHERE cssno=#cssno#
+		]]>
+	</update>
+	
+
+</sqlMap>

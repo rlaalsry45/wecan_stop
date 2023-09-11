@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Post">
+
+	<typeAlias  alias="Post" type="com.z5.zcms.admsys.common.domain.PostVo"/>
+	<resultMap  id="Post" class="com.z5.zcms.admsys.common.domain.PostVo" />
+	
+	<select id="getListPost"  resultClass="Post" parameterClass="Post" >
+		<![CDATA[
+			SELECT *				
+			FROM zpost
+			WHERE 
+				(1=1)
+		]]>
+		<isEqual property="cond1" compareValue="1">
+			<isNotEmpty prepend="and" property="POSTROADNAME">
+				<![CDATA[ POSTROADNAME = #POSTROADNAME# ]]>
+			</isNotEmpty>   
+			<isNotEmpty prepend="and" property="POSTBDNO1">
+				<![CDATA[ POSTBDNO1 = #POSTBDNO1# ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="POSTBDNO2">
+				<![CDATA[ POSTBDNO2 = #POSTBDNO2# ]]>
+			</isNotEmpty>    
+		</isEqual>
+		<isEqual property="cond1" compareValue="2">
+			<isNotEmpty prepend="and" property="POSTBDNAME">
+				<![CDATA[ POSTBDNAME like '%'||#POSTBDNAME#||'%' ]]>
+			</isNotEmpty>
+		</isEqual>
+		<isEqual property="cond1" compareValue="3">
+			<isNotEmpty prepend="and" property="POSTLAWDONG">
+				<![CDATA[(POSTLAWDONG = #POSTLAWDONG# OR POSTADMINDONG = #POSTLAWDONG#) ]]>
+			</isNotEmpty>   
+			<isNotEmpty prepend="and" property="POSTLOTNO1">
+				<![CDATA[ POSTLOTNO1 = #POSTLOTNO1# ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="POSTLOTNO2">
+				<![CDATA[ POSTLOTNO2 = #POSTLOTNO2# ]]>
+			</isNotEmpty>    
+		</isEqual>	
+	</select>
+</sqlMap>            

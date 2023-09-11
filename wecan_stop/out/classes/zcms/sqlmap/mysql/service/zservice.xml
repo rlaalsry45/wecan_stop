@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Zservice">
+
+	<typeAlias alias="zsiteVo" type="com.z5.zcms.admsys.site.domain.ZsiteVo"/>
+	<typeAlias alias="zcssVo" type="com.z5.zcms.admsys.css.domain.ZcssVo"/>
+	<typeAlias alias="zjsVo" type="com.z5.zcms.admsys.js.domain.ZjsVo"/>
+	<typeAlias alias="ztplVo" type="com.z5.zcms.admsys.tpl.domain.ZtplVo"/>
+	<typeAlias alias="zmenuVo" type="com.z5.zcms.admsys.menu.domain.ZmenuVo"/>
+	<typeAlias alias="menuScoreVO" type="com.z5.zcms.frontsys.front.domain.MenuScoreVO"/>
+
+
+	<resultMap id="zsiteVo" class="com.z5.zcms.admsys.site.domain.ZsiteVo"/>
+	<resultMap id="zcssVo" class="com.z5.zcms.admsys.css.domain.ZcssVo"/>
+	<resultMap id="zjsVo" class="com.z5.zcms.admsys.js.domain.ZjsVo"/>
+	<resultMap id="ztplVo" class="com.z5.zcms.admsys.tpl.domain.ZtplVo"/>
+	<resultMap id="zmenuVo" class="com.z5.zcms.admsys.menu.domain.ZmenuVo"/>
+	<resultMap id="menuScoreVO" class="com.z5.zcms.frontsys.front.domain.MenuScoreVO"/>
+
+	<select id="zserviceDAO.selectZsiteBySitedomain"  parameterClass="zsiteVo" resultClass="zsiteVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM ZSITE
+			WHERE sitedomain=#sitedomain#
+		]]>
+	</select>
+
+
+	<select id="zserviceDAO.getListZcssByCssno"  parameterClass="zcssVo" resultClass="zcssVo">
+		<![CDATA[
+			SELECT
+				  cssno
+				, cssfilesave
+			FROM ZCSS
+			WHERE cssno IN
+		]]>
+			<iterate property="arrIntegerNo" open="(" close=")" conjunction=",">
+				#arrIntegerNo[]#
+			</iterate>
+		<![CDATA[
+			ORDER BY cssno
+		]]>
+			<!-- <iterate property="arrIntegerNo" open="(" close=",cssno)" conjunction=",">
+				#arrIntegerNo[]#
+			</iterate> -->
+	</select>
+
+	<select id="zserviceDAO.getListZjsByJsno"  parameterClass="zjsVo" resultClass="zjsVo">
+		<![CDATA[
+			SELECT
+				  jsno
+				, jsfilesave
+			FROM ZJS
+			WHERE jsno IN
+		]]>
+			<iterate property="arrIntegerNo" open="(" close=")" conjunction=",">
+				#arrIntegerNo[]#
+			</iterate>
+		<![CDATA[
+			ORDER BY jsno
+		]]>
+			<!-- <iterate property="arrIntegerNo" open="(" close=",jsno)" conjunction=",">
+				#arrIntegerNo[]#
+			</iterate> -->
+	</select>
+
+
+		<select id="zserviceDAO.getListZtplByTplno"  parameterClass="ztplVo" resultClass="ztplVo">
+		<![CDATA[
+			SELECT
+				  tplno
+				/*, tplconts*/
+			FROM ZTPL
+			WHERE tplno IN
+		]]>
+			<iterate property="arrIntegerNo" open="(" close=")" conjunction=",">
+				#arrIntegerNo[]#
+			</iterate>
+		<![CDATA[
+			ORDER BY tplno
+		]]>
+			<!-- <iterate property="arrIntegerNo" open="(" close=",tplno)" conjunction=",">
+				#arrIntegerNo[]#
+			</iterate> -->
+	</select>
+
+	<select id="zserviceDAO.getTitleListFromZmenuBySitenoAndMenuno"  parameterClass="zmenuVo" resultClass="zmenuVo">
+		<![CDATA[
+			SELECT menutitle
+			FROM ZMENU
+			START WITH menuno=#menuno#
+			CONNECT BY menuno = PRIOR menuparentno
+			AND  siteno = #siteno#
+			ORDER BY menulevel DESC
+		]]>
+	</select>
+
+	<select id="zserviceDAO.getMenuTitle"  parameterClass="zmenuVo" resultClass="java.lang.String">
+		<![CDATA[
+			select menutitle
+			from ZMENU
+			where menuno = #menuno#
+			and siteno =#siteno#
+		]]>
+	</select>
+
+	<select id="zserviceDAO.getMenuTitle1"  parameterClass="zmenuVo" resultClass="java.lang.String">
+		<![CDATA[
+			select /*listagg(menutitle ,' > ') within sort(order by menuno)*/ menutitle
+			from (select * from ZMENU  where siteno=#siteno#) a
+			start with a.menuno = #menuno#
+			connect by prior a.menuparentno =a.menuno
+			and siteno =#siteno#
+		]]>
+	</select>
+
+	<insert id="zserviceDAO.insertMenuScore">
+		<![CDATA[
+			INSERT INTO zmenuscore
+			(
+				menuno
+				, siteno
+				, regdate
+				, userip
+				, score
+			)
+			VALUES
+			(
+				#menuno#
+				,#siteno#
+				,now()
+				,#userip#
+				,#score#
+			)
+		]]>
+	</insert>
+
+	<select id="zserviceDAO.getlist" parameterClass="zmenuVo" resultClass="zmenuVo">
+		SELECT
+			  a.menuno
+			, a.menutopno
+			, a.menulevel
+			, a.menustep
+			, a.menuparentno
+			, a.siteno
+			, a.menutitle
+			, a.menudatereg
+			, a.menudatemod
+			, a.menutype
+			, a.menustatus
+			, a.menutags
+			, a.archv_no
+			, a.menuscore
+			, (SELECT COUNT(*)+1 FROM ZMENU where siteno=a.siteno and menuparentno = a.menuno) cnt
+			, (select count(*) from zmenuscore where menuno=a.menuno and siteno=a.siteno and score =5
+				<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[
+							DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')
+						and DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')
+					]]>
+				</isNotEmpty>
+				) as satis_5
+			, (select count(*) from zmenuscore where menuno=a.menuno and siteno=a.siteno and score =4
+				<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[
+							DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')
+						and DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')
+					]]>
+				</isNotEmpty>
+				) as satis_4
+			, (select count(*) from zmenuscore where menuno=a.menuno and siteno=a.siteno and score =3
+				<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[
+							DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')
+						and DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')
+					]]>
+				</isNotEmpty>
+				) as satis_3
+			, (select count(*) from zmenuscore where menuno=a.menuno and siteno=a.siteno and score =2
+				<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[
+							DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')
+						and DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')
+					]]>
+				</isNotEmpty>
+				) as satis_2
+			, (select count(*) from zmenuscore where menuno=a.menuno and siteno=a.siteno and score =1
+				<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[
+							DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')
+						and DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')
+					]]>
+				</isNotEmpty>
+				) as satis_1
+			, (select count(*) from zmenuscore where menuno=a.menuno and siteno=a.siteno
+				<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[
+							DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')
+						and DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')
+					]]>
+				</isNotEmpty>
+				) as satis_cnt
+			, (select IFNULL(sum(score),0) from zmenuscore where menuno=a.menuno and siteno=a.siteno
+				<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[
+							DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')
+						and DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')
+					]]>
+				</isNotEmpty>
+				) as satis_point
+			, round((select IFNULL(sum(score)/IF(count(*)=0,null,count(*)),0) from zmenuscore where menuno=a.menuno and siteno=a.siteno
+				<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[
+							DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')
+						and DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')
+					]]>
+				</isNotEmpty>
+				),3) as satis_avg
+			FROM ZMENU a
+			WHERE a.siteno=#siteno#
+			ORDER BY menutopno, menustep, menulevel, menuno
+	</select>
+
+	<select id="zserviceDAO.checkMenuScoreDouble"  resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				count(*)
+			FROM zmenuscore
+			WHERE menuno=#menuno#
+			  and siteno=#siteno#
+			  and userip=#userip#
+		]]>
+	</select>
+
+	<select id="zserviceDAO.getMenuScoreEVT" parameterClass="menuScoreVO" resultClass="menuScoreVO">
+		<![CDATA[
+			SELECT
+				IFNULL(avg(score),0) AS avg
+				, count(*) AS total
+			FROM zmenuscore
+			WHERE siteno=#siteno#
+			  and menuno=#menuno#
+		]]>
+	</select>
+
+	<!-- <insert id="zcssDAO.write">
+		<![CDATA[
+			INSERT INTO ZCSS
+			(
+				cssno
+				, csstitle
+				, csstype
+				, cssconts
+				, cssfileorg
+				, cssfilesave
+				, userid
+				, cssdatereg
+				, cssmemo
+			)
+			VALUES
+			(
+				(SELECT IFNULL(MAX(cssno),0)+1 FROM ZCSS)
+				, #csstitle#
+				, #csstype#
+				, #cssconts#
+				, #cssfileorg#
+				, #cssfilesave#
+				, #userid#
+				, now()
+				, #cssmemo#
+			)
+		]]>
+	</insert>
+
+	<select id="zcssDAO.listAll"  resultClass="zcssVo">
+		<![CDATA[
+			SELECT
+				cssno
+				, csstitle
+				, cssfilesave
+			FROM ZCSS
+			ORDER BY cssno DESC
+		]]>
+
+	</select>
+
+	<select id="zcssDAO.list" parameterClass="zcssVo" resultClass="zcssVo">
+		<![CDATA[
+			SELECT
+				 cssno
+				,csstitle
+				,cssuse
+				,sitetitle
+				,cssfilesave
+				,cssdatereg
+				,cssdatemod
+			from
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        a.*
+						        , get_sitetitle('zcssuse','cssno', a.cssno) as sitetitle
+				    	   from
+						        zcss a
+						   where 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# and $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ upper($cond2$) like '%'||#keyword#||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							order by cssno desc
+					 	) row_
+					where
+						rownum <= #n#
+				)
+			where
+				rownum_ > #m#
+			]]>
+	</select>
+
+
+	<select id="zcssDAO.listCount" parameterClass="zcssVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				zcss
+			where 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# and $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					upper($cond2$) like '%'||upper(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+
+
+
+	<delete id="zcssDAO.delete" parameterClass="java.util.List">
+		        DELETE
+		    		FROM ZCSS
+		  			where cssno in
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+
+	</delete>
+
+	<select id="zcssDAO.selectbypk"  parameterClass="zcssVo" resultClass="zcssVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM ZCSS
+						WHERE CSSNO=#cssno#
+				]]>
+	</select>
+
+	<update id="zcssDAO.update">
+		<![CDATA[
+			UPDATE ZCSS
+			SET   csstitle=#csstitle#
+				, csstype=#csstype#
+				, cssfileorg=#cssfileorg#
+				, cssfilesave=#cssfilesave#
+				, cssconts=#cssconts#
+				, cssmemo=#cssmemo#
+				, csshis=#csshis#
+				, userid=#userid#
+				, cssdatemod=now()
+			WHERE cssno=#cssno#
+		]]>
+	</update> -->
+
+
+</sqlMap>

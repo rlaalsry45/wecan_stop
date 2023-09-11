@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap	namespace="ZauthHierachy">
+	<typeAlias alias="ZAuthHierachyVO" type="com.z5.zcms.admsys.authority.domain.ZAuthHierachyVO" />
+	<resultMap id="ZAuthHierachyVO" class="com.z5.zcms.admsys.authority.domain.ZAuthHierachyVO"/>
+
+	<select id="ZAuthHierachyDAO.getAuthList" resultClass="zAuthHierachyVO">
+		<![CDATA[
+			select *
+			  from ZAUTHHIERACHY
+			 where 1=1
+		]]>
+		<isNotEmpty prepend="and" property="keyword">
+			<![CDATA[
+				upper($cond1$) like CONCAT('%',upper(#keyword#),'%')
+			]]>
+		</isNotEmpty>
+		<![CDATA[
+			 order by authorder asc
+		]]>
+	</select>
+	<select id="ZAuthHierachyDAO.authListCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			select count(*) total
+			  from ZAUTHHIERACHY
+			 where 1=1
+		]]>
+		<isNotEmpty prepend="and" property="keyword">
+			<![CDATA[
+				upper($cond1$) like CONCAT('%',upper(#keyword#),'%')
+			]]>
+		</isNotEmpty>
+	</select>
+
+	<insert id="ZAuthHierachyDAO.authInsert" >
+		<![CDATA[
+			INSERT INTO ZAUTHHIERACHY
+			(
+				authno
+				, role
+				, child_role
+				, memo
+				, authorder
+				, frst_regid
+				, frst_regdate
+				, last_updtid
+				, last_updtdate
+			)
+			VALUES
+			(
+				 ZAUTHHIERACHY_AUTHNO_SEQ.nextval
+				, #role#
+				, #child_role#
+				, #memo#
+				, #authorder#
+				, #userid#
+				, now()
+				, #userid#
+				, now()
+
+			)
+		]]>
+	</insert>
+
+	<delete id="ZAuthHierachyDAO.deleteAuth" parameterClass="java.util.List">
+		delete
+		from ZAUTHHIERACHY
+		where authno in
+       <iterate open="(" close=")" conjunction=",">
+           #authno[]#
+       </iterate>
+	</delete>
+
+
+	<select id="ZAuthHierachyDAO.delCheck" parameterClass="java.util.List" resultClass="zAuthHierachyVO">
+		<![CDATA[
+			select hi.authno as authno
+				   , hi.role as role
+				   , au.AUTHORITY as authority
+				   , IFNULL(au.cou, 0) as cou
+			  from ZAUTHHIERACHY hi
+				   , (select count(*) cou
+				   			 , AUTHORITY
+						from ZAUTHORITIES
+					sort by AUTHORITY) au
+			 where hi.role = au.AUTHORITY(+)
+			   and hi.authno in
+		]]>
+       <iterate open="(" close=")" conjunction=",">
+           #authno[]#
+       </iterate>
+	</select>
+
+	<select id="ZAuthHierachyDAO.authduplicationch" resultClass="java.lang.Integer">
+		<![CDATA[
+			select count(*) authcou
+			  from ZAUTHHIERACHY
+			 where 1=1
+			   and role = #role#
+		]]>
+	</select>
+</sqlMap>

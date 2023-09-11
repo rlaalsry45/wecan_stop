@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="w_boardCounsel">
+    <typeAlias alias="WBoardCounselVo" type="com.z5.zcms.admsys.cyberCounsel.domain.WBoardCounselVo" />
+	<resultMap id="WBoardCounselVo" class="com.z5.zcms.admsys.cyberCounsel.domain.WBoardCounselVo"/>
+
+    <select id="w_boardCounsel.listCount" resultClass="java.lang.Integer">
+        <![CDATA[
+            select
+                count(*) as total
+            from
+                board
+            where 1=1                
+        ]]>                
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				REG_DATE between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>     
+			       
+			<isNotEmpty prepend="AND" property="keyword">
+			<isEqual property="cond2" compareValue="boardTitle">
+			<![CDATA[			
+				BOARD_TITLE LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>        	
+			<isEqual property="cond2" compareValue="boardConts">
+			<![CDATA[			
+				BOARD_CONTS LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>        	
+			</isNotEmpty> 
+
+    </select>
+
+    <select id="w_boardCounsel.getList" parameterClass="WBoardCounselVo" resultClass="WBoardCounselVo">
+        <![CDATA[
+        
+            select
+				BOARD_NO AS boardNo,
+				BOARD_USERNAME AS boardUsername,
+				BOARD_PASSWD AS boardPasswd,
+				BOARD_TITLE AS boardTitle,
+				BOARD_CONTS AS boardConts,
+				BOARD_IP AS boardIp,
+				BOARD_HIT AS boardHit,
+				BOARD_ANSWER AS boardAnswer,
+				BOARD_ANSWER_ID AS boardAnswerId,
+				REG_DATE AS regDate,
+				REG_ID AS regId,
+				UPD_DATE AS updDate,
+				UPD_ID AS updId
+
+            from
+                board
+
+            where 1=1
+            and DEL_YN != 'Q'    
+            
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<isEqual property="cond1" compareValue="sitedatereg">
+			<![CDATA[			
+				REG_DATE between #sdate# and #edate#
+        	]]>				
+        	</isEqual>
+			</isNotEmpty>     
+			       
+			<isNotEmpty prepend="AND" property="keyword">
+			<isEqual property="cond2" compareValue="boardTitle">
+			<![CDATA[			
+				BOARD_TITLE LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>        	
+			<isEqual property="cond2" compareValue="boardConts">
+			<![CDATA[			
+				BOARD_CONTS LIKE CONCAT('%',UPPER(#keyword#),'%')
+        	]]>				
+        	</isEqual>        	
+			</isNotEmpty>            
+            
+            ORDER BY
+                REG_DATE desc
+            LIMIT #m#, #n#
+
+    </select>
+    
+    <update id="w_boardCounsel.actionRegistration" parameterClass="WBoardCounselVo">
+        <![CDATA[
+        
+            update board
+			set
+			BOARD_ANSWER = #boardAnswer#,
+			BOARD_ANSWER_ID = #regUser#
+			where
+			BOARD_NO = #boardNo#
+				                
+        ]]>
+
+    </update>    
+    
+    <update id="w_boardCounsel.hitUpdate" parameterClass="WBoardCounselVo">
+        <![CDATA[
+        
+            update board
+			set
+			BOARD_HIT = BOARD_HIT + 1
+			where
+			BOARD_NO = #boardNo#
+				                
+        ]]>
+
+    </update>    
+    
+    <select id="w_boardCounsel.view" parameterClass="WBoardCounselVo" resultClass="WBoardCounselVo">
+        <![CDATA[
+        
+            select
+				BOARD_NO AS boardNo,
+				BOARD_USERNAME AS boardUsername,
+				BOARD_PASSWD AS boardPasswd,
+				BOARD_TITLE AS boardTitle,
+				BOARD_CONTS AS boardConts,
+				BOARD_IP AS boardIp,
+				BOARD_HIT AS boardHit,
+				BOARD_ANSWER AS boardAnswer,
+				BOARD_ANSWER_ID AS boardAnswerId,
+				REG_DATE AS regDate,
+				REG_ID AS regId,
+				UPD_DATE AS updDate,
+				UPD_ID AS updId
+
+            from
+                board
+            
+            where 1=1
+            and DEL_YN != 'Q' 
+			and BOARD_NO = #boardNo#
+            
+        ]]>
+
+    </select>    
+    
+    <update id="w_boardCounsel.delete" parameterClass="WBoardCounselVo">
+        <![CDATA[
+        
+            update board
+            set
+				UPD_ID = #regUser#,
+				UPD_DATE = now(),
+				DEL_YN = 'Q'
+            where BOARD_NO IN
+		]]>
+		<iterate property="delList" open="(" close=")" conjunction=",">
+			#delList[]#
+		</iterate>				                
+
+    </update>
+ 
+</sqlMap>

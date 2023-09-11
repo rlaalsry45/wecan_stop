@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZFormMailHis">
+	<typeAlias alias="zFormMailHisVo" type="com.z5.zcms.admsys.module.domain.ZFormMailHisVo"/>
+	<typeAlias alias="zFormMailVo" type="com.z5.zcms.admsys.module.domain.ZFormMailVo"/>
+	<resultMap id="zFormMailHisVo" class="zFormMailHisVo"/>
+	
+	<select id="ZFormMailHis.list" parameterClass="zFormMailVo" resultClass="zFormMailHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZFORMMAILHIS
+			WHERE
+				formmailno=#formmailno#
+			ORDER BY
+				hisno DESC
+		]]>
+	</select>
+
+	<select id="ZFormMailHis.getByPk" parameterClass="zFormMailHisVo" resultClass="zFormMailHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZFORMMAILHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</select>
+	
+	<delete id="ZFormMailHis.delete" parameterClass="zFormMailHisVo">
+		<![CDATA[
+			DELETE FROM 
+				ZFORMMAILHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</delete>
+	
+	<delete id="ZFormMailHis.deleteMuti" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZFORMMAILHIS
+			WHERE
+				formmailno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<insert id="ZFormMailHis.insert" parameterClass="zFormMailVo">
+		<![CDATA[
+			INSERT INTO ZFORMMAILHIS
+			(
+				
+				title,
+				skin,
+				target,
+				contstype,
+				conts,
+				required,
+				added,
+				memo,
+				datereg,
+				datemod,
+				userid,
+				datehis,
+				formmailno
+			)
+			SELECT
+				
+				title,
+				skin,
+				target,
+				contstype,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				required,
+				added,
+				memo,
+				datereg,
+				datemod,
+				#userid#,
+				now(),
+				formmailno
+			FROM
+				ZFORMMAILCFG
+			WHERE
+				formmailno=#formmailno#
+		]]>
+	</insert>
+
+</sqlMap>

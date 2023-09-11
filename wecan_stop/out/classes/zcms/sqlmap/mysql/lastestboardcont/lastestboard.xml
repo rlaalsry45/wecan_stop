@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="lastestboard">
+	
+	<typeAlias alias="latestBoardVo" type="com.z5.zcms.frontsys.front.domain.FrontLatestBoardVo"/>
+	<resultMap id="latestBoardVo" class="com.z5.zcms.frontsys.front.domain.FrontLatestBoardVo"/>
+	
+	<select id="FrontLastestBoard.boardlist"  parameterClass="latestBoardVo" resultClass="latestBoardVo">
+			<![CDATA[
+				SELECT t.* , m.menuno
+				FROM 
+				(
+				select boardlist.*, @rownum := @rownum + 1 AS rownum_  
+				  from (
+				  		select
+				  			   a.bbstopno,
+				  			   a.bbsstep,
+							   a.bbsno,
+							   a.siteno,
+							   a.boardno,
+							   a.bbstitle,
+							   a.bbsdatereg,
+							   a.place,
+							   a.bbsnotice,
+							   a.sdate,
+							   a.edate,
+							   if(a.sdate <= date_format(now(), '%Y-%m-%d') && a.edate >= date_format(now(), '%Y-%m-%d') = 1, DATEDIFF(a.edate, date_format(now(), '%Y-%m-%d')) ,-1) as appYN,
+							   /*substr(a.bbsconts,0,1000) as bbsconts,*/
+							   a.bbsconts,
+							   a.bbsclose,
+							   b.cname as bbscatename,
+							   c.skin,
+							   c.cateyn,
+							   c.tblname
+						  from $tblname$ a
+						  LEFT OUTER JOIN  zbbscate b ON a.bbscatenos = b.CNO AND a.boardno = b.boardno
+						  LEFT OUTER JOIN zboard c ON a.boardno = c.boardno and a.bbsparentno=0
+						  ,(SELECT @rownum := 0) R
+                          where 1=1
+                          order by bbstopno DESC, bbsstep 
+                          ) boardlist
+                    WHERE 1=1
+                   	AND @rownum < #cnt#
+                    ORDER BY bbstopno DESC, bbsstep 
+                    LIMIT 0,#cnt#
+                    )t, Zboarduse m
+                 WHERE t.boardno = m.boardno
+                   AND t.siteno = m.siteno
+                   ORDER BY bbstopno DESC, bbsstep  
+			]]>	
+	</select>
+	
+	
+	<select id="FrontLastestBoard.getLastestAlumniNews"  parameterClass="latestBoardVo" resultClass="latestBoardVo">
+		<![CDATA[
+			select boardlist.*, m.menuno
+			  from (select row_number() over (order by a.bbsdatereg desc) as rowno,
+                           a.bbsno,
+                           a.siteno,
+                           a.boardno,
+                           a.bbstitle,
+                           a.bbsdatereg,
+                           a.place,
+                           LEFT(a.bbsconts,400) as bbsconts,
+                           b.cname as bbscatename,
+                           c.skin,
+                           c.cateyn
+					  from (select * from zboardcommon202 where bbsno =(select max(bbsno) from zboardcommon202)
+							union all
+							select * from zboardcommon200 where bbsno =(select max(bbsno) from zboardcommon200)
+							union all
+							select * from zboardcommon196 where bbsno =(select max(bbsno) from zboardcommon196)
+							union all
+							select * from zboardcommon192 where bbsno =(select max(bbsno) from zboardcommon192)
+							) a
+							LEFT OUTER JOIN zbbscate b
+							ON dbo.REGEXP_SUBSTR(a.bbscatenos, '[^,]*$$',1,1) = b.CNO
+						    AND a.boardno = b.boardno
+							LEFT OUTER JOIN zboard c
+							ON a.boardno = c.boardno
+		]]>
+
+		<![CDATA[
+                       and a.bbsparentno=0) boardlist,
+                   Zboarduse m
+             where boardlist.boardno = m.boardno
+               and boardlist.siteno = m.siteno
+               and boardlist.rowno <= #cnt#
+		]]>	
+	</select>
+	
+	<select id="FrontLastestBoard.selectSkin"  parameterClass="latestBoardVo" resultClass="java.lang.String">
+		<![CDATA[
+			select skin
+			  from zboard
+			 where boardno = #boardno2#
+		]]>
+	</select>
+	
+	<select id="FrontLastestBoard.selectMenuno"  parameterClass="latestBoardVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select menuno
+			  from Zboarduse
+			 where siteno = #siteno2#
+			   and boardno = #boardno2#
+		]]>
+	</select>
+	
+	<select id="FrontLastestBoard.selectCateyn"  parameterClass="latestBoardVo" resultClass="java.lang.String">
+		<![CDATA[
+			select cateyn
+			  from zboard
+			 where boardno = #boardno2#
+		]]>
+	</select>
+	
+	<select id="FrontLastestBoard.getLastestCarendar"  parameterClass="latestBoardVo" resultClass="latestBoardVo">
+		<![CDATA[
+				select *
+				  from (select row_number() over (order by schdul_bgnde desc) as rowno,
+							   schdul_bgnde,
+							   schdul_endde,
+							   schdul_nm,
+							   schdul_cn
+						  from $tblname$
+						 where calendar_no=#calendar_no#
+						 and LEFT(REPLACE(CONVERT(CHAR(8),GETDATE(),112),'.',''),6)=LEFT(SCHDUL_BGNDE,6))
+				 where rowno <= #cnt#
+				 order by SCHDUL_BGNDE, ROWNO desc
+		]]>	
+	</select>
+	
+	<select id="FrontLastestBoard.getCalendarMenuno"  parameterClass="latestBoardVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT menuno
+			FROM ZCALENDARMANAGE
+			WHERE CALENDAR_NO=#calendar_no#
+		]]>
+	</select>
+</sqlMap>

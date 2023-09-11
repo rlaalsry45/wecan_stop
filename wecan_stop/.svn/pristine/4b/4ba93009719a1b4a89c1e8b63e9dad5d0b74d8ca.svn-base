@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Ztpl">
+	
+	<typeAlias alias="ztplVo" type="com.z5.zcms.admsys.tpl.domain.ZtplVo"/>
+	<resultMap id="ztplVo" class="com.z5.zcms.admsys.tpl.domain.ZtplVo"/>
+
+	<insert id="ztplDAO.write">
+		<![CDATA[
+			INSERT INTO ZTPL 
+				( TPLTITLE
+				  , TPLSCOPE
+				  , TPLPOSITION
+				  , TPLTYPE
+				  , TPLDATEREG
+				  , TPLDATEMOD
+				  , TPLCONTSTYPE
+				  , TPLCONTS
+				  , TPLFILEORG
+				  , TPLFILESAVE
+				  , USERID
+				  , SITENO
+				  , TPLMEMO
+				  , TPLHIS
+				  , TPLPOSITIONWORD )
+			VALUES ( #tpltitle#
+				  , #tplscope#
+				  , #tplposition#
+				  , #tpltype#
+				  , date_format(now(),'%Y%m%d%H%i%s')
+				  , #tpldatemod#
+				  , #tplcontstype#
+				  , #tplconts#
+				  , #tplfileorg#
+				  , #tplfilesave#
+				  , #userid#
+				  , #siteno#
+				  , #tplmemo#
+				  , #tplhis#
+				  , #tplpositionword# )
+		]]>
+	</insert>
+	
+	<select id="ztplDAO.list" parameterClass="ztplVo" resultClass="ztplVo">
+		<![CDATA[
+			SELECT
+				 tplno
+				,tpltitle
+				,tplposition
+				,tplpositionword
+				,sitetitle
+				,tplfilesave
+				,tpldatereg
+				,tpldatemod
+			from 
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        a.*
+						        ,(SELECT GROUP_CONCAT(SITETITLE) FROM ztpluse where tplno = a.tplno) AS sitetitle
+						        /*, get_sitetitle('ztpluse','tplno', a.tplno) as sitetitle*/
+				    	   from
+						        ztpl a,   (SELECT @rownum := #m#) R
+						   where 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# and $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+							</isNotEmpty>
+ 							<isNotEmpty prepend="and" property="tplpositionword">
+								<![CDATA[ upper(tplpositionword) like '%'||upper(#tplpositionword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							order by tplno desc
+							LIMIT #m#, #n#
+					 	) row_
+					where
+						@rownum < (#n#+#m#)
+				)t
+			
+			]]> 
+	</select>
+	
+	
+	<select id="ztplDAO.listCount" parameterClass="ztplVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				ztpl
+			where 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# and $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					upper($cond2$) like '%'||upper(#keyword#)||'%' 
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="tplpositionword">
+				<![CDATA[
+					upper(tplpositionword) like '%'||upper(#tplpositionword#)||'%' 
+				]]>
+			</isNotEmpty>
+	</select>
+	
+	<select id="ztplDAO.listAll" parameterClass="ztplVo" resultClass="ztplVo">
+		SELECT 
+			*
+		FROM ZTPL 
+		ORDER BY tplno DESC
+	</select>
+	
+	
+	<delete id="ztplDAO.delete" parameterClass="java.util.List">
+		        DELETE 
+		    		FROM ZTPL 
+		  			where TPLNO in
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+		
+	</delete>	
+	
+	<select id="ztplDAO.selectbypk"  parameterClass="ztplVo" resultClass="ztplVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM ZTPL
+						WHERE TPLNO=#tplno#
+				]]>
+	</select>
+	
+	<update id="ztplDAO.update">
+		<![CDATA[
+			UPDATE ZTPL
+			SET   TPLTITLE=#tpltitle#
+				, TPLPOSITION=#tplposition#
+				, TPLTYPE=#tpltype#
+		]]>
+		<isNotEmpty property="tplfileorg">
+				<![CDATA[
+				, TPLFILEORG=#tplfileorg#
+				, TPLFILESAVE=#tplfilesave#
+				]]>
+		</isNotEmpty>
+		<![CDATA[
+				, TPLCONTSTYPE=#tplcontstype#
+				, TPLCONTS=#tplconts#
+				, TPLMEMO=#tplmemo#
+				, TPLHIS=#tplhis#
+				, USERID=#userid#
+				, TPLDATEMOD=date_format(now(),'%Y%m%d%H%i%s')
+				, TPLPOSITIONWORD=#tplpositionword#
+			WHERE TPLNO=#tplno#
+		]]>
+	</update>
+	
+
+</sqlMap>

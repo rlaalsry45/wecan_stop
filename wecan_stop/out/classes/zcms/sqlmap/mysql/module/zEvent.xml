@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZEvent">
+	<typeAlias alias="zEventVo" type="com.z5.zcms.admsys.module.domain.ZEventVo"/>
+	<resultMap id="zEventVo" class="com.z5.zcms.admsys.module.domain.ZEventVo"/>
+	
+	<insert id="ZEvent.eventWrite">
+		<![CDATA[
+			INSERT INTO ZEVENTCFG
+			(
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				target,
+				contstype,
+				conts,
+				required,
+				added,
+				memo,
+				datereg,
+				userid
+			)
+			VALUES
+			(
+				
+				#title#,
+				#skin#,
+				#sdate#,
+				#edate#,
+				#target#,
+				#contstype#,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				#required#,
+				#added#,
+				#memo#,
+				now(),
+				#userid#
+			)
+		]]>
+	</insert>
+	
+	<select id="ZEvent.list" resultClass="zEventVo">
+		<![CDATA[
+			SELECT
+				eventno,
+				title,
+				target,
+				sdate,
+				edate,
+				sitetitle,
+				datereg,
+				skin
+			FROM 
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								a.*
+								,(SELECT GROUP_CONCAT(SITETITLE) FROM ZEVENTUSE where eventno = a.eventno) AS sitetitle
+								/*, get_sitetitle('ZEVENTUSE','eventno', a.eventno) as sitetitle*/
+							FROM
+								ZEVENTCFG a,   (SELECT @rownum := #m#) R
+							WHERE 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							ORDER BY eventno DESC
+							LIMIT #m#, #n#
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+			
+			]]> 
+	</select>
+	
+	<select id="ZEvent.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				ZEVENTCFG
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# AND $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+	<select id="ZEvent.getDetailInfo" resultClass="zEventVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				ZEVENTCFG
+			WHERE
+				eventno=#eventno#
+		]]>
+	</select>
+	
+	<delete id="ZEvent.eventDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZEVENTCFG
+			WHERE
+				eventno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<delete id="ZEvent.eventUseDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZEVENTUSE
+			WHERE
+				eventno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<update id="ZEvent.update">
+		<![CDATA[
+		UPDATE
+			ZEVENTCFG
+		SET
+			title=#title#,
+			skin=#skin#,
+			sdate=#sdate#,
+			edate=#edate#,
+			target=#target#,
+			contstype=#contstype#,
+			conts=
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+			required=#required#,
+			added=#added#,
+			memo=#memo#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#
+		WHERE
+			eventno=#eventno#
+		]]>
+	</update>
+
+</sqlMap>

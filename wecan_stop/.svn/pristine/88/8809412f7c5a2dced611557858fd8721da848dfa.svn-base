@@ -1,0 +1,37 @@
+/**common**/
+div#skin h1,h2,h3,h4,div,ol,ul,li,dl,dt,dd,p,form,input,select,textarea{margin:0;padding:0;font:12px 'dotum'}
+div#skin ul, ol, li {list-style:none}
+body {margin:0px;padding:0px}
+div#skin h1, h2, h3, h4, h5, h6 {margin:0px;padding:0px}
+div#skin table, th, td {border-collapse:collapse}
+div#skin img, fieldset{padding:0;border:0 none; vertical-align:top}
+div#skin a{text-decoration:none; border:0px}
+div#skin a:hover{text-decoration:underline; border:0px}
+div#skin hr, caption, legend{display:none}
+div#skin .bold{font-weight:bold}
+div#skin .invisible{display:none}
+div#skin h2#hd{display:none}
+div#skin caption{display:none}
+/*div#skin label{display:none}*/
+div#skin label.visible_label{display:inline}
+div#skin .img_hidden{display:none}
+div#skin input.bor_none{border:none}
+div#skin legend{display:none}
+div#skin .untitle{display:none}
+div#skin .clear{clear:both}
+.fl{float:left}
+.fr{float:right}
+.ftw{font-weight:bold}
+.fcr{color:#ff0000}
+.tal{text-align:left;}
+.tac{text-align:center;}
+.tar{text-align:right;}
+
+
+/*manager*/
+div#manager{width:600px;margin:5px;padding:10px;border-radius:5px;border:solid 1px #ddd;overflow:hidden;background:#f0f0f0}
+div.man_profile{width:55px}
+div.man_contents{margin-top:5px;width:100%;word-wrap:break-word;}
+div.man_contents th{line-height:18px;color:#fff;background:url('/cms/image/bul_etc_manager.png') no-repeat 5px 5px;padding-left:22px;text-align:left;font-weight:bold;border-bottom:solid thin #ddd;background-color:#999;}
+div.man_contents td{color:#6d6054;padding-left:20px;border-bottom:solid thin #ddd}
+

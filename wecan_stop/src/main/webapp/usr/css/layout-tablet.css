@@ -1,0 +1,433 @@
+#wrap {
+    background: url/usr/image/common/bg_gnb.gif') repeat-x 0 0;
+    position: relative;
+}
+
+#header {
+    width: 724px;
+    height: 153px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* gnb */
+#gnb {
+    width: 724px;
+    height: 44px;
+    background: url('/usr/image/common/bg_sgnb2.gif') no-repeat 0 top;
+    position: absolute;
+    top: 71px;
+    left: 0;
+}
+
+#gnb li {
+    display: inline;
+    float: left;
+    height: 30px;
+    margin-left: 86px;
+    padding-top: 14px;
+    text-align: center;
+}
+
+#gnb li#gnb1 {
+    margin-left: 46px;
+}
+
+#gnb li#gnb4 {
+    margin-left: 110px;
+}
+
+#gnb li ul {
+    overflow: hidden;
+    width: 724px;
+    height: 37px;
+    background: url('/usr/image/common/bg_sgnb01.png') no-repeat 0 top;
+    position: absolute;
+    top: 45px;
+    left: 0;
+    visibility: hidden;
+}
+
+#gnb li#gnb4 ul {
+    background: url('/usr/image/common/bg_sgnb04.png') no-repeat 0 top;
+}
+
+#gnb li#gnb1 ul li.first {
+    margin-left: 57px;
+}
+
+#gnb li#gnb2 ul li.first {
+    margin-left: 79px;
+}
+
+#gnb li#gnb3 ul li.first {
+    margin-left: 250px;
+}
+
+#gnb li#gnb4 ul li.first {
+    margin-left: 15px;
+}
+
+#gnb li#gnb4 ul li.last {
+    display: none;
+}
+
+/* 2013-07-29 이경학 */
+.gnb_en {
+    width: 724px;
+    height: 44px;
+    background: url/usr/image/common/bg_gnb2.gif') no-repeat 0 top;
+    position: absolute;
+    top: 71px;
+    left: 0;
+}
+
+.gnb_en li {
+    display: inline;
+    float: left;
+    height: 30px;
+    padding-top: 14px;
+    margin-left: 52px !important;
+    text-align: center;
+}
+
+.gnb_en li#gnb1 {
+    margin-left: 52px;
+}
+
+.gnb_en li#gnb4 {
+    margin-left: 110px;
+}
+
+.gnb_en li#gnb1 ul li.first {
+    margin-left: 57px !important;
+}
+
+.gnb_en li#gnb2 ul li.first {
+    margin-left: 79px !important;
+}
+
+.gnb_en li#gnb3 ul li.first {
+    margin-left: 110px !important;
+}
+
+.gnb_en li#gnb4 ul li.first {
+    margin-left: 15px !important;
+}
+
+.gnb_en li#gnb4 ul li.last {
+    display: none;
+}
+
+.gnb_en li ul li {
+    display: inline;
+    float: left;
+    width: auto;
+    height: 27px;
+    padding-top: 10px;
+    margin-left: 40px !important;
+}
+
+.gnb_en li#gnb4 ul li {
+    margin: 0 !important;
+}
+
+.gnb_en li ul li a {
+    display: inline-block;
+    height: 21px;
+    font-size: 0;
+    line-height: 0;
+    vertical-align: top;
+    overflow: hidden;
+}
+
+.gnb_en li ul li a:hover img, #gnb li ul li a:active img, #gnb li ul li a:focus img, #gnb li ul li a.hover img {
+    margin-top: -21px !important;
+}
+
+/* 2013-07-29 이경학 */
+
+/* 전체메뉴 */
+#fullmenu {
+    display: none;
+    width: 722px;
+    padding-bottom: 19px;
+    border: 1px solid #d1d1d1;
+    background: #fcfcfc;
+    position: absolute;
+    top: 115px;
+    left: 0;
+    z-index: 1;
+}
+
+#fullmenu ul li {
+    float: left;
+    width: 22%;
+    padding: 0;
+    margin: 0;
+    background: none;
+    font-family: NANUM;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+#fullmenu ul li.last {
+    width: 33.9%;
+}
+
+#fullmenu ul li ul {
+    margin-left: 55px;
+}
+
+#fullmenu ul li.last ul {
+    margin-left: 90px;
+}
+
+/* 서브메뉴 */
+#lnb {
+    width: 723px;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+#lnb h2 {
+    width: 700px;
+    height: 28px;
+    padding: 10px 0 0 23px;
+    background: url('/usr/image/common/bg_lnb2.gif') no-repeat 0 0;
+    color: #fff;
+    font-family: NANUM;
+    font-size: 16px;
+    line-height: 18px;
+}
+
+#lnb ul {
+    overflow: hidden;
+    padding-bottom: 11px;
+    border-right: 1px solid #dbdbdb;
+    border-bottom: 1px solid #dbdbdb;
+    border-left: 1px solid #dbdbdb;
+    z-index: 999;
+}
+
+#lnb ul.bg {
+    background: url('/usr/image/common/bg_slnb.gif') no-repeat 0 0;
+}
+
+#lnb ul.bg2 {
+    background: url('/usr/image/common/bg_slnb.gif') no-repeat 0 33px;
+}
+
+#lnb ul.bg3 {
+    background: url('/usr/image/common/bg_slnb02.gif') no-repeat 0 0;
+}
+
+#lnb ul li {
+    float: left;
+    width: 24.9%;
+    padding-top: 13px;
+    font-family: NANUM;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: bold;
+}
+
+#lnb ul li span {
+    display: block;
+    padding-left: 10px;
+}
+
+#lnb ul.bg3 li span {
+    height: 64px;
+}
+
+#lnb ul li.float {
+    clear: both;
+}
+
+#lnb ul li span a {
+    display: block;
+    color: #000000;
+    padding-left: 15px;
+    background: url('/usr/image/common/icon/bl_lnb2.gif') no-repeat 0 6px;
+}
+
+#lnb ul li span.on a, #lnb ul li span a:hover {
+    color: #db3e4c;
+}
+
+#lnb ul li ul {
+    margin-top: 11px;
+    padding: 11px 0 11px 32px;
+    border: 0;
+}
+
+#lnb ul li ul li {
+    float: none;
+    width: auto;
+    margin-top: 7px;
+    padding: 0;
+    font-family: NANUM;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: normal;
+}
+
+#lnb ul li ul li.first {
+    margin-top: 0;
+}
+
+#lnb ul li ul li a {
+    color: #5d5d5d;
+    background: none;
+}
+
+#lnb ul li ul li.on a, #lnb ul li ul li a:hover {
+    color: #db3e4c;
+}
+
+#lnb ul li ul li ul {
+    margin: 0 0 0 8px;
+    border: 0;
+    padding: 5px 0 7px 0;
+}
+
+#lnb ul li ul li ul li {
+    padding-left: 8px;
+    background: url/usr/image/common/icon/bl_lnb3.gif') no-repeat 0 7px;
+}
+
+#lnb ul li ul li.on ul li a {
+    color: #5d5d5d;
+    font-family: NANUM;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: normal;
+}
+
+#lnb span.banner {
+    display: none;
+}
+
+/* container */
+#container {
+    overflow: hidden;
+    width: 724px;
+    margin: 0 auto;
+    padding-top: 47px;
+    position: relative;
+}
+
+#container .contents .r-cont {
+    overflow: hidden;
+    margin-top: 14px;
+}
+
+#container .contents .r-cont .schedule {
+    float: left;
+}
+
+#container .contents .r-cont .online {
+    float: left;
+    margin: 0 0 0 14px;
+}
+
+/* location */
+div.location {
+    width: 472px;
+}
+
+/* 통합검색 */
+ul.search-photo {
+    overflow: hidden;
+    margin-top: 30px;
+}
+
+ul.search-photo li {
+    float: left;
+    width: 24.9%;
+    text-align: center;
+}
+
+ul.search-photo li.last {
+    display: none;
+}
+
+ul.search-photo li a img {
+    border: 1px solid #c5c4c2;
+}
+
+ul.search-photo li strong {
+    display: block;
+    color: #000000;
+    font-family: NANUM;
+    font-size: 12px;
+    line-height: 18px;
+    text-align: center;
+}
+
+/* 재단홈페이지 */
+div.homepage {
+    overflow: hidden;
+    float: left;
+    width: 519px;
+    height: 85px;
+    border: 1px solid #e0e0e0;
+}
+
+div.homepage ul {
+    float: left;
+    width: 440px;
+    padding-top: 8px;
+}
+
+div.homepage ul.banner {
+    float: left;
+    width: 440px;
+    padding-top: 18px;
+}
+
+div.banner {
+    float: left;
+    margin: 0 0 0 14px;
+}
+
+div.banner a {
+    display: block;
+    margin-top: 11px;
+}
+
+div.banner a.first {
+    margin-top: 0;
+}
+
+/* 재단고객센터 */
+div.customer {
+    overflow: hidden;
+    float: right;
+    width: 187px;
+    height: 85px;
+    border: 1px solid #e0e0e0;
+    background: #e4e4e4;
+}
+
+div.customer ul {
+    overflow: hidden;
+    float: right;
+    width: 108px;
+    padding-top: 16px;
+}
+
+/* footer */
+.f-menu {
+    overflow: hidden;
+    width: 724px;
+    margin: 0 auto;
+}
+
+#footer .foot div {
+    overflow: hidden;
+    width: 724px;
+    margin: 0 auto;
+}

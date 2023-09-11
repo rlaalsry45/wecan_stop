@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZMember">
+	<typeAlias alias="zMemberVo" type="com.z5.zcms.admsys.module.domain.ZMemberVo"/>
+	<resultMap id="zMemberVo" class="com.z5.zcms.admsys.module.domain.ZMemberVo"/>
+	<typeAlias alias="zMemberUseVo" type="com.z5.zcms.admsys.module.domain.ZMemberUseVo"/>
+	<resultMap id="zMemberUseVo" class="com.z5.zcms.admsys.module.domain.ZMemberUseVo"/>
+	
+	<insert id="ZMember.memberWrite">
+		<![CDATA[
+			INSERT INTO ZMEMBER
+			(
+				
+				title,
+				skin,
+				contstype2,
+				conts2,
+				contstype3,
+				conts3,
+				contstype4,
+				conts4,
+				contstype5,
+				conts5,
+				memo,
+				datereg,
+				userid
+			)
+			VALUES
+			(
+				
+				#title#,
+				#skin#,
+				#contstype2#,
+		]]>
+		<isEqual property="contstype2" compareValue="1"><![CDATA[#conts2#,]]></isEqual>
+		<isEqual property="contstype2" compareValue="3"><![CDATA[#ckeditorConts2#,]]></isEqual>
+		<![CDATA[#contstype3#,]]>
+		<isEqual property="contstype3" compareValue="1"><![CDATA[#conts3#,]]></isEqual>
+		<isEqual property="contstype3" compareValue="3"><![CDATA[#ckeditorConts3#,]]></isEqual>
+		<![CDATA[#contstype4#,]]>
+		<isEqual property="contstype4" compareValue="1"><![CDATA[#conts4#,]]></isEqual>
+		<isEqual property="contstype4" compareValue="3"><![CDATA[#ckeditorConts4#,]]></isEqual>
+		<![CDATA[#contstype5#,]]>
+		<isEqual property="contstype5" compareValue="1"><![CDATA[#conts5#,]]></isEqual>
+		<isEqual property="contstype5" compareValue="3"><![CDATA[#ckeditorConts5#,]]></isEqual>
+		<![CDATA[
+				#memo#,
+				now(),
+				#userid#
+			)
+		]]>
+	</insert>
+	
+	<select id="ZMember.list" resultClass="zMemberVo">
+		<![CDATA[
+			SELECT
+				memberno,
+				title,
+				sitetitle,
+				datereg,
+				skin
+			FROM 
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								a.*
+								,(SELECT GROUP_CONCAT(SITETITLE) FROM ZMEMBERUSE where memberno = a.memberno) AS sitetitle
+								/*, get_sitetitle('ZMEMBERUSE','memberno', a.memberno) as sitetitle*/
+							FROM
+								ZMEMBER a,   (SELECT @rownum := #m#) R
+							WHERE 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							ORDER BY memberno DESC
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+		
+			]]> 
+	</select>
+	
+	<select id="ZMember.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				ZMEMBER
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# AND $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+	<select id="ZMember.getDetailInfo" resultClass="zMemberVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				ZMEMBER
+			WHERE
+				memberno=#memberno#
+		]]>
+	</select>
+	
+	<delete id="ZMember.memberDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZMEMBER
+			WHERE
+				memberno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<delete id="ZMember.memberUseDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZMEMBERUSE
+			WHERE
+				memberno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<update id="ZMember.update">
+		<![CDATA[
+		UPDATE
+			ZMEMBER
+		SET
+			title=#title#,
+			skin=#skin#,
+			contstype2=#contstype2#,
+			conts2=
+		]]>
+		<isEqual property="contstype2" compareValue="1"><![CDATA[#conts2#,]]></isEqual>
+		<isEqual property="contstype2" compareValue="3"><![CDATA[#ckeditorConts2#,]]></isEqual>
+		<![CDATA[
+			contstype3=#contstype3#,
+			conts3=
+		]]>
+		<isEqual property="contstype3" compareValue="1"><![CDATA[#conts3#,]]></isEqual>
+		<isEqual property="contstype3" compareValue="3"><![CDATA[#ckeditorConts3#,]]></isEqual>
+		<![CDATA[
+			contstype4=#contstype4#,
+			conts4=
+		]]>
+		<isEqual property="contstype4" compareValue="1"><![CDATA[#conts4#,]]></isEqual>
+		<isEqual property="contstype4" compareValue="3"><![CDATA[#ckeditorConts4#,]]></isEqual>
+		<![CDATA[
+			contstype5=#contstype5#,
+			conts5=
+		]]>
+		<isEqual property="contstype5" compareValue="1"><![CDATA[#conts5#,]]></isEqual>
+		<isEqual property="contstype5" compareValue="3"><![CDATA[#ckeditorConts5#,]]></isEqual>
+		<![CDATA[
+			memo=#memo#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#
+		WHERE
+			memberno=#memberno#
+		]]>
+	</update>
+	<select id="ZMember.getRowBySitenoFromZMemberUse" parameterClass="zMemberUseVo" resultClass="zMemberUseVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				zmemberuse
+			WHERE siteno = #siteno#
+		]]>
+	</select>
+
+</sqlMap>

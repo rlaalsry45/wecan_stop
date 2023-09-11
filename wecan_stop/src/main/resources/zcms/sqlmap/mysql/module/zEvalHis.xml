@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZEvalHis">
+	<typeAlias alias="zEvalHisVo" type="com.z5.zcms.admsys.module.domain.ZEvalHisVo"/>
+	<typeAlias alias="zEvalVo" type="com.z5.zcms.admsys.module.domain.ZEvalVo"/>
+	<resultMap id="zEvalHisVo" class="zEvalHisVo"/>
+	
+	<select id="ZEvalHis.list" parameterClass="zEvalVo" resultClass="zEvalHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZEVALHIS
+			WHERE
+				evalno=#evalno#
+			ORDER BY
+				hisno DESC
+		]]>
+	</select>
+
+	<select id="ZEvalHis.getByPk" parameterClass="zEvalHisVo" resultClass="zEvalHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZEVALHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</select>
+	
+	<delete id="ZEvalHis.delete" parameterClass="zEvalHisVo">
+		<![CDATA[
+			DELETE FROM 
+				ZEVALHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</delete>
+	
+	<delete id="ZEvalHis.deleteMuti" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZEVALHIS
+			WHERE
+				evalno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<insert id="ZEvalHis.insert" parameterClass="zEvalVo">
+		<![CDATA[
+			INSERT INTO ZEVALHIS
+			(
+				
+				title,
+				skin,
+				contstype,
+				conts,
+				memo,
+				datereg,
+				datemod,
+				userid,
+				datehis,
+				evalno
+			)
+			SELECT
+				
+				title,
+				skin,
+				contstype,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				memo,
+				datereg,
+				datemod,
+				#userid#,
+				now(),
+				evalno
+			FROM
+				ZEVAL
+			WHERE
+				evalno=#evalno#
+		]]>
+	</insert>
+
+</sqlMap>

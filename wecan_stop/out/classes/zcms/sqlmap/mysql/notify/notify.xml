@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap	namespace="Notify">
+	<typeAlias alias="NotifyVO" type="com.z5.zcms.admsys.notify.domain.NotifyVO" />
+	<resultMap id="NotifyVO" class="com.z5.zcms.admsys.notify.domain.NotifyVO"/>
+
+	<insert id="NotifyDAO.insertNotify">	
+
+		<![CDATA[
+			INSERT INTO NOTIFY(
+				NOTIFY_BUSINESS, 
+				NOTIFY_COUNSELCLASSIFICATION, 
+				NOTIFY_CONTENT, 
+				REG_DATE, 
+				REG_ID
+			)VALUES(
+				#notifyBusiness#, 
+				#notifyCounselclassification#, 
+				#notifyContent#, 
+				now(), 
+				#regId#
+			)	 
+		]]>
+	</insert>
+	
+	<select id="NotifyDAO.getNotifyList" parameterClass="NotifyVO" resultClass="NotifyVO">
+		<![CDATA[
+			SELECT 
+				NOTIFY_NO notifyNo, 
+				NOTIFY_BUSINESS notifyBusiness, 
+				NOTIFY_COUNSELCLASSIFICATION notifyCounselclassification, 
+				NOTIFY_CONTENT notifyContent, 
+				NOTIFY_CONFIRMYN notifyConfirmyn
+			  FROM NOTIFY
+			 WHERE NOTIFY_BUSINESS = #notifyBusiness#
+			   AND NOTIFY_CONFIRMYN = 'N'
+			]]> 
+	</select>
+
+	<update id="NotifyDAO.updateNotify">
+		<![CDATA[
+		 UPDATE
+				NOTIFY
+			SET
+				NOTIFY_CONFIRMYN = #notifyConfirmyn#,
+				UPD_DATE = now(), 
+				UPD_ID = #updId#
+		  WHERE
+				NOTIFY_NO = #notifyNo#
+		  	AND NOTIFY_BUSINESS = #notifyBusiness#
+		]]>
+	</update>
+	
+	<select id="NotifyDAO.getNotifyCnt" parameterClass="NotifyVO" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT 
+				 COUNT(*) notifyCnt
+			FROM NOTIFY
+		   WHERE NOTIFY_CONFIRMYN = 'N'
+		     AND NOTIFY_BUSINESS = #notifyBusiness#
+		]]>
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,29 @@
+package com.z5.zcms.admsys.orgculturedigmng.dao;
+
+import com.z5.zcms.admsys.orgculturedigmng.domain.WCounselorVo;
+import com.z5.zcms.admsys.orgculturedigmng.domain.WOrgCultureDigMngVo;
+import com.z5.zcms.admsys.orgculturedigmng.domain.WOrganizationVo;
+import com.z5.zcms.frontsys.front.domain.GovInfoVo;
+
+import java.util.List;
+
+public interface ZOrgCultureDigMngDAO {
+    public Integer listCount(WCounselorVo reqVo);
+    public List<WCounselorVo> getList(WCounselorVo wCounselorVo);
+	public void registration(WCounselorVo reqVo); 
+	public WCounselorVo view(WCounselorVo reqVo);
+	public void actionUpdate(WCounselorVo reqVo);	
+	public void delete(WCounselorVo reqVo);	
+	
+    public Integer orgListCount(WOrganizationVo reqVo);
+    public List<WOrganizationVo> getOrgList(WOrganizationVo wOrganizationVo);
+	public void orgRegistration(WOrganizationVo reqVo);
+	public WOrganizationVo orgView(WOrganizationVo reqVo);
+	public void orgUpdUse(WOrganizationVo reqVo);
+	public void orgUpdate(WOrganizationVo reqVo);
+	public String getOrgIdSeq();
+	public void privOrgRegistration(GovInfoVo vo) throws Exception;
+	public String getOrgPrivSeq() throws Exception;
+	public List<WOrganizationVo> srchGovIdList(WOrganizationVo reqVo);
+	public List<WOrgCultureDigMngVo> srchConsultingList(WOrgCultureDigMngVo reqVo);
+}

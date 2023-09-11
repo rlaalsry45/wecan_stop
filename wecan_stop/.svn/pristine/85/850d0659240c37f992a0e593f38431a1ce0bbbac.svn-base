@@ -1,0 +1,19 @@
+$(document).ready(function() {
+
+	$('.main_slide').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        dots: true,
+        infinite: true,
+        cssEase: 'linear',
+        arrows: true,
+        prevArrow: '<div class="slick-prev"></div>',
+        nextArrow: '<div class="slick-next"></div>',
+        variableWidth: false,
+        draggable: false,
+        autoplay: false,
+        autoplaySpeed: 1500
+    });
+
+});
+

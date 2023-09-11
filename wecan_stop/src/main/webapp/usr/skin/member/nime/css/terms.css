@@ -1,0 +1,51 @@
+/**common**/
+div#skin h1,h2,h3,h4,div,ol,ul,li,dl,dt,dd,p,form,input,select,textarea{margin:0;padding:0;font:12px 'dotum'}
+div#skin ul, ol, li {list-style:none}
+div#skin h1, h2, h3, h4, h5, h6 {margin:0px;padding:0px}
+div#skin table, th, td {border-collapse:collapse}
+div#skin img, fieldset{padding:0;border:0 none; vertical-align:top}
+div#skin a{text-decoration:none; border:0px}
+div#skin a:hover{text-decoration:underline; border:0px}
+div#skin hr, caption, legend{display:none}
+div#skin .bold{font-weight:bold}
+div#skin .invisible{display:none}
+div#skin h2#hd{display:none}
+div#skin caption{display:none}
+/*div#skin label{display:none}*/
+div#skin label.visible_label{display:inline}
+div#skin .img_hidden{display:none}
+div#skin input.bor_none{border:none}
+div#skin legend{display:none}
+div#skin .untitle{display:none}
+div#skin .clear{clear:both}
+.fl{float:left}
+.fr{float:right}
+.ftw{font-weight:bold}
+.fcr{color:#ff0000}
+.tal{text-align:left;}
+.tac{text-align:center;}
+.tar{text-align:right;}
+
+/**************회원가입********************/
+#join_wrap {border:0px solid #000;width:696px;height:871px;margin-left:14px;display:inline;float:left;margin-bottom:20px;}
+#join_wrap .jo_guide {border:0px solid #000;width:100%;margin-top:58px;float:left;}
+#join_wrap .jo_guide h2 {padding-left:142px;}
+#join_wrap .jo_guide ul {padding:35px 0 0 40px;}
+#join_wrap .jo_guide ul li {}
+
+#join_wrap .terms {border:0px solid #000;float:left;width:676px;margin-top:30px;margin-left:20px;display:inline;}
+#join_wrap .terms h5.jo_tit {height:28px;line-height:28px;padding:3px 0 0 15px;float:left;width:639px;clear:both;}
+.join_rbtn{border:0px solid #000;float:left;margin-top:35px;width:100%;text-align:center;}
+#join_wrap .terms ul {padding:10px 0 0 23px;border:0px solid #000;float:left;}
+#join_wrap .terms ul.join_img {padding:10px 0 0 40px;border:0px solid #000;float:left;}
+#join_wrap .terms ul.join_chkc {width:100%;padding:10px 0 0 0px;text-align:center}
+#join_wrap .terms ul.join_chkc li{width:100%}
+#join_wrap .terms ul.join_chkc li input{padding-left:10px;}
+#join_wrap .terms ul li {border:0px solid #000;float:left;}
+#join_wrap .terms ul li span{border:0px solid #000;padding:0 7px 0 7px;}
+#join_wrap .terms ul li.t_right {text-align:right;line-height:28px;}
+#join_wrap .terms ul li.t_right img {padding-top:3px;}
+#join_wrap .terms ul li.join_tit_g {line-height:25px;border:0px solid #000;height:25px;margin-top:15px;}
+#join_wrap .terms ul li textarea {width:592px;height:128px;color:#5D5D5D;font-size:12px;border:1px solid #dddddd;}
+
+.terms textarea{padding:5px}

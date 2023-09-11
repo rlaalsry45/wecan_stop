@@ -1,0 +1,144 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="java.util.*, java.text.*"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../lnb.jsp" flush="true" />
+            <div id="contents">
+                <form:form modelAttribute="PressVo" name="frm" method="post">
+                    <div class="contents_top">
+                        <div class="location">
+                            <a href="/admsys/administration/">HOME</a> <a href="/admsys/administration/index.html">행정지원</a> <strong>언론모니터링 </strong>
+                        </div>
+                    </div>
+                    <div id="content">
+                        <ul class="homepagebbs">
+                        <li class="bg"><h3 class="sub">언론 모니터링</h3></li>
+                            <li>
+                            <div class="top_bt">
+                                <a class="btmore07" href="javascript:checkAll(true,'pressChkBx');">전체선택</a>
+                                <a class="btmore07" href="javascript:checkAll(false,'pressChkBx');">전체해제</a>
+                                <span id="totalCountText">검색결과 총 ${input.total}건이 조회(검색)되었습니다.</span>
+                            </div>
+
+                                <div class="main_table">
+                                    <!--게시판 영역-->
+                                    <table class="main_table1" summary="번호, 그룹, 소속게시판, 그룹관리자, 관리">
+                                        <caption>관리목록</caption>
+                                        <colgroup>
+                                            <col width="5px" />
+                                            <col width="10px" />
+                                            <col width="25%" />
+                                            <col width="25%" />
+                                            <col width="25%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input class="bor_none" id="batch" type="checkbox" onclick="javascript:checkAll('','pressChkBx')" />
+                                                </th>
+                                                <th>번호</th>
+                                                <th>기사명</th>
+                                                <th>연관 상담 번호</th>
+                                                <th>연관 조치 번호</th>
+                                                <th>등록자명</th>
+                                                <th>등록일</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach items="${list}" var="each" varStatus="loop">
+                                                <tr>
+                                                    <td>
+                                                        <input class="bor_none" name="pressChkBx" value="${each.NO}" type="checkbox" />
+                                                    </td>
+                                                    <td>
+                                                        <c:out value='${input.total-(input.pageIndex-1)*input.pageSize-loop.index}' />
+                                                    </td>
+                                                    <td>
+                                                    	<a href="javascript:viewDetailPage('${each.NO}');">${each.article_title}</a>
+                                                    	<a class="btmore01" href="${each.rel_event_url}" target="_blank">View</a>
+                                                    </td>
+                                                    <td>
+                                                       <c:forEach items="${each.conRelList}" var="c" varStatus="cl">
+                                                      		${c.consulting_action_no}<c:if test="${!cl.last}">,&nbsp;</c:if>
+                                                       </c:forEach>
+                                                    </td>
+                                                    <td>
+                                                       <c:forEach items="${each.acRelList}" var="a" varStatus="al">
+                                                       ${a.consulting_action_no}<c:if test="${!al.last}">,&nbsp;</c:if>
+                                                       </c:forEach>
+                                                    </td>
+                                                    <td>
+                                                        ${each.create_user}
+                                                    </td>
+                                                    <td>
+	                                                    <fmt:parseDate value="${each.create_date}" pattern="yyyy-MM-dd HH:mm:ss" var="isoDate" />
+														<fmt:formatDate type="both" value="${isoDate}" pattern="yyyy-MM-dd HH:mm" />
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                            <c:if test="${input.total==0}">
+                                                <tr>
+                                                    <td colspan="7" style="padding:20;">언론모니터링 정보가 없습니다.</td>
+                                                </tr>
+                                            </c:if>
+                                        </tbody>
+                                    </table>
+                                    <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}' />
+                                    <!--/게시판 영역-->
+                                <div class="top_bt">
+                                	<a class="btmore05" href="javascript:alert('엑셀 다운로드');">엑셀 저장</a>
+                                	<a class="btmore05" href="javascript:alert('인쇄');">인쇄</a>
+
+									<a class="btmore01" href="javascript:deleteChecked();">삭제</a>
+									<a id="press_registration" class="btmore01" href="javascript:void(0);">등록</a>
+                            	</div>
+                                </div>
+                                <!--/main_table-->
+                            </li>
+                        </ul>
+                        <script>
+						$("#press_registration").click(function(){
+							$("#content").load("/admsys/administration/press_registration_form.html");
+						});
+						
+						function deleteChecked(){
+							var dataList = new Array();
+
+							var chk_val = $(':checkbox[name=pressChkBx]:checked').map(function () {
+								var obj = new Object();
+								obj = parseInt($(this).val());
+								dataList.push(obj);
+							});
+
+							$.ajax({
+								  type: 'POST',
+								  url: "/admsys/administration/press_req_delete.html",
+								  data: {"delList":dataList},
+								  traditional:true,
+								  success: function(result){
+									  if ( result.retStatus == "SUCCESS" ) {
+										  alert("삭제 하였습니다.");
+										  location.href = "<c:url value='/admsys/administration/index.html' />";
+									  } else {
+										  alert("삭제에 실패 하였습니다.");
+									  }
+								  },
+								  error:function(e){
+									  alert("삭제중 오류가 발생하였습니다."+e.responseText  );
+								  }
+							});
+						}						
+                        </script>
+                    </div>
+                    <!--/content-->
+                </form:form>
+            </div>
+            <!--/contents-->
+            			<script>
+			function viewDetailPage(NO){
+				$("#content").load("/admsys/administration/press_view.html", {'NO':NO} );  
+			}			
+			</script>
+<jsp:include page="../end.jsp" flush="false" />

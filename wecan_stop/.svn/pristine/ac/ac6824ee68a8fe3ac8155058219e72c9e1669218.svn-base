@@ -1,0 +1,388 @@
+package com.z5.zcms.admsys.statisticsmng.web;
+
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.z5.zcms.admsys.counsel.domain.CounselVO;
+import com.z5.zcms.admsys.counsel.service.CounselService;
+import com.z5.zcms.admsys.orgculturedigmng.domain.AppActionMergeVo;
+import com.z5.zcms.admsys.statisticsmng.domain.ZStatisticsMngVo;
+import com.z5.zcms.admsys.statisticsmng.service.ZStatisticsMngService;
+import com.z5.zcms.util.DataTable;
+import com.z5.zcms.util.StringUtil;
+
+@RequestMapping("/admsys/statisticsmng/")
+@Controller
+public class ZStatisticsMngController {
+	
+	 @Autowired
+	 private ZStatisticsMngService zStatisticsMngService;
+	 
+    /**
+     * 상담 컨트롤러
+     *
+     * @param model
+     * @return "/zcms/admsys/statisticsmng/index.html"
+     * @throws Exception
+     */
+    @RequestMapping(value = "index.html")
+    public String index(ModelMap model, HttpServletRequest req) throws Exception {
+
+    	DataTable input    = new DataTable(req);
+    	
+    	ZStatisticsMngVo zStatisticsMngVo = new ZStatisticsMngVo();
+    	ZStatisticsMngVo monthCounsel = zStatisticsMngService.getMonthCounsel(zStatisticsMngVo);	
+    	ZStatisticsMngVo yearCounsel = zStatisticsMngService.getYearCounsel(zStatisticsMngVo);
+    	ZStatisticsMngVo clientVictimRelType = zStatisticsMngService.getClientVictimRelType(zStatisticsMngVo);
+    	ZStatisticsMngVo actionTypeServiceRel = zStatisticsMngService.getActionTypeServiceRel(zStatisticsMngVo);
+    	ZStatisticsMngVo yearActionTypeServiceRel = zStatisticsMngService.getYearActionTypeServiceRel(zStatisticsMngVo);
+    	
+    	model.addAttribute("monthCounsel", monthCounsel);
+    	model.addAttribute("yearCounsel", yearCounsel);
+    	model.addAttribute("clientVictimRelType", clientVictimRelType);
+    	model.addAttribute("actionTypeServiceRel", actionTypeServiceRel);
+    	model.addAttribute("yearActionTypeServiceRel", yearActionTypeServiceRel);
+    	
+        return "/zcms/admsys/statisticsmng/index";
+    }
+
+    /**
+     * 조직문화진단 컨트롤러
+     *
+     * @param model
+     * @return "/zcms/admsys/statisticsmng/orgculturedig.html"
+     * @throws Exception
+     */
+    @RequestMapping(value = "orgculturedig.html")
+    public String orgculturedig(ModelMap model) throws Exception {
+    	
+    	ZStatisticsMngVo zStatisticsMngVo = new ZStatisticsMngVo();
+       	ZStatisticsMngVo actionCode = zStatisticsMngService.getActionCode(zStatisticsMngVo);
+    	ZStatisticsMngVo step8ActionCode = zStatisticsMngService.getStep8ActionCode(zStatisticsMngVo);
+    	ZStatisticsMngVo orgType = zStatisticsMngService.getOrgType(zStatisticsMngVo);
+    	ZStatisticsMngVo step8OrgType = zStatisticsMngService.getStep8OrgType(zStatisticsMngVo);
+    	ZStatisticsMngVo orgTypeGovDetail = zStatisticsMngService.getOrgTypeGovDetail(zStatisticsMngVo);
+    	ZStatisticsMngVo step8OrgTypeGovDetail = zStatisticsMngService.getStep8OrgTypeGovDetail(zStatisticsMngVo);
+    	ZStatisticsMngVo hamType = zStatisticsMngService.getHamType(zStatisticsMngVo);
+    	ZStatisticsMngVo consultingType = zStatisticsMngService.getConsultingType(zStatisticsMngVo);
+    	ZStatisticsMngVo weekActionTypeCont = zStatisticsMngService.getWeekActionTypeCont(zStatisticsMngVo);
+    	ZStatisticsMngVo yearActionTypeCont = zStatisticsMngService.getYearActionTypeCont(zStatisticsMngVo);
+     	ZStatisticsMngVo masterActionTypeServiceRel = zStatisticsMngService.getMasterActionTypeServiceRel(zStatisticsMngVo);
+    	ZStatisticsMngVo historyActionTypeServiceRel = zStatisticsMngService.getHistoryActionTypeServiceRel(zStatisticsMngVo);
+    	
+    	DecimalFormat df = new DecimalFormat("00");
+    	Calendar currentCalendar = Calendar.getInstance();
+    	//현재 날짜 구하기
+    	String strYear = Integer.toString(currentCalendar.get(Calendar.YEAR));
+    	String strMonth = df.format(currentCalendar.get(Calendar.MONTH) + 1);
+    	String strDay = df.format(currentCalendar.get(Calendar.DATE));
+    	String strDate = strMonth +"."+strDay+".";
+
+    	//일주일 전 날짜 구하기
+    	currentCalendar.add(currentCalendar.DATE, -7);
+    	String strYear7 = Integer.toString(currentCalendar.get(Calendar.YEAR));
+    	String strMonth7 = df.format(currentCalendar.get(Calendar.MONTH) + 1);
+    	String strDay7 = df.format(currentCalendar.get(Calendar.DATE));
+    	String strDate7 = strMonth7 +"."+strDay7+".";
+    	
+    	model.addAttribute("actionCode", actionCode);
+    	model.addAttribute("step8ActionCode", step8ActionCode);
+    	model.addAttribute("orgType", orgType);
+    	model.addAttribute("step8OrgType", step8OrgType);
+    	model.addAttribute("orgTypeGovDetail", orgTypeGovDetail);
+    	model.addAttribute("step8OrgTypeGovDetail", step8OrgTypeGovDetail);
+    	model.addAttribute("hamType", hamType);
+    	model.addAttribute("consultingType", consultingType);
+    	model.addAttribute("weekActionTypeCont", weekActionTypeCont);
+    	model.addAttribute("yearActionTypeCont", yearActionTypeCont);
+    	model.addAttribute("masterActionTypeServiceRel", masterActionTypeServiceRel);
+    	model.addAttribute("historyActionTypeServiceRel", historyActionTypeServiceRel);
+    	model.addAttribute("strDate", strDate);
+    	model.addAttribute("strDate7", strDate7);
+    	
+    	
+        return "/zcms/admsys/statisticsmng/orgculturedig";
+    }
+
+    /**
+     * 만족도조사 컨트롤러
+     *
+     * @param model
+     * @return "/zcms/admsys/statisticsmng/satisfactionrsrch.html"
+     * @throws Exception
+     */
+    @RequestMapping(value = "satisfactionrsrch.html")
+    public String satisfactionrsrch(@ModelAttribute("ZStatisticsMngVo") ZStatisticsMngVo reqVo, ModelMap model, HttpServletRequest req) throws Exception {
+    	
+    	DataTable input = new DataTable(req);
+    	
+    	if(!StringUtils.isEmpty(reqVo.getSdate())
+    			&& !StringUtils.isEmpty(reqVo.getEdate())) {
+    		reqVo.setSdate(reqVo.getSdate().replaceAll("-", ""));
+    		reqVo.setEdate(reqVo.getEdate().replaceAll("-", ""));
+    	}
+    	
+    	List<String> orgList = new ArrayList<String>();
+    	if(StringUtils.isEmpty(reqVo.getOrg1())
+    			&& StringUtils.isEmpty(reqVo.getOrg2())) {
+    		orgList.add("gov");
+    		orgList.add("priv");
+    	}
+    	
+    	if(!StringUtils.isEmpty(reqVo.getOrg1())) {
+    		orgList.add(reqVo.getOrg1());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getOrg2())) {
+    		orgList.add(reqVo.getOrg2());
+    	}
+    	
+    	reqVo.setOrgList(orgList);
+    	
+    	List<String> typeList = new ArrayList<String>();
+    	if(StringUtils.isEmpty(reqVo.getType1())
+    			&& StringUtils.isEmpty(reqVo.getType2())
+    			&& StringUtils.isEmpty(reqVo.getType3())
+    			&& StringUtils.isEmpty(reqVo.getType4())) {
+    		typeList.add("A");
+    		typeList.add("B");
+    		typeList.add("C");
+    		typeList.add("D");
+    	}
+    	
+    	if(!StringUtils.isEmpty(reqVo.getType1())) {
+    		typeList.add(reqVo.getType1());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getType2())) {
+    		typeList.add(reqVo.getType2());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getType3())) {
+    		typeList.add(reqVo.getType3());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getType4())) {
+    		typeList.add(reqVo.getType4());
+    	}
+    	
+    	reqVo.setTypeList(typeList);
+    	
+       	ZStatisticsMngVo getSatisfaction = zStatisticsMngService.getSatisfaction(reqVo);
+    	
+    	List<ZStatisticsMngVo> getSatisfaction1OpinionList = zStatisticsMngService.getSatisfaction1OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSatisfaction2OpinionList = zStatisticsMngService.getSatisfaction2OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSatisfaction3OpinionList = zStatisticsMngService.getSatisfaction3OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSatisfaction4OpinionList = zStatisticsMngService.getSatisfaction4OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSatisfaction5OpinionList = zStatisticsMngService.getSatisfaction5OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSatisfaction6OpinionList = zStatisticsMngService.getSatisfaction6OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSatisfaction7OpinionList = zStatisticsMngService.getSatisfaction7OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSatisfaction8OpinionList = zStatisticsMngService.getSatisfaction8OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSatisfaction9List = zStatisticsMngService.getSatisfaction9List(reqVo);
+    	
+    	model.addAttribute("getSatisfaction", getSatisfaction);
+    	
+    	model.addAttribute("getSatisfaction1OpinionList", getSatisfaction1OpinionList);
+    	model.addAttribute("getSatisfaction2OpinionList", getSatisfaction2OpinionList);
+    	model.addAttribute("getSatisfaction3OpinionList", getSatisfaction3OpinionList);
+    	model.addAttribute("getSatisfaction4OpinionList", getSatisfaction4OpinionList);
+    	model.addAttribute("getSatisfaction5OpinionList", getSatisfaction5OpinionList);
+    	model.addAttribute("getSatisfaction6OpinionList", getSatisfaction6OpinionList);
+    	model.addAttribute("getSatisfaction7OpinionList", getSatisfaction7OpinionList);
+    	model.addAttribute("getSatisfaction8OpinionList", getSatisfaction8OpinionList);
+    	model.addAttribute("getSatisfaction9List", getSatisfaction9List);
+    	
+    	model.addAttribute("input", input);
+    	
+        return "/zcms/admsys/statisticsmng/satisfactionrsrch";
+    }
+    
+    /**
+     * 설문조사 컨트롤러
+     *
+     * @param model
+     * @return "/zcms/admsys/statisticsmng/surveyrsrch.html"
+     * @throws Exception
+     */
+    @RequestMapping(value = "surveyrsrch.html")
+    public String surveyrsrch(@ModelAttribute("ZStatisticsMngVo") ZStatisticsMngVo reqVo, ModelMap model, HttpServletRequest req) throws Exception {
+    	
+    	DataTable input = new DataTable(req);
+    	
+    	if(!StringUtils.isEmpty(reqVo.getSdate())
+    			&& !StringUtils.isEmpty(reqVo.getEdate())) {
+    		reqVo.setSdate(reqVo.getSdate().replaceAll("-", ""));
+    		reqVo.setEdate(reqVo.getEdate().replaceAll("-", ""));
+    	}
+    	
+    	List<String> orgList = new ArrayList<String>();
+    	if(StringUtils.isEmpty(reqVo.getOrg1())
+    			&& StringUtils.isEmpty(reqVo.getOrg2())) {
+    		orgList.add("gov");
+    		orgList.add("priv");
+    	}
+    	
+    	if(!StringUtils.isEmpty(reqVo.getOrg1())) {
+    		orgList.add(reqVo.getOrg1());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getOrg2())) {
+    		orgList.add(reqVo.getOrg2());
+    	}
+    	
+    	reqVo.setOrgList(orgList);
+    	
+    	List<String> typeList = new ArrayList<String>();
+    	if(StringUtils.isEmpty(reqVo.getType1())
+    			&& StringUtils.isEmpty(reqVo.getType2())
+    			&& StringUtils.isEmpty(reqVo.getType3())
+    			&& StringUtils.isEmpty(reqVo.getType4())) {
+    		typeList.add("A");
+    		typeList.add("B");
+    		typeList.add("C");
+    		typeList.add("D");
+    	}
+    	
+    	if(!StringUtils.isEmpty(reqVo.getType1())) {
+    		typeList.add(reqVo.getType1());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getType2())) {
+    		typeList.add(reqVo.getType2());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getType3())) {
+    		typeList.add(reqVo.getType3());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getType4())) {
+    		typeList.add(reqVo.getType4());
+    	}
+    	
+    	reqVo.setTypeList(typeList);
+    	
+       	ZStatisticsMngVo getSurvey = zStatisticsMngService.getSurvey(reqVo);
+
+    	List<ZStatisticsMngVo> getSurvey7OpinionList = zStatisticsMngService.getSurvey7OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSurvey7_1_1OpinionList = zStatisticsMngService.getSurvey7_1_1OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSurvey7_2_1OpinionList = zStatisticsMngService.getSurvey7_2_1OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSurvey10OpinionList = zStatisticsMngService.getSurvey10OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSurvey11OpinionList = zStatisticsMngService.getSurvey11OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSurvey12OpinionList = zStatisticsMngService.getSurvey12OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getSurvey13OpinionList = zStatisticsMngService.getSurvey13OpinionList(reqVo);
+
+    	model.addAttribute("getSurvey", getSurvey);
+    	
+    	model.addAttribute("getSurvey7OpinionList", getSurvey7OpinionList);
+    	model.addAttribute("getSurvey7_1_1OpinionList", getSurvey7_1_1OpinionList);
+    	model.addAttribute("getSurvey7_2_1OpinionList", getSurvey7_2_1OpinionList);
+    	model.addAttribute("getSurvey10OpinionList", getSurvey10OpinionList);
+    	model.addAttribute("getSurvey11OpinionList", getSurvey11OpinionList);
+    	model.addAttribute("getSurvey12OpinionList", getSurvey12OpinionList);
+    	model.addAttribute("getSurvey13OpinionList", getSurvey13OpinionList);
+    	
+    	model.addAttribute("input", input);
+    	
+        return "/zcms/admsys/statisticsmng/surveyrsrch";
+    }
+    
+    /**
+     * 사전질의 컨트롤러
+     *
+     * @param model
+     * @return "/zcms/admsys/statisticsmng/prequeryrsrch.html"
+     * @throws Exception
+     */
+    @RequestMapping(value = "prequeryrsrch.html")
+    public String prequeryrsrch(@ModelAttribute("ZStatisticsMngVo") ZStatisticsMngVo reqVo, ModelMap model, HttpServletRequest req) throws Exception {
+    	
+    	DataTable input = new DataTable(req);
+    	
+    	if(!StringUtils.isEmpty(reqVo.getSdate())
+    			&& !StringUtils.isEmpty(reqVo.getEdate())) {
+    		reqVo.setSdate(reqVo.getSdate().replaceAll("-", ""));
+    		reqVo.setEdate(reqVo.getEdate().replaceAll("-", ""));
+    	}
+    	
+    	List<String> orgList = new ArrayList<String>();
+    	if(StringUtils.isEmpty(reqVo.getOrg1())
+    			&& StringUtils.isEmpty(reqVo.getOrg2())) {
+    		orgList.add("gov");
+    		orgList.add("priv");
+    	}
+    	
+    	if(!StringUtils.isEmpty(reqVo.getOrg1())) {
+    		orgList.add(reqVo.getOrg1());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getOrg2())) {
+    		orgList.add(reqVo.getOrg2());
+    	}
+    	
+    	reqVo.setOrgList(orgList);
+    	
+    	List<String> typeList = new ArrayList<String>();
+    	if(StringUtils.isEmpty(reqVo.getType1())
+    			&& StringUtils.isEmpty(reqVo.getType2())
+    			&& StringUtils.isEmpty(reqVo.getType3())
+    			&& StringUtils.isEmpty(reqVo.getType4())) {
+    		typeList.add("A");
+    		typeList.add("B");
+    		typeList.add("C");
+    		typeList.add("D");
+    	}
+    	
+    	if(!StringUtils.isEmpty(reqVo.getType1())) {
+    		typeList.add(reqVo.getType1());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getType2())) {
+    		typeList.add(reqVo.getType2());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getType3())) {
+    		typeList.add(reqVo.getType3());
+    	}
+    	if(!StringUtils.isEmpty(reqVo.getType4())) {
+    		typeList.add(reqVo.getType4());
+    	}
+    	
+    	reqVo.setTypeList(typeList);
+    	
+       	ZStatisticsMngVo getPrequery = zStatisticsMngService.getPrequery(reqVo);
+   
+    	List<ZStatisticsMngVo> getPrequery2_8OpinionList = zStatisticsMngService.getPrequery2_8OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getPrequery4List = zStatisticsMngService.getPrequery4List(reqVo);
+    	List<ZStatisticsMngVo> getPrequery5_8OpinionList = zStatisticsMngService.getPrequery5_8OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getPrequery6_1_7OpinionList = zStatisticsMngService.getPrequery6_1_7OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getPrequery6_2_6OpinionList = zStatisticsMngService.getPrequery6_2_6OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getPrequery6_2_1_6OpinionList = zStatisticsMngService.getPrequery6_2_1_6OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getPrequery6_3_3OpinionList = zStatisticsMngService.getPrequery6_3_3OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getPrequery7_4OpinionList = zStatisticsMngService.getPrequery7_4OpinionList(reqVo);
+    	List<ZStatisticsMngVo> getPrequery9List = zStatisticsMngService.getPrequery9List(reqVo);
+    	List<ZStatisticsMngVo> getPrequery10List = zStatisticsMngService.getPrequery10List(reqVo);
+    	List<ZStatisticsMngVo> getPrequery11List = zStatisticsMngService.getPrequery11List(reqVo);
+    	List<ZStatisticsMngVo> getPrequery13List = zStatisticsMngService.getPrequery13List(reqVo);
+    	
+    	
+    	model.addAttribute("getPrequery", getPrequery);
+    	
+    	model.addAttribute("getPrequery2_8OpinionList", getPrequery2_8OpinionList);
+    	model.addAttribute("getPrequery4List", getPrequery4List);
+    	model.addAttribute("getPrequery5_8OpinionList", getPrequery5_8OpinionList);
+    	model.addAttribute("getPrequery6_1_7OpinionList", getPrequery6_1_7OpinionList);
+    	model.addAttribute("getPrequery6_2_6OpinionList", getPrequery6_2_6OpinionList);
+    	model.addAttribute("getPrequery6_2_1_6OpinionList", getPrequery6_2_1_6OpinionList);
+    	model.addAttribute("getPrequery6_3_3OpinionList", getPrequery6_3_3OpinionList);
+    	model.addAttribute("getPrequery7_4OpinionList", getPrequery7_4OpinionList);
+    	model.addAttribute("getPrequery9List", getPrequery9List);
+    	model.addAttribute("getPrequery10List", getPrequery10List);
+    	model.addAttribute("getPrequery11List", getPrequery11List);
+    	model.addAttribute("getPrequery13List", getPrequery13List);
+    	
+    	model.addAttribute("input", input);
+    	
+        return "/zcms/admsys/statisticsmng/prequeryrsrch";
+    }
+}

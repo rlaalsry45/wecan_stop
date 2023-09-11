@@ -1,0 +1,52 @@
+﻿@import url("base.css");
+
+#popup-wrap {width:1000px;background:url('/cms/image/evnt/bg_popup.gif') repeat-x 0 0;position:relative;}
+#popup-wrap h1 {height:30px;padding:15px 0 0 20px;}
+
+#container {padding:20px;}
+div.step {height:78px;background:url('/usr/image/popup/bg_step.gif') no-repeat 0 0;}
+div.step02 {height:78px;background:url('/usr/image/popup/bg_step02.gif') no-repeat 0 0;}
+div.step2 {background-position:0 -78px;}
+div.step3 {background-position:0 -156px;}
+div.step4 {background-position:0 -234px;}
+p.text {margin-top:20px;}
+ul.text {margin-top:20px;}
+ul.text li {font-size:12px;line-height:18px;}
+
+/* title */
+h3.view-tit {height:24px;margin-top:10px;padding:9px 0 0 17px;border-top:2px solid #c4c4c4;border-bottom:1px solid #c4c4c4;background:#fafafa;color:#575757;font-size:12px;line-height:18px;}
+
+/* main_table1 */
+table, th, td {
+    border: 0 none;
+    border-collapse: collapse;
+    margin: 0;
+}
+div.board {margin-top:7px;}
+.main_table1 {
+    width:100%;
+	border: 1px solid #DDDDDD;
+}
+.main_table1 td {
+    border: 1px solid #DDDDDD;
+    color: #666666;
+    padding: 5px;
+    text-align: center;
+}
+.main_table1 th {
+    background-color: #F9F9F9;
+    border: 1px solid #DDDDDD;
+    color: #333333;
+    padding: 5px;
+}
+.main_table1 td span {
+    display: block;
+    margin-top: 10px;
+}
+.main_table1 td input.img {
+    vertical-align: top;
+}
+
+/* btn */
+div.btn-r {margin-top:10px;text-align:right;}
+#popup-wrap a.close {position:absolute;top:17px;right:20px;}

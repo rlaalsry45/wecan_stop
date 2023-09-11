@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap	namespace="Prequery">
+	<typeAlias alias="PrequeryVO" type="com.z5.zcms.admsys.prequery.domain.PrequeryVO" />
+	<resultMap id="PrequeryVO" class="com.z5.zcms.admsys.prequery.domain.PrequeryVO"/>
+
+	<insert id="PrequeryDAO.insertPrequery">	
+
+		<![CDATA[
+			INSERT INTO prequery(
+				PREQUERY_ID, 
+				CONSULTING_APPLICATION_NO,
+				PREQUERY_1, 
+				PREQUERY_2_1, 
+				PREQUERY_2_2, 
+				PREQUERY_2_3, 
+				PREQUERY_2_4, 
+				PREQUERY_2_5, 
+				PREQUERY_2_6, 
+				PREQUERY_2_7, 
+				PREQUERY_2_8, 
+				PREQUERY_2_8_OPINION, 
+				PREQUERY_3, 
+				PREQUERY_4_1, 
+				PREQUERY_4_2, 
+				PREQUERY_5, 
+				PREQUERY_5_8_OPINION, 
+				PREQUERY_6_1_1, 
+				PREQUERY_6_1_2, 
+				PREQUERY_6_1_3, 
+				PREQUERY_6_1_4, 
+				PREQUERY_6_1_5, 
+				PREQUERY_6_1_6, 
+				PREQUERY_6_1_7, 
+				PREQUERY_6_1_8, 
+				PREQUERY_6_1_7_OPINION, 
+				PREQUERY_6_2_1, 
+				PREQUERY_6_2_2, 
+				PREQUERY_6_2_3, 
+				PREQUERY_6_2_4, 
+				PREQUERY_6_2_5, 
+				PREQUERY_6_2_6, 
+				PREQUERY_6_2_7,  
+				PREQUERY_6_2_6_OPINION, 
+				PREQUERY_6_2_1_1, 
+				PREQUERY_6_2_1_2, 
+				PREQUERY_6_2_1_3, 
+				PREQUERY_6_2_1_4, 
+				PREQUERY_6_2_1_5, 
+				PREQUERY_6_2_1_6, 
+				PREQUERY_6_2_1_6_OPINION, 
+				PREQUERY_6_3_1, 
+				PREQUERY_6_3_2, 
+				PREQUERY_6_3_3, 
+				PREQUERY_6_3_4, 
+				PREQUERY_6_3_3_OPINION, 
+				PREQUERY_7, 
+				PREQUERY_7_4_OPINION, 
+				PREQUERY_8, 
+				PREQUERY_9_1, 
+				PREQUERY_9_2, 
+				PREQUERY_10_1, 
+				PREQUERY_10_2, 
+				PREQUERY_10_3, 
+				PREQUERY_10_4, 
+				PREQUERY_11, 
+				PREQUERY_12, 
+				PREQUERY_13_1, 
+				PREQUERY_13_2, 
+				PREQUERY_13_3, 
+				PREQUERY_13_4, 
+				PREQUERY_13_5, 
+				PREQUERY_13_6, 
+				PREQUERY_13_7, 
+				REG_ID, 
+				REG_DATE
+			)VALUES(
+				#prequeryId#,
+				#consulting_application_no#, 
+				#prequery1#, 
+				#prequery2_1#, 
+				#prequery2_2#, 
+				#prequery2_3#, 
+				#prequery2_4#, 
+				#prequery2_5#, 
+				#prequery2_6#, 
+				#prequery2_7#, 
+				#prequery2_8#, 
+				#prequery2_8_opinion#, 
+				#prequery3#, 
+				#prequery4_1#, 
+				#prequery4_2#, 
+				#prequery5#,
+				#prequery5_8_opinion#, 
+				#prequery6_1_1#,
+				#prequery6_1_2#,
+				#prequery6_1_3#,
+				#prequery6_1_4#,
+				#prequery6_1_5#,
+				#prequery6_1_6#,
+				#prequery6_1_7#,
+				#prequery6_1_8#,
+				#prequery6_1_7_opinion#, 
+				#prequery6_2_1#,
+				#prequery6_2_2#,
+				#prequery6_2_3#,
+				#prequery6_2_4#,
+				#prequery6_2_5#,
+				#prequery6_2_6#,
+				#prequery6_2_7#,
+				#prequery6_2_6_opinion#, 
+				#prequery6_2_1_1#,
+				#prequery6_2_1_2#,
+				#prequery6_2_1_3#,
+				#prequery6_2_1_4#,
+				#prequery6_2_1_5#,
+				#prequery6_2_1_6#,
+				#prequery6_2_1_6_opinion#,
+				#prequery6_3_1#,
+				#prequery6_3_2#,
+				#prequery6_3_3#,
+				#prequery6_3_4#,
+				#prequery6_3_3_opinion#,
+				#prequery7#, 
+				#prequery7_4_opinion#,
+				#prequery8#, 
+				#prequery9_1#, 
+				#prequery9_2#, 
+				#prequery10_1#, 
+				#prequery10_2#, 
+				#prequery10_3#, 
+				#prequery10_4#, 
+				#prequery11#, 
+				#prequery12#, 
+				#prequery13_1#, 
+				#prequery13_2#, 
+				#prequery13_3#, 
+				#prequery13_4#, 
+				#prequery13_5#, 
+				#prequery13_6#, 
+				#prequery13_7#, 
+				#regId#, 
+				NOW()
+			)
+
+		]]>
+	</insert>
+	
+	<select id="PrequeryDAO.listCount" resultClass="java.lang.Integer">
+		<![CDATA[	
+			SELECT
+				 COUNT(*)
+			FROM prequery p,
+				 w_organization wo
+		   WHERE p.DEL_YN = 'N'
+		   ]]>
+		   <isNotEmpty prepend="and" property="cond1">
+		   		<isNotEmpty property="sdate">
+           		<isNotEmpty property="edate">
+				<![CDATA[ date_format($cond1$,'%Y%m%d') between #sdate# and #edate# ]]>
+				</isNotEmpty>
+				</isNotEmpty>
+			</isNotEmpty>
+           	<isNotEmpty prepend="and" property="cond2">
+          		<isNotEqual property="cond2" compareValue="org_name">
+           		<isNotEmpty property="keyword">
+				<![CDATA[ upper($cond2$) like concat('%',upper(#keyword#),'%') ]]>
+				</isNotEmpty>
+				</isNotEqual>
+				<isEqual property="cond2" compareValue="org_name">
+				<isNotEmpty property="keyword">
+				<![CDATA[ wo.ORGANIZATION_NAME like concat('%',upper(#keyword#),'%')]]>
+				</isNotEmpty>
+				</isEqual>
+			</isNotEmpty>
+		<![CDATA[
+		   ORDER BY p.PREQUERY_NO DESC
+			]]>		
+	</select>
+	
+	<select id="PrequeryDAO.prequeryList" resultClass="PrequeryVO">
+		<![CDATA[
+			SELECT
+				p.PREQUERY_NO prequeryNo,
+				p.PREQUERY_ID prequeryId,
+				wo.ORGANIZATION_NAME orgName,
+				p.CONSULTING_APPLICATION_NO consulting_application_no,
+				p.REG_ID regId,
+				(SELECT USERNAME FROM zuser WHERE USERID = p.REG_ID) regName,
+				DATE_FORMAT(p.REG_DATE, '%Y-%m-%d %H:%i:%S') regDate
+			FROM prequery p,
+				 w_organization wo
+		   WHERE p.PREQUERY_ID = wo.ORGANIZATION_ID
+		     AND p.DEL_YN = 'N'
+		   ]]>
+		   <isNotEmpty prepend="and" property="cond1">
+		   		<isNotEmpty property="sdate">
+           		<isNotEmpty property="edate">
+				<![CDATA[ date_format($cond1$,'%Y%m%d') between #sdate# and #edate# ]]>
+				</isNotEmpty>
+				</isNotEmpty>
+			</isNotEmpty>
+           	<isNotEmpty prepend="and" property="cond2">
+          		<isNotEqual property="cond2" compareValue="org_name">
+           		<isNotEmpty property="keyword">
+				<![CDATA[ upper($cond2$) like concat('%',upper(#keyword#),'%') ]]>
+				</isNotEmpty>
+				</isNotEqual>
+				<isEqual property="cond2" compareValue="org_name">
+				<isNotEmpty property="keyword">
+				<![CDATA[ wo.ORGANIZATION_NAME like concat('%',upper(#keyword#),'%')]]>
+				</isNotEmpty>
+				</isEqual>
+			</isNotEmpty>
+		<![CDATA[
+		   ORDER BY p.PREQUERY_NO DESC
+		   LIMIT #m#, #n#
+		]]>			
+	</select>
+	
+	<select id="PrequeryDAO.prequery" resultClass="PrequeryVO">
+		<![CDATA[
+			SELECT 
+				PREQUERY_ID prequeryId, 
+				PREQUERY_1 prequery1, 
+				PREQUERY_2_1 prequery2_1, 
+				PREQUERY_2_2 prequery2_2, 
+				PREQUERY_2_3 prequery2_3, 
+				PREQUERY_2_4 prequery2_4, 
+				PREQUERY_2_5 prequery2_5, 
+				PREQUERY_2_6 prequery2_6, 
+				PREQUERY_2_7 prequery2_7, 
+				PREQUERY_2_8 prequery2_8, 
+				PREQUERY_2_8_OPINION prequery2_8_opinion, 
+				PREQUERY_3 prequery3, 
+				PREQUERY_4_1 prequery4_1, 
+				PREQUERY_4_2 prequery4_2, 
+				PREQUERY_5 prequery5, 
+				PREQUERY_5_8_OPINION prequery5_8_opinion, 
+				PREQUERY_6_1_1 prequery6_1_1, 
+				PREQUERY_6_1_2 prequery6_1_2, 
+				PREQUERY_6_1_3 prequery6_1_3, 
+				PREQUERY_6_1_4 prequery6_1_4, 
+				PREQUERY_6_1_5 prequery6_1_5, 
+				PREQUERY_6_1_6 prequery6_1_6, 
+				PREQUERY_6_1_7 prequery6_1_7, 
+				PREQUERY_6_1_8 prequery6_1_8, 
+				PREQUERY_6_1_7_OPINION prequery6_1_7_opinion, 
+				PREQUERY_6_2_1 prequery6_2_1, 
+				PREQUERY_6_2_2 prequery6_2_2, 
+				PREQUERY_6_2_3 prequery6_2_3, 
+				PREQUERY_6_2_4 prequery6_2_4, 
+				PREQUERY_6_2_5 prequery6_2_5, 
+				PREQUERY_6_2_6 prequery6_2_6, 
+				PREQUERY_6_2_7 prequery6_2_7, 
+				PREQUERY_6_2_6_OPINION prequery6_2_6_opinion, 
+				PREQUERY_6_2_1_1 prequery6_2_1_1, 
+				PREQUERY_6_2_1_2 prequery6_2_1_2, 
+				PREQUERY_6_2_1_3 prequery6_2_1_3, 
+				PREQUERY_6_2_1_4 prequery6_2_1_4, 
+				PREQUERY_6_2_1_5 prequery6_2_1_5, 
+				PREQUERY_6_2_1_6 prequery6_2_1_6, 
+				PREQUERY_6_2_1_6_OPINION prequery6_2_1_6_opinion, 
+				PREQUERY_6_3_1 prequery6_3_1, 
+				PREQUERY_6_3_2 prequery6_3_2, 
+				PREQUERY_6_3_3 prequery6_3_3, 
+				PREQUERY_6_3_4 prequery6_3_4, 
+				PREQUERY_6_3_3_OPINION prequery6_3_3_opinion, 
+				PREQUERY_7 prequery7, 
+				PREQUERY_7_4_OPINION prequery7_4_opinion, 
+				PREQUERY_8 prequery8, 
+				PREQUERY_9_1 prequery9_1, 
+				PREQUERY_9_2 prequery9_2, 
+				PREQUERY_10_1 prequery10_1, 
+				PREQUERY_10_2 prequery10_2, 
+				PREQUERY_10_3 prequery10_3, 
+				PREQUERY_10_4 prequery10_4, 
+				PREQUERY_11 prequery11, 
+				PREQUERY_12 prequery12, 
+				PREQUERY_13_1 prequery13_1, 
+				PREQUERY_13_2 prequery13_2, 
+				PREQUERY_13_3 prequery13_3, 
+				PREQUERY_13_4 prequery13_4, 
+				PREQUERY_13_5 prequery13_5, 
+				PREQUERY_13_6 prequery13_6, 
+				PREQUERY_13_7 prequery13_7
+			FROM prequery
+			WHERE DEL_YN = 'N'
+			 AND PREQUERY_NO = #prequeryNo#
+		]]>			
+	</select>
+	
+	<select id="PrequeryDAO.getPrequeryCount" parameterClass="PrequeryVO" resultClass="int">
+		<![CDATA[
+			SELECT
+				 COUNT(*)
+			FROM prequery
+		   WHERE DEL_YN = 'N'
+		     AND PREQUERY_ID = #prequeryId# 
+		     AND CONSULTING_APPLICATION_NO = #consulting_application_no#
+		     AND REG_ID = #regId#
+		   ]]>
+		   	
+	</select>
+	
+	
+</sqlMap>

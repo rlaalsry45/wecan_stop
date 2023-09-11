@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Archv">
+<typeAlias alias="archv" type="com.z5.zcms.frontsys.archv.domain.Archv" />
+<resultMap id="archv" class="com.z5.zcms.frontsys.archv.domain.Archv" />
+<typeAlias alias="archvVO" type="com.z5.zcms.frontsys.archv.domain.ArchvVO" />
+<resultMap id="archvVO" class="com.z5.zcms.frontsys.archv.domain.ArchvVO"/>
+<typeAlias alias="archvFile" type="com.z5.zcms.frontsys.archv.domain.ArchvFile" />
+<resultMap id="archvFile" class="com.z5.zcms.frontsys.archv.domain.ArchvFile"/>
+<typeAlias alias="archvFileVO" type="com.z5.zcms.frontsys.archv.domain.ArchvFileVO" />
+<resultMap id="archvFileVO" class="com.z5.zcms.frontsys.archv.domain.ArchvFileVO"/>
+<typeAlias alias="archvCatgryVO" type="com.z5.zcms.frontsys.archv.domain.ArchvCatgryVO" />
+<resultMap id="archvCatgryVO" class="com.z5.zcms.frontsys.archv.domain.ArchvCatgryVO"/>
+<typeAlias alias="archvRltdVO" type="com.z5.zcms.frontsys.archv.domain.ArchvRltdVO" />
+<resultMap id="archvRltdVO" class="com.z5.zcms.frontsys.archv.domain.ArchvRltdVO"/>
+<typeAlias alias="archvMenunoPath" type="com.z5.zcms.frontsys.archv.domain.ArchvMenunoPath" />
+<resultMap id="archvMenunoPath" class="com.z5.zcms.frontsys.archv.domain.ArchvMenunoPath"/>
+
+
+	
+	
+	<select id="listCount" resultClass="archvVO">
+		select eventCount,documentCount,photoCount,vodCount from 
+			(select
+						count(*) as eventcount
+					from
+						archv a,
+						archv_catgry b
+					where 
+						a.catgry_cd =b.catgry_cd
+					and b.path like #path#||'%'
+					and a.apov_ste = 1    	
+					and a.shw_yn =1
+					and a.lang=#lang#         	
+					and a.opt_no in(1,2,3,4,8)) event,
+			(select
+						count(*) as documentCount
+					from
+						archv a,
+						archv_catgry b
+					where 
+						a.catgry_cd =b.catgry_cd
+					and b.path like #path#||'%'
+					and a.apov_ste = 1    	
+					and a.shw_yn =1
+					and a.lang=#lang#         	
+					and a.opt_no = 5) document,
+			(select
+						count(*) as photoCount
+					from
+						archv a,
+						archv_catgry b
+					where 
+						a.catgry_cd =b.catgry_cd
+					and b.path like #path#||'%'
+					and a.apov_ste = 1    	
+					and a.shw_yn =1
+					and a.lang=#lang#         	
+					and a.opt_no =6) photo,
+			(select
+						count(*) as vodCount
+					from
+						archv a,
+						archv_catgry b
+					where 
+						a.catgry_cd =b.catgry_cd
+					and b.path like #path#||'%'
+					and a.apov_ste = 1    	
+					and a.shw_yn =1
+					and a.lang=#lang#         	
+					and a.opt_no =7) vod
+
+	</select>
+
+	<select id="list" parameterClass="archvVO" resultClass="archvVO">
+		<![CDATA[
+		SELECT
+				archv_no,
+				archv_cnt,
+				start_date,
+				lang,
+				title,
+				reg_date,
+				apov_ste,
+				sumup,
+				vdo_url,
+				shw_yn,
+				evnt_cd_no,
+				catgry_cd,
+				opt_no,
+				(select count(*) from archv_file where archv_no = re.archv_no) as fileCount,
+		        IFNULL((select IFNULL(reg_nm,'관리자') from archv_aprov where archv_no = re.archv_no),'관리자') as reg_nm,
+				IFNULL((select realname from archv_file where file_no = (select min(file_no) from archv_file where archv_no = re.archv_no)),'noimg.gif') as thbnail,
+				FC_ARCHV_CATGRY_NAME_LIST_LANG(catgry_cd,#lang#) as catgry_name_list,
+				rownum_
+			from 
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+								a.*
+							from
+								archv a,
+								archv_catgry b,   (SELECT @rownum := #m#) R 
+							where 
+								a.catgry_cd =b.catgry_cd
+							and b.path like #path#||'%'
+							and a.apov_ste = 1    	
+							and a.shw_yn =1
+							and a.lang = #lang#
+			]]>
+							<isNotEmpty property="tab">
+								<isEqual property="tab" compareValue="1">
+								<![CDATA[ and a.opt_no in (1,2,3,4,8) ]]> 	
+								</isEqual>
+								<isEqual property="tab" compareValue="2">
+								<![CDATA[ and a.opt_no =5 ]]> 	
+								</isEqual>
+								<isEqual property="tab" compareValue="3">
+								<![CDATA[ and a.opt_no =6 ]]> 	
+								</isEqual>
+								<isEqual property="tab" compareValue="4">
+								<![CDATA[ and a.opt_no =7 ]]> 	
+								</isEqual>
+							</isNotEmpty>
+							<isEmpty property="tab">
+								<![CDATA[	and a.opt_no in (1,2,3,4,8)   ]]> 
+							</isEmpty>
+			<![CDATA[
+							order by a.start_date asc, a.archv_no_
+					 	) row_
+					where rownum <=(#n# + #m#)
+				) re
+			
+			]]> 
+	</select>
+	
+	
+	<select id="getArchvListWithPreNext" resultClass="archvVO">
+		<![CDATA[
+		select 
+			re.*,
+			FC_ARCHV_CATGRY_NAME_LIST(re.catgry_cd) as catgry_name_list,
+			IFNULL((select reg_nm from archv_aprov where archv_no = re.archv_no),'관리자') as reg_nm,
+			(select count(*) from archv_file where archv_no = re.archv_no) as fileCount,
+			(select conts from archv_conts where archv_no = re.archv_no) as conts,
+			(select start_date from archv_evnt_period where archv_no = re.archv_no) as event_start_date,
+			(select end_date from archv_evnt_period where archv_no = re.archv_no) as event_end_date
+		from 
+		(
+	        select a.*,
+			    lead(title,1,'현재 페이지가 마지막 페이지입니다.') over (order by a.archv_no) next_title,
+			    lead(archv_no,1) over (order by a.archv_no) next_archv_no,
+			    lag(title,1,'현재 페이지가 첫 페이지입니다.') over (order by a.archv_no ) pre_title,
+			    lag(archv_no,1) over (order by a.archv_no ) pre_archv_no
+			    from (
+	              select 
+	              		ba.*,
+	              		/*case when ba.opt_no <=4 then 0 else ba.opt_no end as opt*/
+	              		decode(ba.opt_no, 1,0
+	              						, 2,0
+	              						, 3,0
+	              						, 4,0
+	              						, 5,5
+	              						, 6,6
+	              						, 7,7
+	              						, 8,0) as opt
+	                from archv ba,
+	                	 archv_catgry b
+	              where 
+	              	    ba.catgry_cd =b.catgry_cd
+					and b.path like #path#||'%'
+	                and ba.apov_ste = 1    	
+	                and ba.shw_yn =1
+	                and ba.lang = #lang#
+        	)a where a.opt = (select /*case when opt_no <=4 then 0 else opt_no end as opt*/
+        	 						decode(opt_no, 1,0
+			              						, 2,0
+			              						, 3,0
+			              						, 4,0
+			              						, 5,5
+			              						, 6,6
+			              						, 7,7
+			              						, 8,0) as opt
+        						from archv where archv_no = #archv_no#)
+		    
+		)re where archv_no =#archv_no#
+		]]>	
+	</select>
+	
+	<update id="addCount">
+		update archv
+		set archv_cnt = archv_cnt+1
+		where archv_no =#archv_no#
+	</update>
+	
+	<select id="getFileList" resultClass="archvFile"> 
+		select 
+			a.*,
+			b.catgry_cd AS archv_category_type
+		from
+			archv_file a
+			JOIN
+			archv	   b
+			ON
+			a.archv_no = b.archv_no
+		where
+			a.archv_no =#archv_no#
+	</select>
+	
+	<select id="getLinkMenunoList" resultClass="archvMenunoPath">
+		select 
+			(SELECT SUBSTR(MAX(sys_connect_by_path(menutitle, ' > ')),4) path
+				FROM zmenu
+				WHERE menuno = a.menuno
+				START WITH menuparentno = 0
+				CONNECT BY PRIOR menuno = menuparentno
+			) as zmenu_title_path
+			/*ZMENU_TITLE_PATH(a.menuno) as zmenu_title_path*/
+			,a.menuno
+			,(select sitedomain from zsite where siteno = a.siteno) as sitedomain 
+		from
+			zmenu a
+		where
+			a.archv_no =#archv_no#
+	</select>
+	
+	<select id="getFileOne" parameterClass="int" resultClass="archvFileVO">
+		select 
+			  a.* 
+			, b.opt_no
+		from
+			  archv_file a
+			, archv b
+		where
+			a.archv_no = b.archv_no
+		and 
+			file_no = #file_no#
+	</select>
+	
+	<select id="getOrgFilename" resultClass="java.lang.String">
+		select 
+			name
+		from
+			archv_file
+		where
+			realname =#filename#
+		
+	</select>
+	
+	<select id="getLnbCatgryList" remapResults="true" resultClass="archvCatgryVO">
+		select
+			<isEqual property="lang" compareValue="0">
+				a.*,
+			</isEqual>
+			<isNotEqual property="lang" compareValue="0">
+				a.catgry_cd
+				,nvl2($name_cont$,$name_cont$,a.name) as name
+				,reg_date
+				,prnt_catgry_cd
+				,path,
+			</isNotEqual>
+			level
+		FROM
+  			archv_catgry a
+		START WITH path = #path#
+		CONNECT BY  prnt_catgry_cd  = PRIOR catgry_cd
+		order siblings by a.catgry_cd
+	</select>
+	
+	<select id="getArchvCatgryNameListByPath" resultClass="java.lang.String">
+		select FC_ARCHV_CATGRY_NAME_LIST_LANG(catgry_cd,#lang#) 
+		from(
+			select catgry_cd from archv_catgry where path = #path#
+		)
+	</select>
+	
+	<select id="getContsByArchv_no" resultClass="java.lang.String">
+		select 
+			conts 
+		from archv_conts 
+		where archv_no = #archv_no#
+	</select>
+	<select id="getRltdByMenunoAndSiteno" resultClass="archvRltdVO">
+		select
+			a.*,
+			b.catgry_cd,
+			b.opt_no,
+			/*FC_ARCHV_CATGRY_NAME_LIST(b.catgry_cd) as catgry_name_list,*/
+			b.title
+		FROM
+  			archv_rltd a,
+  			archv b
+		where
+			a.menuno = #menuno#
+		and a.siteno = #siteno#
+		and a.archv_no = b.archv_no
+		order by b.archv_no_
+	</select>
+	
+	<select id="getArchv" resultClass="archvVO">
+		select
+			  b.archv_no
+			  ,b.archv_cnt
+			  ,DATE_FORMAT(b.start_date,'%Y-%m-%d') as start_date
+			  ,b.lang
+			  ,b.title
+			  ,b.reg_date
+			  ,b.apov_ste
+			  ,b.sumup
+			  ,b.vdo_url
+			  ,b.shw_yn
+			  ,b.evnt_cd_no
+			  ,b.catgry_cd
+			  ,b.opt_no
+			  ,b.archv_no_
+			  ,IFNULL((select conts from archv_conts where archv_no = b.archv_no),'') as conts
+			  ,FC_ARCHV_CATGRY_NAME_LIST_LANG(b.catgry_cd,b.lang) as catgry_name_list
+			  ,IFNULL((select reg_nm from archv_aprov where archv_no = b.archv_no),'관리자') as reg_nm
+			  ,c.path
+			  ,DATE_FORMAT((select start_date from archv_evnt_period where archv_no =b.archv_no),'%Y-%m-%d') as event_start_date
+			  ,DATE_FORMAT((select end_date from archv_evnt_period where archv_no =b.archv_no),'%Y-%m-%d') as event_end_date
+		FROM
+  			archv b,
+        	archv_catgry c
+		where
+        	b.archv_no =#archv_no#
+    		and b.catgry_cd =c.catgry_cd
+	</select>
+	
+	<delete id="delRltdInMenu">
+		delete from archv_rltd
+		where rltd_no = #rltd_no#
+	</delete>
+	<insert id ="addRltdInMenu">
+		insert into archv_rltd
+		( 
+			rltd_no
+			,menuno
+			,reg_date
+			,siteno
+			,archv_no
+			
+		)
+		values
+		(	
+			rltd_no_seq.nextval
+			,#menuno#
+			,now()
+			,#siteno#
+			,#archv_no#
+			
+		)
+		    		
+	</insert>
+	<delete id="delRltdListInMenu">
+		delete from archv_rltd
+		where siteno = #siteno#
+		  and menuno = #menuno#
+	</delete>
+
+
+</sqlMap>

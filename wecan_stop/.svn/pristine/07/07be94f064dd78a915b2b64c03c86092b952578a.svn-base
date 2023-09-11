@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="lastestboard">
+	
+	<typeAlias alias="zLastestBoardVo" type="com.z5.zcms.admsys.lastestboard.domain.ZLastestBoardVo"/>
+	<resultMap id="zLastestBoardVo" class="com.z5.zcms.admsys.lastestboard.domain.ZLastestBoardVo"/>
+	
+	<select id="ZLastestBoard.boardlist"  parameterClass="zLastestBoardVo" resultClass="zLastestBoardVo">
+		<isNotEmpty property="tabno">
+		<isEqual property="tabno" compareValue="1">
+			<![CDATA[
+				select *
+				  from (select row_number() over (order by bbsdatereg desc) as rowno,
+							   bbsno,
+							   siteno,
+							   boardno,
+							   bbstitle,
+							   bbsdatereg
+						  from (select * from notice where bbsno =(select max(bbsno) from notice)
+								union all
+								select * from notice_e where bbsno =(select max(bbsno) from notice_e)
+								union all
+								select * from notice2 where bbsno =(select max(bbsno) from notice2)
+								union all
+								select * from notice2_e where bbsno =(select max(bbsno) from notice2_e)
+								union all
+								select * from notice3 where bbsno =(select max(bbsno) from notice3)
+								union all
+								select * from notice3_e where bbsno =(select max(bbsno) from notice3_e)
+								)
+						)where rowno <= #cnt#
+			]]>	
+		</isEqual>
+		</isNotEmpty>
+	</select>
+	
+	<select id="ZLastestBoard.selectSkin"  parameterClass="zLastestBoardVo" resultClass="java.lang.String">
+		<![CDATA[
+			select skin
+			  from zboard
+			 where boardno = #boardno2#
+		]]>
+	</select>
+	
+	<select id="ZLastestBoard.selectMenuno"  parameterClass="zLastestBoardVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select menuno
+			  from Zboarduse
+			 where siteno = #siteno2#
+			   and boardno = #boardno2#
+		]]>
+	</select>
+</sqlMap>

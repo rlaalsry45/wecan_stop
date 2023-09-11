@@ -1,0 +1,28 @@
+@font-face {
+	font-family:NANUM;
+	src:url('http://192.168.1.98/skin/member/kf/emailskin/font/NANUMGOTHIC.eot');
+	src:local('NanumGothic'),
+		url('http://192.168.1.98/skin/member/kf/emailskin/font/NANUMGOTHIC.eot?#iefix') format('embedded-opentype'),
+		url('http://192.168.1.98/skin/member/kf/emailskin/font/NanumGothic.woff') format('woff');
+}
+@font-face {
+	font-family: 'daumregular';
+	src:url('http://192.168.1.98/skin/member/kf/emailskin/font/daum_regular-webfont.eot');
+	src:url('http://192.168.1.98/skin/member/kf/emailskin/font/daum_regular-webfont.eot?#iefix') format('embedded-opentype'),
+		url('http://192.168.1.98/skin/member/kf/emailskin/font/daum_regular-webfont.woff') format('woff'),
+		url('http://192.168.1.98/skin/member/kf/emailskin/font/daum_regular-webfont.ttf') format('truetype'),
+		url('http://192.168.1.98/skin/member/kf/emailskin/font/daum_regular-webfont.svg#daumregular') format('svg');
+	font-weight:normal;
+	font-style:normal;
+
+}
+@font-face {
+	font-family: 'daumsemibold';
+	src: url('http://192.168.1.98/skin/member/kf/emailskin/font/daum_semibold-webfont.eot');
+	src: url('http://192.168.1.98/skin/member/kf/emailskin/font/daum_semibold-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('http://192.168.1.98/skin/member/kf/emailskin/font/daum_semibold-webfont.woff') format('woff'),
+		 url('http://192.168.1.98/skin/member/kf/emailskin/font/daum_semibold-webfont.ttf') format('truetype'),
+		 url('http://192.168.1.98/skin/member/kf/emailskin/font/daum_semibold-webfont.svg#daumsemibold') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}

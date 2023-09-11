@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="satisfactionResult">
+	<typeAlias alias="satisfactionResultVo" type="com.z5.zcms.admsys.module.domain.SatisfactionResultVo"/>
+	<resultMap id="satisfactionResultVo" class="com.z5.zcms.admsys.module.domain.SatisfactionResultVo"/>
+	
+	<select id="SatisfactionResult.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(1) AS total
+			FROM
+				SATISFACTIONRESULT
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="satisfactionno">
+				<![CDATA[
+					satisfactionno = #satisfactionno#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="askno">
+				<![CDATA[
+					askno = #askno#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="answer">
+				<![CDATA[
+					answer = #answer#
+				]]>
+			</isNotEmpty>
+			<isEmpty prepend="and" property="answer">
+				<![CDATA[
+					answer IS NOT NULL
+				]]>
+			</isEmpty>
+	</select>
+
+	<select id="SatisfactionResult.listSubject" resultClass="satisfactionResultVo">
+		<![CDATA[
+			SELECT
+				no,
+				answer
+			FROM
+				SATISFACTIONRESULT
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="satisfactionno">
+				<![CDATA[
+					satisfactionno = #satisfactionno#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="askno">
+				<![CDATA[
+					askno = #askno#
+				]]>
+			</isNotEmpty>
+			<isEmpty prepend="and" property="answer">
+				<![CDATA[
+					answer IS NOT NULL
+				]]>
+			</isEmpty>
+			<![CDATA[
+				ORDER BY no DESC
+			]]>
+	</select>
+
+	<delete id="SatisfactionResult.satisfactionResultDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				satisfactionresult
+			WHERE
+				satisfactionno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<delete id="SatisfactionResult.satisfactionResultWrite" parameterClass="satisfactionResultVo">
+		<![CDATA[
+			insert into satisfactionresult
+				(
+				counselclassification,
+				counselclassificationnum,
+				satisfactionno, 
+				askno, 
+				answer, 
+				regdate
+			) values(
+				#counselclassification#,
+				#counselclassificationnum#,
+				#satisfactionno#, 
+				#askno#, 
+				#answer#, 
+				now()
+			)
+		]]>
+		
+	</delete>
+	
+	<update id="SatisfactionResult.satisfactionResultTotalUpdate" parameterClass="satisfactionResultVo">
+		<![CDATA[
+			update satisfaction
+			set   total = total+1
+			where satisfactionno = #satisfactionno#
+		]]>
+		
+	</update>
+	
+	<delete id="SatisfactionResult.satisfactionResultChangeDelete" parameterClass="satisfactionResultVo">
+		<![CDATA[
+			DELETE FROM 
+				satisfactionresult
+			WHERE
+				satisfactionno = #satisfactionno#
+			AND askno = #askno#
+		]]>
+	</delete>
+	
+	<update id="SatisfactionResult.satisfactionResultUpdate" parameterClass="satisfactionResultVo">
+		<![CDATA[
+			update satisfactionresult
+			set   askno = #change_askno#
+			where satisfactionno = #satisfactionno#
+			and askno = #askno#
+		]]>
+		
+	</update>
+	
+</sqlMap>

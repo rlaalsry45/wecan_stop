@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZSITE">
+
+	<typeAlias alias="zsiteVo" type="com.z5.zcms.admsys.site.domain.ZsiteVo" />
+	<resultMap id="zsiteVo" class="com.z5.zcms.admsys.site.domain.ZsiteVo" />
+
+	<insert id="zsiteDAO.write">
+		<![CDATA[
+			INSERT INTO ZSITE
+			(
+				sitetitle,
+				sitewebtitle,
+				sitestatus,
+				sitedatereg,
+				userid,
+				sitedomain,
+				redirectuse,
+				redirectmenuno,
+				underCNumber,
+				siteorder
+			)
+			VALUES
+			(
+				#sitetitle#,
+				#sitewebtitle#,
+				#sitestatus#,
+				DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+				#userid#,
+				#sitedomain#,
+				#redirectuse#,
+				#redirectmenuno#,
+				#underCNumber#,
+				#maxno#
+			)
+		]]>
+	</insert>
+
+	<select id="zsiteDAO.listAll" parameterClass="zsiteVo" resultClass="zsiteVo">
+		<![CDATA[
+			SELECT
+				siteno,
+				sitetitle,
+				sitedomain
+			FROM ZSITE
+			ORDER BY siteorder DESC
+		]]>
+	</select>
+
+	<select id="zsiteDAO.list" parameterClass="zsiteVo" resultClass="zsiteVo">
+		<![CDATA[
+			SELECT *
+			FROM
+				(
+					SELECT row_.*,
+							@rownum := @rownum + 1 AS rownum_
+					FROM (
+							SELECT
+								siteno,
+								sitetitle,
+								sitedomain,
+								(SELECT COUNT(*) FROM ZMENU WHERE siteno=a.siteno) cnt,
+								sitestatus,
+								sitedatereg,
+								sitedatemod,
+								siteorder
+							FROM
+								ZSITE a,   (SELECT @rownum := #m#) R
+							WHERE 1=1
+		]]>
+		<isNotEmpty prepend="and" property="cond1">
+						<![CDATA[ to_date($cond1$,'%Y%m%d%H%i%s') BETWEEN to_date(#sdate#||'000000','%Y%m%d%H%i%s')  and  to_date(#edate#||'235959','%Y%m%d%H%i%s')       ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+							<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="sitestatus">
+							<![CDATA[ sitestatus=#sitestatus# ]]>
+		</isNotEmpty>
+		<![CDATA[
+							order by siteorder desc
+							LIMIT #m#, #n#
+						) row_
+					WHERE @rownum < (#n#+#m#)
+				) c
+
+		]]>
+	</select>
+
+	<select id="zsiteDAO.listCount" parameterClass="zsiteVo"
+		resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				zsite
+			where 1 = 1
+		]]>
+		<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[ to_date($cond1$,'%Y%m%d%H%i%s') BETWEEN to_date(#sdate#||'000000','%Y%m%d%H%i%s')  and  to_date(#edate#||'235959','%Y%m%d%H%i%s')       ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="sitestatus">
+				<![CDATA[ sitestatus=#sitestatus# ]]>
+		</isNotEmpty>
+	</select>
+
+	<select id="zsiteDAO.dupCheck" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				zsite
+			WHERE sitedomain = #sitedomain#
+		]]>
+	</select>
+
+	<delete id="zsiteDAO.delete" parameterClass="String">
+		<![CDATA[
+			DELETE
+			FROM ZSITE
+			WHERE siteno
+			IN ($no:String$)
+		]]>
+	</delete>
+
+	<delete id="zsiteDAO.batchdelete" parameterClass="zsiteVo">
+		<![CDATA[
+			DELETE
+			FROM $table$
+			WHERE siteno
+			IN (#nos#)
+		]]>
+	</delete>
+
+	<select id="zsiteDAO.selectbypk" parameterClass="zsiteVo"
+		resultClass="zsiteVo">
+		<![CDATA[
+			SELECT *
+			FROM ZSITE
+			WHERE siteno=#siteno#
+		]]>
+	</select>
+
+	<update id="zsiteDAO.update">
+		<![CDATA[
+			UPDATE ZSITE
+			SET sitetitle=#sitetitle#,
+				sitewebtitle=#sitewebtitle#,
+				sitestatus=#sitestatus#,
+				sitedatemod=DATE_FORMAT(NOW(),'%Y%m%d%H%i%s'),
+				userid=#userid#,
+				sitedomain=#sitedomain#,
+				redirectuse=#redirectuse#,
+				redirectmenuno=#redirectmenuno#,
+				underCNumber=#underCNumber#
+			WHERE siteno=#siteno#
+		]]>
+	</update>
+
+	<update id="zsiteDAO.updatedate">
+		<![CDATA[
+			UPDATE ZSITE SET
+				sitedatemod=DATE_FORMAT(NOW(),'%Y%m%d%H%i%s'),
+				userid=#userid#
+			WHERE siteno=#siteno#
+		]]>
+	</update>
+
+	<select id="zsiteDAO.selectmaxno" parameterClass="zsiteVo" resultClass="Integer">
+		<![CDATA[
+			SELECT (IFNULL(MAX(siteno),0)+1) maxno
+			FROM ZSITE
+		]]>
+	</select>
+
+	<insert id="zsiteDAO.copysite">
+		<![CDATA[
+			INSERT INTO ZSITE
+			(
+				siteno,
+				sitetitle,
+				sitewebtitle,
+				sitestatus,
+				sitedatereg,
+				userid,
+				sitedomain,
+				siteorder,
+				redirectuse,
+				redirectmenuno,
+				undercnumber
+			)
+			SELECT
+				#maxno#,
+				#sitetitle#,
+				sitewebtitle,
+				sitestatus,
+				DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+				#userid#,
+				#sitedomain#,
+				#maxno#,
+				redirectuse,
+				redirectmenuno,
+				undercnumber
+			FROM ZSITE
+			WHERE siteno=#siteno#
+		]]>
+	</insert>
+
+	<insert id="zsiteDAO.copysitecfg">
+		<![CDATA[
+		INSERT INTO ZSITECFG
+		(
+
+			sitecfgzoom,
+			sitecfgprint,
+			sitecfgemail,
+			sitecfgscrap,
+			sitecfgval,
+			sitecfgvalstep,
+			sitecfgvalmin,
+			sitecfgvalmax,
+			sitecfgvalway,
+			sitecfgvalimgorg,
+			sitecfgvalimgsave,
+			sitecfgopinion,
+			sitecfgopinionuser,
+			siteno,
+			/*sitecfgmenu,*/
+			/*sitecfgmenudepth,*/
+			sitecfgmaincss,
+			sitecfgmainjs,
+			sitecfgsubcss,
+			sitecfgsubjs,
+			sitecfgtoptpl,
+			sitecfglefttpl,
+			sitecfgrighttpl,
+			sitecfgbottomtpl,
+			sitecfgmain,
+			userid,
+			sitecfgdatereg,
+			sitecfgdtd,
+			sitecfghtm,
+			sitecfgmeta
+		)
+		SELECT
+
+			sitecfgzoom,
+			sitecfgprint,
+			sitecfgemail,
+			sitecfgscrap,
+			sitecfgval,
+			sitecfgvalstep,
+			sitecfgvalmin,
+			sitecfgvalmax,
+			sitecfgvalway,
+			sitecfgvalimgorg,
+			sitecfgvalimgsave,
+			sitecfgopinion,
+			sitecfgopinionuser,
+			#maxno#,
+			/*sitecfgmenu,*/
+			/*sitecfgmenudepth,*/
+			sitecfgmaincss,
+			sitecfgmainjs,
+			sitecfgsubcss,
+			sitecfgsubjs,
+			sitecfgtoptpl,
+			sitecfglefttpl,
+			sitecfgrighttpl,
+			sitecfgbottomtpl,
+			sitecfgmain,
+			#userid#,
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+			sitecfgdtd,
+			sitecfghtm,
+			sitecfgmeta
+		FROM ZSITECFG
+		WHERE siteno=#siteno#
+		]]>
+	</insert>
+
+	<insert id="zsiteDAO.copymain">
+		<![CDATA[
+		INSERT INTO ZMAIN
+		(
+			maintitle,
+			mainstatus,
+			maincontstype,
+			mainconts,
+			mainstaffid,
+			mainstaffsect,
+			mainstaffname,
+			mainstaffemail,
+			mainstafftel,
+			mainstafffax,
+			mainhis,
+			maindatereg,
+			siteno,
+			userid,
+			mainhit,
+			mainscore,
+			mainscoreentry,
+			mainuse,
+			maintags,
+			maintype
+		)
+		SELECT
+			concat(maintitle, '_copy'),
+			mainstatus,
+			maincontstype,
+			mainconts,
+			mainstaffid,
+			mainstaffsect,
+			mainstaffname,
+			mainstaffemail,
+			mainstafftel,
+			mainstafffax,
+			mainhis,
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+			#maxno#,
+			#userid#,
+			mainhit,
+			mainscore,
+			mainscoreentry,
+			mainuse,
+			maintags,
+			maintype
+		FROM ZMAIN
+		WHERE siteno=#siteno#
+		]]>
+		<selectKey resultClass="int" keyProperty="mainmaxno">
+			<![CDATA[ SELECT @@identity AS mainmaxno ]]>
+		</selectKey>
+	</insert>
+
+	<insert id="zsiteDAO.copymenu">
+		<![CDATA[
+		INSERT INTO ZMENU
+		(
+			menuno,
+			menutitle,
+			menustatus,
+			/*menurank,*/
+			menutype,
+			menusubno,
+			/*menubbsno,*/
+			menulinktarget,
+			menulink,
+			/*menuiframe,*/
+			/*menucontsno,*/
+			/*menutoptype,*/
+			menutop,
+			/*menutopfile,*/
+			/*menubtmtype,*/
+			menubtm,
+			/*menubtmfile,*/
+			menucontstype,
+			menuconts,
+			menustaffid,
+			menustaffsect,
+			menustaffname,
+			menustaffemail,
+			menustafftel,
+			menustafffax,
+			menuhis,
+			menudatereg,
+			siteno,
+			userid,
+			menutopno,
+			menulevel,
+			menustep,
+			menuparentno,
+			/*menucontstext,*/
+			menuhit,
+			menuscore,
+			menuscoreentry,
+			menulinkother,
+			menusubcss,
+			menusubjs,
+			menuttpl,
+			menultpl,
+			menurtpl,
+			menubtpl,
+			menutags,
+			menuintenallinktarget,
+			menuintenallink,
+			menuintenallinkother,
+			authcheck,
+			taskcheck,
+			archv_no,
+			menuarchivepath,
+			rltd_no,
+			rltd_shw_yn,
+			menustaff_use_yn,
+			menusns_use_yn,
+			location_use_yn
+
+		)
+		SELECT
+			menuno,
+			menutitle,
+			menustatus,
+			/*menurank,*/
+			menutype,
+			menusubno,
+			/*menubbsno,*/
+			menulinktarget,
+			menulink,
+			/*menuiframe,*/
+			/*menucontsno,*/
+			/*menutoptype,*/
+			menutop,
+			/*menutopfile,*/
+			/*menubtmtype,*/
+			menubtm,
+			/*menubtmfile,*/
+			menucontstype,
+			menuconts,
+			menustaffid,
+			menustaffsect,
+			menustaffname,
+			menustaffemail,
+			menustafftel,
+			menustafffax,
+			menuhis,
+			DATE_FORMAT(NOW(), '%Y%m%d%H%i%s'),
+			#maxno#,
+			#userid#,
+			menutopno,
+			menulevel,
+			menustep,
+			menuparentno,
+			/*menucontstext,*/
+			menuhit,
+			menuscore,
+			menuscoreentry,
+			menulinkother,
+			menusubcss,
+			menusubjs,
+			menuttpl,
+			menultpl,
+			menurtpl,
+			menubtpl,
+			menutags,
+			menuintenallinktarget,
+			menuintenallink,
+			menuintenallinkother,
+			authcheck,
+			taskcheck,
+			archv_no,
+			menuarchivepath,
+			rltd_no,
+			rltd_shw_yn,
+			menustaff_use_yn,
+			menusns_use_yn,
+			location_use_yn
+		FROM ZMENU
+		WHERE siteno=#siteno#
+		]]>
+	</insert>
+
+	<insert id="zsiteDAO.copycssuse">
+		<![CDATA[
+		INSERT INTO ZCSSUSE
+		(
+			sitetitle,
+			siteno,
+			cssno,
+			userid
+		)
+		SELECT
+			#sitetitle#,
+			#maxno#,
+			cssno,
+			#userid#
+		FROM ZCSSUSE
+		WHERE siteno=#siteno#
+		]]>
+	</insert>
+
+	<insert id="zsiteDAO.copyjsuse">
+		<![CDATA[
+		INSERT INTO ZJSUSE
+		(
+			sitetitle,
+			siteno,
+			jsno,
+			userid
+		)
+		SELECT
+			#sitetitle#,
+			#maxno#,
+			jsno,
+			#userid#
+		FROM ZJSUSE
+		WHERE siteno=#siteno#
+		]]>
+	</insert>
+
+	<insert id="zsiteDAO.copytpluse">
+		<![CDATA[
+		INSERT INTO ZTPLUSE
+		(
+			sitetitle,
+			siteno,
+			tplno,
+			userid
+		)
+		SELECT
+			#sitetitle#,
+			#maxno#,
+			tplno,
+			#userid#
+		FROM ZTPLUSE
+		WHERE siteno=#siteno#
+		]]>
+	</insert>
+
+	<select id="zsiteDAO.swapNum" parameterClass="java.util.Map" resultClass="int">
+		<![CDATA[
+			SELECT IFNULL($func$(siteorder),0) AS maxno
+			FROM ZSITE
+			WHERE siteorder$mark$#siteorder#
+			ORDER BY siteorder DESC
+		]]>
+	</select>
+
+	<update id="zsiteDAO.siteOrder" parameterClass="java.util.Map">
+		<![CDATA[
+			UPDATE ZSITE
+			SET
+				siteorder=
+				(
+					CASE siteorder
+						WHEN $swapNum$ THEN #siteorder#
+						WHEN $siteorder$ THEN #swapNum#
+					END
+				)
+			WHERE siteorder IN ($swapNum$,$siteorder$)
+		]]>
+	</update>
+	<update id="zsiteDAO.updatemain">
+		<![CDATA[
+			UPDATE zmain
+			SET maintitle=#sitetitle#,
+				userid=#userid#
+			WHERE siteno=#siteno#
+		]]>
+	</update>
+
+</sqlMap>

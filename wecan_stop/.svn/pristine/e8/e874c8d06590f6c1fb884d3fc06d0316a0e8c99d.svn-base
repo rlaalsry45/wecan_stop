@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CommonFile">
+
+	<typeAlias alias="fileInfoVo" type="com.z5.zcms.admsys.common.domain.FileInfoVo"/>
+	<resultMap id="fileInfoVo" class="com.z5.zcms.admsys.common.domain.FileInfoVo"/>
+
+ 	<insert id="registrationFileInfo" parameterClass="fileInfoVo">
+ 		<![CDATA[
+			INSERT INTO w_file_info
+			(	
+					file_name
+				,	create_user
+				,	create_date
+			)
+			VALUES
+			(
+					#file_name#
+				,	#create_user#
+				,	NOW()
+			)
+		]]>
+		<selectKey keyProperty="NO" resultClass="Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+ 	</insert>
+ 	
+ 	<select id="retrieveFileNameByNO" parameterClass="int" resultClass="String">
+ 	 	<![CDATA[
+ 	 		SELECT
+ 	 			file_name
+ 	 		FROM
+ 	 			w_file_info
+ 	 		WHERE
+ 	 				DELETE_YN = 'N'
+ 	 			AND	NO = #no#
+		]]> 	 		
+ 	</select>
+ 	
+ 	<delete id="deleteFileIno" parameterClass="int">
+ 	 	<![CDATA[
+ 	 		DELETE FROM w_file_info WHERE NO = #no#
+		]]> 	 	 	
+ 	</delete>
+ 	
+	<select id="retrieveFileCountByNO" parameterClass="fileInfoVo" resultClass="int">
+ 	 	<![CDATA[
+ 	 		SELECT
+ 	 			COUNT(*) + 1
+ 	 		FROM
+ 	 			w_file_info
+ 	 		WHERE
+ 	 				DELETE_YN = 'N'
+ 	 			AND	menu_no = #menu_no#
+ 	 			AND menu_cate = #menu_cate#
+		]]> 	 		
+ 	</select>
+ 	
+ 	<update id="updateFileInfo" parameterClass="fileInfoVo">
+ 	 	<![CDATA[
+ 	 		UPDATE w_file_info
+ 	 			SET
+ 	 				menu_cate = #menu_cate#
+ 	 			,	menu_no = #menu_no#
+ 	 			,	file_seq = #file_seq#
+ 	 			,	update_user = #update_user#
+ 	 			,	update_date = NOW()
+			WHERE
+				NO = #NO#
+		]]>
+ 	</update>
+ 	
+ 	<select id="retrieveFilListByMenuNo" parameterClass="fileInfoVo" resultClass="fileInfoVo">
+ 	 	<![CDATA[
+ 	 		SELECT
+ 	 				NO
+ 	 			,	file_seq
+ 	 			,	file_name
+ 	 		FROM
+ 	 			w_file_info
+ 	 		WHERE
+ 	 				menu_no = #menu_no#
+ 	 			AND	menu_cate = #menu_cate#
+ 	 			AND delete_yn = 'N'
+		]]>
+ 	</select>
+</sqlMap>

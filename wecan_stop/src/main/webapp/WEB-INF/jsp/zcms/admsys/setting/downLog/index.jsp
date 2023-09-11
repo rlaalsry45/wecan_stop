@@ -1,0 +1,108 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../../lnb.jsp" flush="true" />
+<style>
+.graph {height: 20px;background-color: #f5f5f5;border-radius: 4px;margin-bottom: 8px; width:100%}
+.graph-bar.active {-webkit-animation: graph-bar 2s linear infinite;-o-animation: graph-bar 2s linear infinite;animation: graph-bar 2s linear infinite}
+.graph-bar {background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);background-size: 20px 20px}
+.graph-bar {float: left;width: 0;height: 100%;line-height: 20px;color: #fff;text-align: right;background-color: #337ab7;-webkit-transition: all .6s ease;-o-transition: all .6s ease;transition: all .6s ease}
+</style>
+           <div id="contents">
+                    <div class="contents_top">
+						<div class="location">
+							<a href="/admsys/dashboard/index.html">HOME</a> <a href="/admsys/setting/admin/">환경설정</a> <a href="/admsys/setting/log/">접속로그관리</a> <strong> 다운로드로그 </strong>
+						</div>
+					</div>
+                    <div id="content">
+					<form:form modelAttribute="zUserVo" name="frm" method="post">
+					<ul class="homepagebbs">
+					<c:set var="li_title" value="다운로드로그"/>
+						<li class="bg"><h3 class="sub">접속로그관리 : ${li_title }</h3></li>
+						<li>
+		                    <table class="main_table1 bgneno">
+		                        <caption>주제검색</caption>
+		                        <colgroup>
+		                            <col width="10%">
+		                            <col width="90%">
+		                        </colgroup>
+		                        <tbody>
+		                        <tr>
+		                            <th class="">접속일</th>
+		                            <td class="Tbod Tleft">
+		                                <div class="category">
+											<fmt:parseDate value="${input.sdate}" pattern="yyyy-MM-dd" var="isd" />
+											<fmt:parseDate value="${input.edate}" pattern="yyyy-MM-dd" var="ied" />
+											<input type="date" id="d4311" name="sdate" value="<fmt:formatDate type="both" value="${isd}" pattern="yyyy-MM-dd" />" min="1970-01-01" max="2030-12-31" placeholder="년/월/일" style="width: 160px;">~
+											<input type="date" id="d4312" name="edate" value="<fmt:formatDate type="both" value="${ied}" pattern="yyyy-MM-dd" />" min="1970-01-01" max="2030-12-31" placeholder="년/월/일" style="width: 160px;">
+	                                    </div>
+		                            </td>
+		                        </tr>
+		                        <tr>
+		                            <th class="Tbornone">검색어 입력</th>
+		                            <td class="Tleft">
+		                                <select style="height:27px;" name="cond2">
+		                                	<option value="">전체</option>
+		                                	<option value="downid" <c:if test="${input.cond2=='downid'}"><c:out value='selected'/></c:if>>ID</option>
+		                                	<option value="downname" <c:if test="${input.cond2=='downname'}"><c:out value='selected'/></c:if>>이름</option>
+				                            <option value="downip" <c:if test="${input.cond2=='downip'}"><c:out value='selected'/></c:if>>IP</option>
+				                        </select>
+				                        <input type=text name="keyword" value="<c:out value='${input.keyword}' />" class="bor1ddd" style="width:50%;"/>
+		                            </td>
+		                        </tr>
+		                        </tbody>
+		                    </table>
+		                    <div class="btn-c">
+		                        <input class="bt01" type="submit" id="search" title="검색조건에 부합되는 로그를 조회해옵니다." value="검색"/>
+		                    </div>
+		                </li>
+						<li>
+						<div class="top_bt">
+						&nbsp;총 ${input.total}건
+						</div>
+						<div class="main_table">
+                            <!---게시판 영역------------------------->
+                            <table class="main_table1" border="1" cellspacing="1" cellpadding="2" width="100%" summary="다운로드로그 리스트">
+                                <caption>다운로드로그 리스트</caption>
+                                <colgroup>
+                                	<col width="5%"/>
+                                    <col width="10%"/>
+                                    <col width="15%"/>
+                                    <col width="10%"/>
+                                    <col width="15%"/>
+                                    <col width="20%"/>
+                                    <col width="25%"/>
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                    	<th>번호</th>
+                                        <th>일시</th>
+										<th>이름</th>
+									  	<th>IP</th>
+									  	<th>메뉴</th>
+									  	<th>내역</th>
+									  	<th>다운로드 사유</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                	<c:forEach var="data" items="${list}" varStatus="status">
+                                	<tr>
+                                		<td><c:out value='${input.total-(input.pageIndex-1)*input.pageSize-status.index}'/></td>
+                                		<td>${fn:substring(data.downdate, 0, 19)}</td>
+                                    	<td>${data.downname}</td>
+                                		<td>${data.downip}<c:if test="${data.device=='1'}">(PC)</c:if><c:if test="${data.device=='2'}">(MOBILE)</c:if><c:if test="${data.device=='3'}">(TABLET)</c:if></td>
+                                		<td>${data.downmenu}</td>
+                                		<td style="text-align:left">${data.downdetail}</td>
+                                		<td style="text-align:left">${data.downreason}</td>
+                                	</tr>
+                                    </c:forEach>
+                                    <c:if test="${empty list}"><tr><td colspan="7">검색된 결과가 없습니다.</td></tr></c:if>
+                                </tbody>
+                            </table>
+                            <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}'/>
+                        </div><!--/main_table-->
+						</li>
+					</ul>
+					</form:form>
+                    </div><!--/content-->
+  <jsp:include page="../../end.jsp" flush="false" />

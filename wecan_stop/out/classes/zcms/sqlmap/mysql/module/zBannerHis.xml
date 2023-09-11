@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZBannerHis">
+	<typeAlias alias="zBannerHisVo" type="com.z5.zcms.admsys.module.domain.ZBannerHisVo"/>
+	<typeAlias alias="zBannerVo" type="com.z5.zcms.admsys.module.domain.ZBannerVo"/>
+	<resultMap id="zBannerHisVo" class="zBannerHisVo"/>
+	
+	<select id="ZBannerHis.list" parameterClass="zBannerVo" resultClass="zBannerHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZBANNERHIS
+			WHERE
+				bannerno=#bannerno#
+			ORDER BY
+				hisno DESC
+		]]>
+	</select>
+
+	<select id="ZBannerHis.getByPk" parameterClass="zBannerHisVo" resultClass="zBannerHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZBANNERHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</select>
+	
+	<delete id="ZBannerHis.delete" parameterClass="zBannerHisVo">
+		<![CDATA[
+			DELETE FROM 
+				ZBANNERHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</delete>
+	
+	<delete id="ZBannerHis.deleteMuti" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZBANNERHIS
+			WHERE
+				bannerno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<insert id="ZBannerHis.insert" parameterClass="zBannerVo">
+		<![CDATA[
+			INSERT INTO ZBANNERHIS
+			(
+				
+				title,
+				skin,
+				listtype,
+				conts,
+				memo,
+				datereg,
+				datemod,
+				userid,
+				datehis,
+				bannerno
+			)
+			SELECT
+				
+				title,
+				skin,
+				listtype,
+				#conts#
+				memo,
+				datereg,
+				datemod,
+				#userid#,
+				now(),
+				bannerno
+			FROM
+				ZBANNER
+			WHERE
+				bannerno=#bannerno#
+		]]>
+	</insert>
+
+</sqlMap>

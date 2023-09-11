@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZLayerPopup">
+	<typeAlias alias="zLayerPopupVo" type="com.z5.zcms.admsys.module.domain.ZLayerPopupVo"/>
+	<resultMap id="zLayerPopupVo" class="com.z5.zcms.admsys.module.domain.ZLayerPopupVo"/>
+
+	<insert id="ZLayerPopup.popupWrite">
+		<![CDATA[
+			INSERT INTO ZLAYERPOPUP
+			(
+				title,
+				skin,
+				sdate,
+				edate,
+				popupsize,
+				popupposition,
+				today,
+				popupimg,
+				contstype,
+				conts,
+				memo,
+				datereg,
+				userid,
+				popupstatus
+			)
+			VALUES
+			(
+				#title#,
+				#skin#,
+				#sdate#,
+				#edate#,
+				#popupsize#,
+				#popupposition#,
+				#today#,
+				#popupimg#,
+				#contstype#,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				#memo#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#,
+				#popupstatus#
+			)
+		]]>
+	</insert>
+
+	<select id="ZLayerPopup.list" resultClass="zLayerPopupVo">
+		<![CDATA[
+			SELECT
+				layerpopupno,
+				title,
+				sdate,
+				edate,
+				sitetitle,
+				datereg,
+				skin,
+				popupstatus
+			FROM
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								a.*
+								,(SELECT GROUP_CONCAT(SITETITLE) FROM ZLAYERPOPUPUSE where layerpopupno = a.layerpopupno) AS sitetitle
+								/*, get_sitetitle('ZLAYERPOPUPUSE','layerpopupno', a.layerpopupno) as sitetitle*/
+							FROM
+								ZLAYERPOPUP a,   (SELECT @rownum := #m#) R
+							WHERE 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ to_date($cond1$,'%Y%m%d%H%i%s') BETWEEN to_date(#sdate#||'000000','%Y%m%d%H%i%s')  and  to_date(#edate#||'235959','%Y%m%d%H%i%s')       ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							ORDER BY layerpopupno DESC
+							LIMIT #m#, #n#
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+
+			]]>
+	</select>
+
+	<select id="ZLayerPopup.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				ZLAYERPOPUP
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[ to_date($cond1$,'%Y%m%d%H%i%s') BETWEEN to_date(#sdate#||'000000','%Y%m%d%H%i%s')  and  to_date(#edate#||'235959','%Y%m%d%H%i%s')       ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+
+	<select id="ZLayerPopup.getDetailInfo" resultClass="zLayerPopupVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZLAYERPOPUP
+			WHERE
+				layerpopupno=#layerpopupno#
+		]]>
+	</select>
+
+	<delete id="ZLayerPopup.popupDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM
+				ZLAYERPOPUP
+			WHERE
+				layerpopupno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<delete id="ZLayerPopup.popupUseDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM
+				ZLAYERPOPUPUSE
+			WHERE
+				layerpopupno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<update id="ZLayerPopup.update">
+		<![CDATA[
+		UPDATE
+			ZLAYERPOPUP
+		SET
+			title=#title#,
+			skin=#skin#,
+			sdate=#sdate#,
+			edate=#edate#,
+			popupsize=#popupsize#,
+			popupposition=#popupposition#,
+			today=#today#,
+			popupimg=#popupimg#,
+			contstype=#contstype#,
+			conts=
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+			memo=#memo#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#,
+			popupstatus=#popupstatus#
+		WHERE
+			layerpopupno=#layerpopupno#
+		]]>
+	</update>
+
+	<update id="ZLayerPopup.updateAttach">
+		<![CDATA[
+		UPDATE
+			ZLAYERPOPUP
+		SET
+			popupimg='',
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#
+		WHERE
+			layerpopupno=#layerpopupno#
+		]]>
+	</update>
+
+</sqlMap>

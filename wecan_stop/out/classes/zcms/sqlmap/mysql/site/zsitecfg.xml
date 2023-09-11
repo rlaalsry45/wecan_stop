@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Zsitecfg">
+
+	<typeAlias alias="zsitecfgVo" type="com.z5.zcms.admsys.site.domain.ZsitecfgVo" />
+	<resultMap id="zsitecfgVo" class="com.z5.zcms.admsys.site.domain.ZsitecfgVo" />
+
+	<select id="zsitecfgDAO.selectbysiteno" parameterClass="java.lang.Integer" resultClass="zsitecfgVo">
+		SELECT
+            *
+        FROM
+            ZSITECFG
+        WHERE
+            siteno=#siteno#
+	</select>
+
+		<statement id="zsitecfgDAO.write">
+		<![CDATA[
+			INSERT INTO ZSITECFG
+			(
+				siteno,
+				sitecfgzoom,
+				sitecfgprint,
+				sitecfgemail,
+				sitecfgscrap,
+				sitecfgval,
+				sitecfgvalstep,
+				sitecfgvalmin,
+				sitecfgvalmax,
+				sitecfgvalway,
+				sitecfgvalimgorg,
+				sitecfgvalimgsave,
+				sitecfgopinion,
+				sitecfgopinionuser,
+				sitecfgmain,
+				sitecfgmaincss,
+				sitecfgsubcss,
+				sitecfgmainjs,
+				sitecfgsubjs,
+				sitecfgtoptpl,
+				sitecfglefttpl,
+				sitecfgrighttpl,
+				sitecfgbottomtpl,
+				userid,
+				sitecfgdatereg,
+				sitecfgdtd,
+				sitecfghtm,
+				sitecfgmeta
+			)
+			VALUES
+			(
+				#siteno#,
+				#sitecfgzoom#,
+				#sitecfgprint#,
+				#sitecfgemail#,
+				#sitecfgscrap#,
+				#sitecfgval#,
+				#sitecfgvalstep#,
+				#sitecfgvalmin#,
+				#sitecfgvalmax#,
+				#sitecfgvalway#,
+				#sitecfgvalimgorg#,
+				#sitecfgvalimgsave#,
+				#sitecfgopinion#,
+				#sitecfgopinionuser#,
+				#sitecfgmain#,
+				#sitecfgmaincss#,
+				#sitecfgsubcss#,
+				#sitecfgmainjs#,
+				#sitecfgsubjs#,
+				#sitecfgtoptpl#,
+				#sitecfglefttpl#,
+				#sitecfgrighttpl#,
+				#sitecfgbottomtpl#,
+				#userid#,
+				now(),
+				#sitecfgdtd#,
+				#sitecfghtm#,
+				#sitecfgmeta#
+			)
+			ON DUPLICATE KEY UPDATE 
+				sitecfgzoom=#sitecfgzoom#,
+				sitecfgprint=#sitecfgprint#,
+				sitecfgemail=#sitecfgemail#,
+				sitecfgscrap=#sitecfgscrap#,
+				sitecfgval=#sitecfgval#,
+				sitecfgvalstep=#sitecfgvalstep#,
+				sitecfgvalmin=#sitecfgvalmin#,
+				sitecfgvalmax=#sitecfgvalmax#,
+				sitecfgvalway=#sitecfgvalway#,
+				sitecfgvalimgorg=#sitecfgvalimgorg#,
+				sitecfgvalimgsave=#sitecfgvalimgsave#,
+				sitecfgopinion=#sitecfgopinion#,
+				sitecfgopinionuser=#sitecfgopinionuser#,
+				sitecfgmain=#sitecfgmain#,
+				sitecfgmaincss=#sitecfgmaincss#,
+				sitecfgsubcss=#sitecfgsubcss#,
+				sitecfgmainjs=#sitecfgmainjs#,
+				sitecfgsubjs=#sitecfgsubjs#,
+				sitecfgtoptpl=#sitecfgtoptpl#, 
+				sitecfglefttpl=#sitecfglefttpl#,
+				sitecfgrighttpl=#sitecfgrighttpl#,
+				sitecfgbottomtpl=#sitecfgbottomtpl#,
+				userid=#userid#,
+				sitecfgdatemod=now(),
+				sitecfgdtd=#sitecfgdtd#,
+				sitecfghtm=#sitecfghtm#,
+				sitecfgmeta=#sitecfgmeta#
+			
+		]]>
+	</statement> 
+  
+
+</sqlMap>

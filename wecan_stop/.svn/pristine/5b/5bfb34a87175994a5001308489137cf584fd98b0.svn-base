@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZSurveyHis">
+	<typeAlias alias="zSurveyHisVo" type="com.z5.zcms.admsys.module.domain.ZSurveyHisVo"/>
+	<typeAlias alias="zSurveyVo" type="com.z5.zcms.admsys.module.domain.ZSurveyVo"/>
+	<resultMap id="zSurveyHisVo" class="zSurveyHisVo"/>
+	
+	<select id="ZSurveyHis.list" parameterClass="zSurveyVo" resultClass="zSurveyHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZSURVEYHIS
+			WHERE
+				surveyno=#surveyno#
+			ORDER BY
+				hisno DESC
+		]]>
+	</select>
+
+	<select id="ZSurveyHis.getByPk" parameterClass="zSurveyHisVo" resultClass="zSurveyHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZSURVEYHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</select>
+	
+	<delete id="ZSurveyHis.delete" parameterClass="zSurveyHisVo">
+		<![CDATA[
+			DELETE FROM 
+				ZSURVEYHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</delete>
+
+	<delete id="ZSurveyHis.deleteMuti" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZSURVEYHIS
+			WHERE
+				surveyno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<insert id="ZSurveyHis.insert" parameterClass="zSurveyVo">
+		<![CDATA[
+			INSERT INTO ZSURVEYHIS
+			(
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				target,
+				contstype,
+				conts,
+				added,
+				memo,
+				datereg,
+				datemod,
+				userid,
+				total,
+				datehis,
+				surveyno
+			)
+			SELECT
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				target,
+				contstype,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				added,
+				memo,
+				datereg,
+				datemod,
+				#userid#,
+				total,
+				now(),
+				surveyno
+			FROM
+				ZSURVEY
+			WHERE
+				surveyno=#surveyno#
+		]]>
+	</insert>
+
+</sqlMap>

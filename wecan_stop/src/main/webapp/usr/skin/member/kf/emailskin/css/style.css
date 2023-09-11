@@ -1,0 +1,36 @@
+h4.sctit {
+		display:block;
+		padding-top:11px;
+		background:url('http://192.168.1.98/skin/member/kf/emailskin/images/bl_title04.gif') no-repeat left top;
+		color:#000000;
+		font-family:NANUM;
+		font-size:15px;
+		line-height:19px;
+	}
+	p.text {
+		margin-top:15px;
+		font-family:NANUM;
+		font-size:12px;
+		line-height:18px;
+		text-align:justify;
+	}
+	div.email {
+		margin-top:19px;
+		padding:36px 0 37px 140px;
+		border-top:2px solid #000000;
+		border-bottom:1px solid #e0e0e2;
+		background:url('http://192.168.1.98/skin/member/kf/emailskin/images/icon_email.gif') no-repeat 21px 29px;
+		font-family:NANUM;
+		font-size:12px;
+		line-height:18px;
+	}
+	ul.clist {margin-top:14px;}
+	ul.clist li {
+		font-family:NANUM;
+		font-size:12px;
+		line-height:18px;
+	}
+	div.btn-c {
+		margin-top:15px;
+		text-align:center;
+	}

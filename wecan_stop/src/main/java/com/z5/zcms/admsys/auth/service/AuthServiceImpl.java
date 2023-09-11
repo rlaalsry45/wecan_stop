@@ -1,0 +1,104 @@
+package com.z5.zcms.admsys.auth.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.z5.zcms.admsys.auth.dao.AuthDAO;
+import com.z5.zcms.admsys.auth.domain.Auth;
+import com.z5.zcms.admsys.auth.domain.AuthVo;
+import com.z5.zcms.admsys.auth.domain.GAuthEmp;
+import com.z5.zcms.admsys.user.domain.ZUserVo;
+
+import egovframework.rte.fdl.cmmn.AbstractServiceImpl;
+
+@Service
+public class AuthServiceImpl extends AbstractServiceImpl implements AuthService {
+
+	@Autowired
+	private AuthDAO authDAO;
+
+	@Override
+	public List<AuthVo> authList(AuthVo authVo) {
+		return authDAO.authList(authVo);
+	}
+
+	@Override
+	@Transactional
+	public void authListSel(Auth auth) {
+		authDAO.authListSel(auth);
+	}
+
+	@Override
+	@Transactional
+	public void authAdminListSel(Auth auth) {
+		authDAO.authAdminListSel(auth);
+	}
+
+	@Override
+	@Transactional
+	public void authDelete(Auth auth) {
+		authDAO.authDelete(auth);
+	}
+
+	@Override
+	public List<String> authSubMenuList(Auth auth) {
+		return authDAO.authSubMenuList(auth);
+	}
+
+	@Override
+	public List<GAuthEmp> hqList() {
+		return authDAO.hqList();
+	}
+
+	@Override
+	public List<GAuthEmp> deptList(GAuthEmp gAuthEmp) {
+		return authDAO.deptList(gAuthEmp);
+	}
+
+	@Override
+	public List<GAuthEmp> authEmpList(GAuthEmp gAuthEmp) {
+		return authDAO.authEmpList(gAuthEmp);
+	}
+
+	@Override
+	public int listCount(GAuthEmp gAuthEmp) {
+		return authDAO.listCount(gAuthEmp);
+	}
+
+	@Override
+	public void authMutiDelete(Auth auth) {
+		authDAO.authMutiDelete(auth);
+	}
+
+	@Override
+	public List<Integer> authMenus(String authno) {
+		return authDAO.authMenus(authno);
+	}
+	
+	@Override
+	@Transactional
+	public void delete(List<String> arrDeleteNo) {
+		authDAO.delete(arrDeleteNo);
+	}
+
+	@Override
+	public List<ZUserVo> chargeList(ZUserVo zUserVo) {
+		return authDAO.chargeList(zUserVo);
+	}
+
+	@Override
+	public int chargeListCount(ZUserVo zUserVo) {
+		return authDAO.chargeListCount(zUserVo);
+	}
+	
+	@Override
+	public List<GAuthEmp> authEmpListExcel(GAuthEmp gAuthEmp) {
+		gAuthEmp.setM(0);
+		gAuthEmp.setN(99999999);
+		
+		return authDAO.authEmpList(gAuthEmp);
+	}
+}

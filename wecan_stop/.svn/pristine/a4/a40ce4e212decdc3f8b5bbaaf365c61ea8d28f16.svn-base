@@ -1,0 +1,325 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="java.util.*, java.text.*"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../lnb.jsp" flush="true" />
+            <div id="contents">
+                <form:form modelAttribute="ZStatisticsMngVo" name="frm" method="post">
+                    <div class="contents_top">
+                        <div class="location">
+                            <a href="/admsys/statisticsmng/">HOME</a> <a href="/admsys/statisticsmng/index.html">통계관리</a> <strong>만족도조사</strong>
+                        </div>
+                        <%--<div class="TopSearch">
+                            <span>SEARCH AREA</span>
+                            <select style="height:27px;" name="cond1">
+                                <option value="term" <c:if test="${input.cond1=='term'}"><c:out value='selected' /></c:if>>기간</option>
+                            </select>
+                              <input id="d4311" name="sdate" class="Wdate" type="text" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'d4312\')}'})" value="<c:out value='${input.sdate}' />" style="width:128px;"/>
+                                        ~
+                              <input id="d4312" name="edate" class="Wdate" type="text" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'d4311\')}'})" value="<c:out value='${input.edate}' />" style="width:128px;"/>
+                            <input class="bt01" type="submit" value="검색" onclick="/admsys/statisticsmng/index.html" />
+                        </div> --%>
+                    </div>
+                    <div id="content">
+                        <ul class="homepagebbs">
+                            <li class="bg"><h3 class="sub">만족도조사</h3></li> 
+                            <li>
+                                <div class="main_table">
+                                	<div style="width:600px;height:300px;border:1px solid;margin-left:100px;">
+                                		<p style="margin-top:20px;">기간 : 
+                                		<fmt:parseDate value="${input.sdate}" pattern="yyyy-MM-dd" var="isd" />
+										<fmt:parseDate value="${input.edate}" pattern="yyyy-MM-dd" var="ied" />
+										<input type="date" id="d4311" name="sdate" value="<fmt:formatDate type="both" value="${isd}" pattern="yyyy-MM-dd" />" min="1970-01-01" max="2030-12-31" placeholder="년/월/일" style="width: 160px;">~
+										<input type="date" id="d4312" name="edate" value="<fmt:formatDate type="both" value="${ied}" pattern="yyyy-MM-dd" />" min="1970-01-01" max="2030-12-31" placeholder="년/월/일" style="width: 160px;">
+										</p>
+										<p style="margin-top:20px;">기관 :
+											<input type="checkbox" id="org1" name="org1" value="gov" <c:if test="${input.org1 eq 'gov'}">checked</c:if>><label class="on" for="org1">공공</label>
+											<input type="checkbox" id="org2" name="org2" value="priv" <c:if test="${input.org2 eq 'priv'}">checked</c:if>><label class="on" for="org2">민간</label>
+										</p>
+										<p style="margin-top:20px;">유형 :
+											<input type="checkbox" id="type1" name="type1" value="A" <c:if test="${input.type1 eq 'A'}">checked</c:if>><label class="on" for="type1">여성가족부신고사건(A)</label>
+											<input type="checkbox" id="type2" name="type2" value="B" <c:if test="${input.type2 eq 'B'}">checked</c:if>><label class="on" for="type2">기관신청건(B)</label>
+											<input type="checkbox" id="type3" name="type3" value="C" <c:if test="${input.type3 eq 'C'}">checked</c:if>><label class="on" for="type3">여가부선정/타부처이관(C)</label>
+											<input type="checkbox" id="type4" name="type4" value="D" <c:if test="${input.type4 eq 'D'}">checked</c:if>><label class="on" for="type4">현장점검(D)</label>
+										</p>
+										<p style="margin-top:20px;">기관코드 :
+											<input type="text" id="orgId" name="orgId" value="${input.orgId}">
+										</p>
+										<p style="margin-top:20px;">진단일지번호(사건번호) :
+											<input type="text" id="consulting_application_no" name="consulting_application_no" value="${input.consulting_application_no}">
+										</p>
+										<br>
+										<p style="float:right;margin-right:20px;">
+											<a class="btmore05" href="javascript:search();">조회</a>
+										</p>
+                                	</div>
+                                    <!--게시판 영역-->
+                                    <table class="main_table1" summary="구분, 만족도조사 항목">
+                                        <caption>만족도조사 1번항목</caption>
+                                        <colgroup>
+                                            <col />
+                                            <col width="30%" />
+                                            <col width="10%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>질문</th>
+                                                <th>답</th>
+                                                <th>선택</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                             	<td rowspan="6" style="text-align:left;">1. 귀 기관의 유형은 무엇인가요?</td>
+                                             	<td>1.중앙행정기관</td>
+                                                <td>${getSatisfaction1.satisfactionCnt01}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td>2.지방자치단체</td>
+                                                <td>${getSatisfaction1.satisfactionCnt02}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td>3.공공기관</td>
+                                                <td>${getSatisfaction1.satisfactionCnt03}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td>4.초·중·고교</td>
+                                                <td>${getSatisfaction1.satisfactionCnt04}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td>5.대학교</td>
+                                                <td>${getSatisfaction1.satisfactionCnt05}</td>
+                                            </tr>
+                                            <tr>
+                                             	<td>6.기타</td>
+                                                <td>${getSatisfaction1.satisfactionCnt06}</td>
+                                            </tr>
+                                            <c:forEach var="each" items="${getSatisfaction1OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno1opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                            <tr>
+                                            	<td rowspan="5" style="text-align:left;">2. 조직문화 진단 실시 전 계획과 내용에 대해 충분한 안내를 받으셨습니다?</td>
+                                                <td>1.매우 그렇다</td>
+                                                <td>${getSatisfaction2.satisfactionCnt01}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>2.그렇다</td>
+                                                <td>${getSatisfaction2.satisfactionCnt02}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>3.보통이다</td>
+                                                <td>${getSatisfaction2.satisfactionCnt03}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>4.그렇지 않다</td>
+                                                <td>${getSatisfaction2.satisfactionCnt04}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>5.매우 그렇지 않다</td>
+                                                <td>${getSatisfaction2.satisfactionCnt05}</td>
+                                        	</tr>
+                                        	<c:forEach var="each" items="${getSatisfaction2OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno2opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                        	<tr>
+                                            	<td rowspan="5" style="text-align:left;">3. 이번 조직문화 진단 진행방식에 만족하셨습니까?</td>
+                                                <td>1.매우 그렇다</td>
+                                                <td>${getSatisfaction3.satisfactionCnt01}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>2.그렇다</td>
+                                                <td>${getSatisfaction3.satisfactionCnt02}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>3.보통이다</td>
+                                                <td>${getSatisfaction3.satisfactionCnt03}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>4.그렇지 않다</td>
+                                                <td>${getSatisfaction3.satisfactionCnt04}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>5.매우 그렇지 않다</td>
+                                                <td>${getSatisfaction3.satisfactionCnt05}</td>
+                                        	</tr>
+                                        	<c:forEach var="each" items="${getSatisfaction3OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno3opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                            <tr>
+                                            	<td rowspan="5" style="text-align:left;">4. 자문위원단의 전문성에 만족하셨습니까?</td>
+                                                <td>1.매우 그렇다</td>
+                                                <td>${getSatisfaction4.satisfactionCnt01}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>2.그렇다</td>
+                                                <td>${getSatisfaction4.satisfactionCnt02}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>3.보통이다</td>
+                                                <td>${getSatisfaction4.satisfactionCnt03}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>4.그렇지 않다</td>
+                                                <td>${getSatisfaction4.satisfactionCnt04}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>5.매우 그렇지 않다</td>
+                                                <td>${getSatisfaction4.satisfactionCnt05}</td>
+                                        	</tr>
+                                        	<c:forEach var="each" items="${getSatisfaction4OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno4opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                            <tr>
+                                            	<td rowspan="5" style="text-align:left;">5. 자문위원단의 조직문화 진단을 위한 사전 준비가 충분했다고 느끼셨습니까?</td>
+                                                <td>1.매우 그렇다</td>
+                                                <td>${getSatisfaction5.satisfactionCnt01}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>2.그렇다</td>
+                                                <td>${getSatisfaction5.satisfactionCnt02}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>3.보통이다</td>
+                                                <td>${getSatisfaction5.satisfactionCnt03}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>4.그렇지 않다</td>
+                                                <td>${getSatisfaction5.satisfactionCnt04}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>5.매우 그렇지 않다</td>
+                                                <td>${getSatisfaction5.satisfactionCnt05}</td>
+                                        	</tr>
+                                        	<c:forEach var="each" items="${getSatisfaction5OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno5opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                            <tr>
+                                            	<td rowspan="5" style="text-align:left;">6. 이번 조직문화 진단을 통해 그간 궁금했던 사항들을 해결하는 데에 도움이 되었습니까?</td>
+                                                <td>1.매우 그렇다</td>
+                                                <td>${getSatisfaction6.satisfactionCnt01}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>2.그렇다</td>
+                                                <td>${getSatisfaction6.satisfactionCnt02}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>3.보통이다</td>
+                                                <td>${getSatisfaction6.satisfactionCnt03}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>4.그렇지 않다</td>
+                                                <td>${getSatisfaction6.satisfactionCnt04}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>5.매우 그렇지 않다</td>
+                                                <td>${getSatisfaction6.satisfactionCnt05}</td>
+                                        	</tr>
+                                        	<c:forEach var="each" items="${getSatisfaction6OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno6opinion}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                            <tr>
+                                            	<td rowspan="5" style="text-align:left;">7. 이번 조직문화 진단을 통해 습득한 내용을 관련 업무에 활용할 수 있다고 생각하십니까?</td>
+                                                <td>1.매우 그렇다</td>
+                                                <td>${getSatisfaction7.satisfactionCnt01}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>2.그렇다</td>
+                                                <td>${getSatisfaction7.satisfactionCnt02}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>3.보통이다</td>
+                                                <td>${getSatisfaction7.satisfactionCnt03}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>4.그렇지 않다</td>
+                                                <td>${getSatisfaction7.satisfactionCnt04}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>5.매우 그렇지 않다</td>
+                                                <td>${getSatisfaction7.satisfactionCnt05}</td>
+                                        	</tr>
+                                        	<c:forEach var="each" items="${getSatisfaction7OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno7opinion}</td>
+			                                </tr> 
+			                                </c:forEach> 
+                                            <tr>
+                                            	<td rowspan="5" style="text-align:left;">8. 이번 조직문화 진단에서 특별히 도움이 되었던 분야는 무엇인가요?</td>
+                                                <td>1.매우 그렇다</td>
+                                                <td>${getSatisfaction8.satisfactionCnt01}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>2.그렇다</td>
+                                                <td>${getSatisfaction8.satisfactionCnt02}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>3.보통이다</td>
+                                                <td>${getSatisfaction8.satisfactionCnt03}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>4.그렇지 않다</td>
+                                                <td>${getSatisfaction8.satisfactionCnt04}</td>
+                                        	</tr>
+                                        	<tr>
+                                                <td>5.매우 그렇지 않다</td>
+                                                <td>${getSatisfaction8.satisfactionCnt05}</td>
+                                        	</tr>
+                                        	<c:forEach var="each" items="${getSatisfaction8OpinionList}">
+			                                <tr>
+			                                    <td>${each.askno8opinion}</td>
+			                                </tr> 
+			                                </c:forEach> 
+			                                <tr>
+                                            	<td style="text-align:left;">9. 이번 조직문화 진단에 개선할 사항이 있다면 자유롭게 말씀해 주세요.</td>
+                                        	</tr>
+                                        	<c:forEach var="each" items="${getSatisfaction9List}">
+			                                <tr>
+			                                    <td>${each.askno9}</td>
+			                                </tr> 
+			                                </c:forEach>
+                                        </tbody>
+                                    </table> 
+<%--                                     <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}' /> --%>
+                                    <!--/게시판 영역-->
+									<!--설명-->
+									<!--<p class="notification_right01">
+										<img src="/cms/image/excla.gif" alt="!">
+										1. [홈페이지 목록/등록] 메뉴에서 [홈페이지등록]을 클릭한 후 관련 정보를 입력 합니다. <br />
+										<img src="/cms/image/excla.gif" alt="!">
+										2. 생성된 홈페이지 목록 우측의  [환경설정]버튼을 클릭하여 홈페이지 제작에 필요한 가장 기본적인 정보를 셑팅합니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										3. [홈페이지 목록/등록] &gt; [홈페이지등록]메뉴에서 홈페이지를 등록하시면 [메뉴/콘텐츠 관리]에서 자동으로 카테고리를 관리할 수 있는 홈페이지 목록이 생성 됩니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										4. 원하시는 홈페이지를 셑팅하기 위해서는 미리 코딩해둔 메인페이지 Html 및 css파일, js파일을 각각 [메인페이지 관리], [CSS관리], [JS관리]에 미리 등록해 두어야 합니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										5. 따로 [메인페이지 관리]에서 메인페이지를 등록하시지 않아도 [메뉴/콘텐츠 관리]메뉴의  메인페이지 역할을 하는 페이지를 생성하여 메뉴리다이렉트 기능을 이용하셔도 무방합니다.
+										</p>-->
+									<!--/설명-->
+                                </div>
+                                <!--/main_table-->
+                            </li>
+                        </ul>
+                        <script type="text/javascript">
+	                        function search(){
+								$("#ZStatisticsMngVo").attr("action","/admsys/statisticsmng/satisfactionrsrch.html");
+								$("#ZStatisticsMngVo").submit();
+							}
+						</script>
+                    </div>
+                    <!--/content-->
+                </form:form>
+            </div>
+            <!--/contents-->
+<jsp:include page="../end.jsp" flush="false" />

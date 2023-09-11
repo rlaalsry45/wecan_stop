@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Zcssuse">
+	
+	<typeAlias alias="zcssuseVo" type="com.z5.zcms.admsys.css.domain.ZcssUseVo"/>
+	<resultMap id="zcssuseVo" class="com.z5.zcms.admsys.css.domain.ZcssUseVo"/>
+
+	<delete id="zcssUseDAO.delete" parameterClass="java.util.List">
+		        DELETE 
+		    		FROM ZCSSUSE 
+		  			where CSSNO in
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+		
+	</delete>	
+	
+	<delete id="zcssUseDAO.deleteOfSite" parameterClass="zcssUseVo">
+		<![CDATA[
+		        DELETE 
+		    		FROM ZCSSUSE 
+		  			WHERE siteno = #siteno#
+		  			and menuno = #menuno#
+		]]>  
+	</delete>	
+	
+	<select id="zcssUseDAO.listCount" parameterClass="zcssUseVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*)
+			FROM
+				ZCSSUSE
+			WHERE CSSNO = #cssno#
+			  AND SITENO = #siteno#
+		]]>
+	</select>
+	
+	<insert id="zcssUseDAO.write">
+		<![CDATA[
+			INSERT INTO ZCSSUSE
+			(
+				cssno
+				,siteno
+				,sitetitle
+				,userid
+				,menuno
+			) VALUES
+			(	
+				#cssno#
+				,#siteno#
+				,(SELECT sitetitle FROM ZSITE WHERE siteno = #siteno#)
+				,#userid#
+				,#menuno#
+			)
+		]]>
+	</insert>
+	
+	
+	
+
+</sqlMap>

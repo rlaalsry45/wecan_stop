@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="accessAuthority">
+    <typeAlias alias="AccessAuthorityVo" type="com.z5.zcms.admsys.ftp.domain.AccessAuthorityVo" />
+    <typeAlias alias="EgovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" />
+    
+    
+	<resultMap id="AccessAuthorityVo" class="com.z5.zcms.admsys.ftp.domain.AccessAuthorityVo"/>
+
+    <select id="accessAuthority.listCount" resultClass="java.lang.Integer">
+        <![CDATA[
+			select
+			count(*) as total
+			
+			from w_function_per_menu_log
+			where 1=1
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<![CDATA[
+				date_format(approval_date,'%Y%m%d') between #sdate# and #edate#
+        	]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="reason">
+			<![CDATA[
+				reason LIKE CONCAT('%',UPPER(#reason#),'%')
+        	]]>
+       		</isNotEmpty>
+       		<isNotEmpty prepend="AND" property="regName">
+			<![CDATA[
+				identification_info LIKE CONCAT('%',UPPER(#regName#),'%')
+        	]]>
+        	</isNotEmpty>	
+
+    </select>
+
+    <select id="accessAuthority.getList" parameterClass="AccessAuthorityVo" resultClass="AccessAuthorityVo">
+        <![CDATA[
+        
+			select
+            	NO,
+            	userId,
+				identification_info AS userName, 
+				permission_info, 
+				permission_type,
+				CASE WHEN permission_type = 'P1' THEN '권한부여'
+					 WHEN permission_type = 'P2' THEN '권한변경'
+					 WHEN permission_type = 'P3' THEN '권한말소'
+				ELSE '' END AS permission_typeName,
+				reason,
+				approval_user, 
+				approval_date
+            from
+                w_function_per_menu_log
+			where 1=1
+        ]]>     
+		   <isNotEmpty prepend="AND" property="sdate">
+			<![CDATA[
+				date_format(approval_date,'%Y%m%d') between #sdate# and #edate#
+        	]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="reason">
+			<![CDATA[
+				reason LIKE CONCAT('%',UPPER(#reason#),'%')
+        	]]>
+       		</isNotEmpty>
+       		<isNotEmpty prepend="AND" property="regName">
+			<![CDATA[
+				identification_info LIKE CONCAT('%',UPPER(#regName#),'%')
+        	]]>
+        	</isNotEmpty>    	        	     		          
+            
+			order by NO desc
+            LIMIT #m#, #n#
+
+    </select>
+   
+ 	<insert id="accessAuthority.actionRegistration" parameterClass="AccessAuthorityVo">
+    	<![CDATA[
+    	insert into w_function_per_menu_log
+            (
+            	userId,
+				identification_info, 
+				permission_info, 
+				permission_type,
+				reason,
+				approval_user,
+				approval_date
+			)
+			values
+			(
+			#userId#,
+			#userName#,
+			#permission_info#,
+			#permission_type#,
+			#reason#,
+			#approval_user#,
+			NOW()
+			)
+				                
+        ]]>
+        <selectKey keyProperty="NO" resultClass="Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+    	
+    </insert>
+    
+    <select id="accessAuthority.view" parameterClass="AccessAuthorityVo" resultClass="AccessAuthorityVo">
+        <![CDATA[
+        
+            select
+				NO,
+				userId,
+				identification_info AS userName, 
+				permission_info, 
+				permission_type,
+				reason
+			
+            from
+                w_function_per_menu_log 
+            where 1=1
+            and NO = #NO#
+        ]]>
+
+    </select>
+    
+    <select id="accessAuthority.getUrlList" parameterClass="AccessAuthorityVo" resultClass="AccessAuthorityVo">
+        <![CDATA[
+        
+            select
+				URLNO,
+				URLTITLE
+            from
+                zadmin_url 
+            where 1=1
+            and URLPARENTNO in (38, 39, 41, 27)
+            and VIEW_YN = 'Y'
+            order by URLTOPNO
+        ]]>
+
+    </select>
+    
+    <insert id="accessAuthority.actionPermissionRegistration" parameterClass="AccessAuthorityVo">
+    	<![CDATA[
+    	insert into w_function_per_menu_permission_info
+            (
+            	userId,
+            	URLNO,
+				FUNCTION_TYPE, 
+				ALLOW_YN,
+				create_user,
+				create_date
+			)
+			values
+			(
+			#userId#,
+			#URLNO#,
+			#FUNCTION_TYPE#,
+			'Y',
+			#create_user#,
+			NOW()
+			)
+				                
+        ]]>
+    	
+    </insert>
+    
+    <delete id="accessAuthority.actionPermissionDeletion" parameterClass="AccessAuthorityVo">
+    	<![CDATA[
+    		delete 
+    		from w_function_per_menu_permission_info
+    		where userId = #userId#
+    		  and URLNO = #URLNO#
+    		  and FUNCTION_TYPE = #FUNCTION_TYPE#
+    	]]>
+    	
+    </delete>
+    
+    <select id="accessAuthority.permissionCount" parameterClass="AccessAuthorityVo" resultClass="java.lang.Integer">
+        <![CDATA[
+        
+            select
+				count(*) as cnt
+            from
+                w_function_per_menu_permission_info 
+            where userId = #userId#
+    		  and URLNO = #URLNO#
+    		  and FUNCTION_TYPE = #FUNCTION_TYPE#
+        ]]>
+
+    </select>
+    
+    <select id="accessAuthority.getPermission" parameterClass="AccessAuthorityVo" resultClass="AccessAuthorityVo">
+        <![CDATA[
+        
+            select
+				  userId,
+				  URLNO,
+				  FUNCTION_TYPE
+            from
+                w_function_per_menu_permission_info 
+            where userId = #userId#
+    		  and URLNO = #URLNO#
+        ]]>
+
+    </select>
+    
+    <select id="accessAuthority.authority_excel" parameterClass="AccessAuthorityVo" resultClass="EgovMap">
+        <![CDATA[
+        
+			select
+            	NO,
+            	userId,
+				identification_info AS userName, 
+				permission_info, 
+				permission_type,
+				CASE WHEN permission_type = 'P1' THEN '권한부여'
+					 WHEN permission_type = 'P2' THEN '권한변경'
+					 WHEN permission_type = 'P3' THEN '권한말소'
+				ELSE '' END AS permission_typeName,
+				reason,
+				approval_user, 
+				date_format(approval_date , '%Y-%m-%d') as approval_date
+            from
+                w_function_per_menu_log
+			where 1=1
+        ]]>     
+		   <isNotEmpty prepend="AND" property="sdate">
+			<![CDATA[
+				date_format(approval_date,'%Y%m%d') between #sdate# and #edate#
+        	]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="reason">
+			<![CDATA[
+				reason LIKE CONCAT('%',UPPER(#reason#),'%')
+        	]]>
+       		</isNotEmpty>
+       		<isNotEmpty prepend="AND" property="regName">
+			<![CDATA[
+				identification_info LIKE CONCAT('%',UPPER(#regName#),'%')
+        	]]>
+        	</isNotEmpty>    	        	     		          
+            
+			order by NO desc
+            LIMIT #m#, #n#
+
+    </select>
+    
+    
+</sqlMap>

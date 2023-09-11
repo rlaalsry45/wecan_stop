@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <bean id="profiles" class="java.lang.Boolean">
+        <constructor-arg value="#{systemProperties['profiles.private'] ?: false}" />
+    </bean>
+
+    <bean id="egov.propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath:/egovframework/egovProps/#{profiles ? 'private' : 'globals'}.properties"/>
+    </bean>
+
+    <!-- DataSource -->
+    <alias name="dataSource-${Globals.db.type}" alias="egov.dataSource"/>
+    <!-- <alias name="dataSource-${Globals.db2.type}" alias="egov.dataSource2"/> -->
+
+    <!-- MySql -->
+    <bean id="dataSource-mysql" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${Globals.db.driver}"/>
+        <property name="url" value="${Globals.db.url}"/>
+        <property name="username" value="${Globals.db.username}"/>
+        <property name="password" value="${Globals.db.password}"/>
+        <property name="initialSize" value="10"/>
+        <property name="minIdle" value="10"/>
+        <property name="maxIdle" value="100"/>
+        <property name="maxActive" value="100"/>
+        <property name="maxWait" value="10000"/>
+        <property name="validationQuery" value="select 1"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="timeBetweenEvictionRunsMillis" value="7200000"/>
+        <property name="minEvictableIdleTimeMillis" value="-1"/>
+    </bean>
+
+    <!-- Oracle 
+    <bean id="dataSource-oracle" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${Globals.db2.driver}" />
+        <property name="url" value="${Globals.db2.url}" />
+        <property name="username" value="${Globals.db2.username}" />
+        <property name="password" value="${Globals.db2.password}" />
+        <property name="initialSize" value="10" />
+        <property name="minIdle" value="10" />
+        <property name="maxIdle" value="100" />
+        <property name="maxActive" value="100" />
+        <property name="maxWait" value="30" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="30" />
+    </bean>-->
+</beans>

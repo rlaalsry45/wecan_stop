@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZBanner">
+	<typeAlias alias="zBannerVo" type="com.z5.zcms.admsys.module.domain.ZBannerVo"/>
+	<resultMap id="zBannerVo" class="com.z5.zcms.admsys.module.domain.ZBannerVo"/>
+	
+	<insert id="ZBanner.bannerWrite">
+		<![CDATA[
+			INSERT INTO ZBANNER
+			(
+				
+				title,
+				skin,
+				linktype,
+				imgsize,
+				conts,
+				memo,
+				datereg,
+				userid,
+				random
+			)
+			VALUES
+			(
+				
+				#title#,
+				#skin#,
+				#linktype#,
+				#imgsize#,
+				#conts#,
+				#memo#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#,
+				#random#
+			)
+		]]>
+	</insert>
+	
+	<select id="ZBanner.list" resultClass="zBannerVo">
+		<![CDATA[
+			SELECT
+				bannerno,
+				title,
+				sitetitle,
+				datereg,
+				skin,
+				random
+			FROM 
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								a.*
+								,(SELECT GROUP_CONCAT(SITETITLE) FROM ZBANNERUSE where bannerno = a.bannerno) AS sitetitle
+								/*, get_sitetitle('ZBANNERUSE','bannerno', a.bannerno) as sitetitle*/
+							FROM
+								ZBANNER a,   (SELECT @rownum := #m#) R
+							WHERE 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond3">
+								<![CDATA[ bannerno IN (SELECT bannerno FROM ZBANNERUSE WHERE siteno = #cond3#) ]]>
+							</isNotEmpty>
+							
+							
+			<![CDATA[
+							ORDER BY bannerno DESC
+							LIMIT #m#, #n#
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+			
+			]]> 
+	</select>
+	
+	<select id="ZBanner.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				ZBANNER
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond3">
+				<![CDATA[ bannerno IN (SELECT bannerno FROM ZBANNERUSE WHERE siteno = #cond3#) ]]>
+			</isNotEmpty>
+	</select>
+
+	<select id="ZBanner.getDetailInfo" resultClass="zBannerVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM
+				ZBANNER
+			WHERE
+				bannerno=#bannerno#
+		]]>
+	</select>
+	
+	<delete id="ZBanner.bannerDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZBANNER
+			WHERE
+				bannerno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<delete id="ZBanner.bannerUseDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZBANNERUSE
+			WHERE
+				bannerno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<update id="ZBanner.update">
+		<![CDATA[
+		UPDATE
+			ZBANNER
+		SET
+			title=#title#,
+			skin=#skin#,
+			linktype=#linktype#,
+			conts=#conts#,
+			imgsize=#imgsize#,
+			memo=#memo#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#,
+			random=#random#
+		WHERE
+			bannerno=#bannerno#
+		]]>
+	</update>
+	
+	<select id="ZBanner.contsList" resultClass="zBannerVo" parameterClass="java.util.List">
+		<![CDATA[
+			SELECT 
+				conts
+			FROM
+				zbanner
+			WHERE
+				bannerno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</select>
+	
+	
+	
+	<select id="listStatsCount" resultClass="java.lang.Integer">
+		<![CDATA[
+		
+			select count(c.total) AS total
+				from (
+				
+					SELECT
+						COUNT(*) AS total
+					FROM
+						tbl_stats_banner
+					WHERE bannerno = #bannerno#
+			
+			]]>
+				<isNotEmpty prepend="and" property="cond1">
+					<![CDATA[
+						$cond1$ >= #sdate# AND $cond1$ <= #edate#
+					]]>
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="cond2">
+					<![CDATA[
+						UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%'
+					]]>
+				</isNotEmpty>
+				
+				GROUP BY url   
+			) as c	
+			
+	</select>
+	
+	
+	<select id="listStats" resultClass="zBannerVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM 
+				(
+					SELECT
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					FROM
+						(
+							SELECT
+								seq
+								,bannerno
+								,regdate
+								,title
+								,url
+							    ,sum(click) AS click
+							FROM
+								tbl_stats_banner,   (SELECT @rownum := #m#) R
+							WHERE bannerno = #bannerno#
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							GROUP BY url
+							ORDER BY seq DESC
+						) row_
+					WHERE
+						@rownum < (#n#+#m#)
+				)t
+			
+			]]> 
+	</select>
+	
+	<select id="listAllStats" resultClass="zBannerVo">
+		SELECT seq
+			  ,bannerno
+			  ,DATE_FORMAT(regdate,'%Y-%m-%d') as regdate
+			  ,click
+			  ,title
+			  ,url
+		FROM tbl_stats_banner
+		WHERE 1=1
+		<isNotEqual prepend="and" property="bannerno" compareValue="0">
+			<![CDATA[ bannerno = #bannerno# ]]>
+		</isNotEqual> 
+		<isNotEmpty prepend="and" property="url">
+			<![CDATA[ url = #url# ]]>
+		</isNotEmpty> 
+		<isNotEmpty prepend="and" property="title">
+			<![CDATA[ title = #title# ]]>
+		</isNotEmpty> 
+		<isNotEmpty prepend="and" property="cond1">
+			<![CDATA[ 
+				DATE_FORMAT($cond1$,'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d') 
+			and DATE_FORMAT($cond1$,'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d') 
+			]]>
+		</isNotEmpty>
+		<isEmpty prepend="and" property="cond1">
+			DATE_FORMAT(regdate,'%Y%m%d') = DATE_FORMAT(now(),'%Y%m%d')
+		</isEmpty>
+	</select>
+	<update id="updateStats">
+		<![CDATA[
+		update tbl_stats_banner
+		   set click = #click#
+		 where bannerno = #bannerno#
+		 AND   url = #url#
+		 and DATE_FORMAT(regdate,'%Y%m%d') = DATE_FORMAT(now(),'%Y%m%d')
+		]]>
+	</update>
+	
+	<insert id="insertStats">
+		<![CDATA[
+ 			insert into tbl_stats_banner(
+ 				seq,
+				bannerno,
+				regdate,
+				click,
+				title,
+				url
+ 			) values(
+ 				tbl_stats_banner_seq.nextval,
+ 				#bannerno#,
+ 				now(),
+ 				'1',
+ 				#title#,
+				#url#
+ 			)
+		]]>
+	</insert>
+
+</sqlMap>

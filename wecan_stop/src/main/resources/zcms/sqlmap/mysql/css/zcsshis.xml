@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZcssHis">
+	
+	<typeAlias alias="zcssHisVo" type="com.z5.zcms.admsys.css.domain.ZcssHisVo"/>
+	<resultMap id="zcssHisVo" class="com.z5.zcms.admsys.css.domain.ZcssHisVo"/>
+	<resultMap id="zcssVo" class="com.z5.zcms.admsys.css.domain.ZcssVo"/>
+	
+ 	<select id="zcssHisDAO.list" resultClass="zcssHisVo">
+		<![CDATA[
+ 			SELECT	*
+			FROM ZCSSHIS
+			WHERE CSSNO =#cssno#
+			
+			]]> 
+							
+	</select>	
+
+	
+ 	<select id="zcssHisDAO.selectbypk" parameterClass="zcssHisVo" resultClass="zcssVo">
+		<![CDATA[
+			SELECT 
+					  csshistitle as csstitle
+					, '1' as cssposition
+					, '1' as csstype
+					, '1' as csshis
+					, csshiscontstype as csscontstype
+					, csshisconts as cssconts
+					, csshismemo as cssmemo 
+					, csshisfilesave as cssfilesave
+			FROM ZCSSHIS 
+			WHERE csshisno=#csshisno#
+				]]>
+	</select>
+	
+	<insert id="zcssHisDAO.write">
+		<![CDATA[
+			INSERT INTO ZCSSHIS 
+				( 
+				 csshistitle
+				, csshisdatereg
+				, csshisdatemod
+				, csshisconts
+				, csshisfileorg
+				, csshisfilesave
+				, csshisuserid
+				, csshissiteno
+				, csshismemo
+				, userid
+				, csshisdate
+				, cssno
+				)
+				 SELECT 
+				 	 csstitle
+				 	, cssdatereg
+				 	, cssdatemod
+				 	, cssconts
+				 	, cssfileorg
+				 	, cssfilesave
+				 	, userid
+				 	, siteno
+				 	, cssmemo
+				 	, #userid#
+				 	, date_format(now(),'%Y%m%d%H%i%s')
+				 	, cssno 
+				 FROM ZCSS 
+				 WHERE cssno=#cssno#
+				 
+		]]>
+	</insert>
+	
+	
+	<delete id="zcssHisDAO.delete" parameterClass="zcssHisVo">
+		        DELETE 
+		        FROM ZCSSHIS 
+		        WHERE csshisno=#csshisno#
+
+		
+	</delete>	
+</sqlMap>

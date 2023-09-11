@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZBoardGroup">
+	<typeAlias alias="zBoardGroupVo" type="com.z5.zcms.admsys.board.domain.ZBoardGroupVo"/>
+	<typeAlias alias="zBoardGroupMemberVo" type="com.z5.zcms.admsys.board.domain.ZBoardGroupMemberVo"/>
+	<typeAlias alias="zBoardGroupAdminVo" type="com.z5.zcms.admsys.board.domain.ZBoardGroupAdminVo"/>
+	<resultMap id="zBoardGroupVo" class="zBoardGroupVo"/>
+	<resultMap id="zBoardGroupMemberVo" class="zBoardGroupMemberVo"/>
+	<resultMap id="zBoardGroupAdminVo" class="zBoardGroupAdminVo"/>
+
+	<select id="listCount" parameterClass="zBoardGroupVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT count(*) AS total
+			FROM zboardgroup
+		]]>
+		<isNotEmpty prepend="WHERE" property="keyword">
+		<isEqual property="cond1" compareValue="groupnm">
+		<![CDATA[
+			groupnm LIKE concat('%',UPPER(#keyword#),'%')
+		]]>
+		</isEqual>
+		</isNotEmpty>
+	</select>
+	
+	<resultMap id="groupList" class="zBoardGroupVo">
+		<result column="groupno" property="groupno"/>
+		<result column="groupnm" property="groupnm"/>
+		<result column="keyword" property="keyword"/>
+		<result column="cond1" property="cond1"/>
+		<result column="{groupno=groupno,keyword=keyword,cond1=cond1,cond2=cond2}" property="zBoardGroupMemberVo" select="ZBoardGroup.getBoardGroupMemberList" />
+		<result column="{groupno=groupno,keyword=keyword,cond1=cond1,cond2=cond2}" property="zBoardGroupAdminVo" select="ZBoardGroup.getBoardGroupAdminList" />
+	</resultMap>
+
+	<select id="list" parameterClass="zBoardGroupVo" resultMap="groupList">
+		<![CDATA[
+			SELECT groupno, groupnm, #keyword# keyword, #cond1# cond1, #cond2# cond2
+			FROM zboardgroup
+		]]>
+		<isNotEmpty prepend="WHERE" property="keyword">
+		<isEqual property="cond1" compareValue="groupnm">
+		<![CDATA[
+			groupnm LIKE concat('%',UPPER(#keyword#),'%')
+		]]>
+		</isEqual>
+		</isNotEmpty>
+		<![CDATA[
+			GROUP BY groupno, groupnm
+			ORDER BY groupno
+		]]>
+	</select>
+
+	<select id="getBoardGroupAdminList" parameterClass="zBoardGroupAdminVo" resultClass="zBoardGroupAdminVo">
+		<![CDATA[
+			SELECT c.emp_nm as username FROM ZAUTH_EMP c
+			JOIN
+			(
+				SELECT a.no, a.userno
+				FROM zboardgroupadmin a
+				LEFT JOIN zboardgroup b
+				ON a.groupno = b.groupno
+		]]>
+		<isEqual prepend="WHERE" property="cond2" compareProperty="groupno">
+		<![CDATA[
+				a.groupno = -1
+		]]>
+		</isEqual>
+		<isNotEqual prepend="WHERE" property="cond2" compareProperty="groupno">
+		<![CDATA[
+				a.groupno = #groupno#
+		]]>
+		</isNotEqual>
+		<![CDATA[
+			) d
+			ON d.userno = c.emp_no
+		]]>
+		<isNotEmpty prepend="WHERE" property="keyword">
+		<isEqual property="cond1" compareValue="username">
+		<![CDATA[
+			c.emp_nm LIKE concat('%',UPPER(#keyword#),'%')
+		]]>
+		</isEqual>
+		</isNotEmpty>
+		<![CDATA[
+			ORDER BY d.no
+		]]>
+	</select>
+
+	<select id="getBoardGroupMemberList" parameterClass="zBoardGroupMemberVo" resultClass="zBoardGroupMemberVo">
+		<![CDATA[
+			SELECT c.boardtitle FROM ZBOARD c
+			JOIN
+			(
+				SELECT a.no, a.boardno
+				FROM zboardgroupmember a
+				LEFT JOIN zboardgroup b
+				ON a.groupno = b.groupno
+		]]>
+		<isEqual prepend="WHERE" property="cond2" compareProperty="groupno">
+		<![CDATA[
+				a.groupno = -1
+		]]>
+		</isEqual>
+		<isNotEqual prepend="WHERE" property="cond2" compareProperty="groupno">
+		<![CDATA[
+				a.groupno = #groupno#
+		]]>
+		</isNotEqual>
+		<![CDATA[
+			) d
+			ON d.boardno = c.boardno
+		]]>
+		<isNotEmpty prepend="WHERE" property="keyword">
+		<isEqual property="cond1" compareValue="boardtitle">
+		<![CDATA[
+			c.boardtitle LIKE concat('%',UPPER(#keyword#),'%')
+		]]>
+		</isEqual>
+		</isNotEmpty>
+		<![CDATA[
+			ORDER BY d.no
+		]]>
+	</select>
+
+	<select id="boardGroupDupChk" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT count(*)
+			FROM zboardgroup
+			WHERE groupnm = #groupnm#
+		]]>
+	</select>
+
+	<insert id="boardGroupCreate" parameterClass="zBoardGroupVo">
+		<![CDATA[
+			INSERT INTO zboardgroup
+			(
+				groupnm,
+				datereg,
+				userid
+			)
+			VALUES
+			(
+				#groupnm#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#
+			)
+		]]>
+	</insert>
+<!-- 
+	<select id="getEmpList" resultClass="zBoardGroupAdminVo">
+		<![CDATA[
+			SELECT a.emp_nm AS username, a.emp_no AS userno, IFNULL(b.groupno, -1) groupno FROM ZAUTH_EMP a LEFT JOIN ZBOARDGROUPADMIN b ON a.emp_no=b.userno ORDER BY emp_no DESC
+		]]>
+	</select>
+ -->	
+	<resultMap id="groupInfo" class="zBoardGroupVo">
+		<result column="groupno" property="groupno"/>
+		<result column="groupnm" property="groupnm"/>
+		<result column="{groupno=groupno}" property="zBoardGroupMemberVo" select="ZBoardGroup.getBoardGroupMemberAllList" />
+		<result column="{groupno=groupno}" property="zBoardGroupAdminVo" select="ZBoardGroup.getBoardGroupAdminAllList" />
+	</resultMap>
+
+	<select id="getBoardGroupInfo" parameterClass="java.lang.Integer" resultMap="groupInfo">
+		<![CDATA[
+			SELECT groupno, groupnm
+			FROM zboardgroup
+			WHERE groupno = #groupno#
+		]]>
+	</select>
+
+	<select id="getBoardGroupMemberAllList" parameterClass="zBoardGroupMemberVo" resultClass="zBoardGroupMemberVo">
+		<![CDATA[
+			SELECT a.boardno, a.boardtitle, IFNULL(b.groupno, -1) groupno
+			FROM zboard a
+			LEFT JOIN zboardgroupmember b
+			ON a.boardno = b.boardno and b.groupno = #groupno#
+			ORDER BY b.no
+		]]>
+	</select>
+
+	<select id="getBoardGroupAdminAllList" parameterClass="zBoardGroupAdminVo" resultClass="zBoardGroupAdminVo">
+		<![CDATA[
+			SELECT a.emp_nm AS username, a.emp_id AS userid, IFNULL(b.groupno, -1) groupno
+			FROM zauth_emp a
+			LEFT JOIN zboardgroupadmin b
+			ON a.emp_no = b.userno and b.groupno = #groupno#
+			ORDER BY b.no
+		]]>
+	</select>
+	
+	<update id="boardGroupMemberSet" parameterClass="zBoardGroupVo">
+		<![CDATA[
+			INSERT into zboardgroupmember(
+				groupno,
+				boardno,
+				datereg,
+				userid
+			)
+ 			VALUES(
+				#groupno#,
+				#zBoardGMVo.boardno#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#
+			)
+			ON DUPLICATE KEY
+			UPDATE
+				datemod = date_format(now(),'%Y%m%d%H%i%s'),
+				userid = #userid#
+		]]>
+	
+	<!-- 
+		<![CDATA[
+			MERGE INTO zboardgroupmember a
+			USING
+		]]>
+		<iterate open="(" close=") b" conjunction="UNION ALL" property="zBoardGroupMemberVo">
+		<![CDATA[
+			SELECT 
+				#groupno# AS groupno,
+				#zBoardGroupMemberVo[].boardno# AS boardno
+			FROM db_root
+		]]>
+		</iterate>
+		<![CDATA[
+			ON (a.groupno = b.groupno AND a.boardno = b.boardno AND a.groupno=#groupno#)
+			WHEN NOT MATCHED THEN
+			INSERT VALUES
+			(
+				ZBOARDGROUPMEMBER_SEQ.NEXTVAL,
+				b.groupno,
+				b.boardno,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				'',
+				#userid#
+			)
+			WHEN MATCHED THEN
+			UPDATE
+			SET
+				a.datemod = date_format(now(),'%Y%m%d%H%i%s'),
+				a.userid = #userid#
+		]]> -->
+	</update>
+	
+	<update id="boardGroupAdminSet" parameterClass="zBoardGroupVo">
+	
+		<![CDATA[
+			INSERT into zboardgroupadmin(
+				groupno,
+				userno,
+				datereg,
+				userid
+			)
+ 			VALUES(
+				#groupno#,
+				#zBoardGAVo.userno#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#
+			)
+			ON DUPLICATE KEY
+			UPDATE
+				datemod = date_format(now(),'%Y%m%d%H%i%s'),
+				userid = #userid#
+		]]>
+	
+		<!-- <![CDATA[
+			MERGE INTO zboardgroupadmin a
+			USING
+		]]>
+		<iterate open="(" close=") b" conjunction="UNION ALL" property="zBoardGroupAdminVo">
+		<![CDATA[
+			SELECT 
+				#groupno# AS groupno,
+				#zBoardGroupAdminVo[].userno# AS userno
+			FROM db_root
+		]]>
+		</iterate>
+		<![CDATA[
+			ON (a.groupno = b.groupno AND a.userno = b.userno AND a.groupno=#groupno#)
+			WHEN NOT MATCHED THEN
+			INSERT VALUES
+			(
+				ZBOARDGROUPADMIN_SEQ.NEXTVAL,
+				b.groupno,
+				b.userno,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				'',
+				#userid#
+			)
+			WHEN MATCHED THEN
+			UPDATE
+			SET
+				a.datemod = date_format(now(),'%Y%m%d%H%i%s'),
+				a.userid = #userid#
+		]]> -->
+	</update>
+	
+	<delete id="boardGroupMemberOmitDelete" parameterClass="zBoardGroupVo">
+		<![CDATA[
+			DELETE FROM 
+				zboardgroupmember
+			WHERE
+				groupno = #groupno#
+		]]>
+		<isNotNull property="zBoardGroupMemberVo">
+		<![CDATA[
+			AND ( boardno NOT IN
+		]]>
+		<iterate open="(" close=")" conjunction="," property="zBoardGroupMemberVo">
+		<![CDATA[
+			#zBoardGroupMemberVo[].boardno#
+		]]>
+		</iterate>
+		<![CDATA[ OR boardno IS NULL) ]]>
+		</isNotNull>
+	</delete>
+		
+	<delete id="boardGroupAdminOmitDelete" parameterClass="zBoardGroupVo">
+		<![CDATA[
+			DELETE FROM 
+				zboardgroupadmin
+			WHERE
+				groupno = #groupno#
+		]]>
+		<isNotNull property="zBoardGroupAdminVo">
+		<![CDATA[
+			AND ( userno NOT IN
+		]]>
+		<iterate open="(" close=")" conjunction="," property="zBoardGroupAdminVo">
+		<![CDATA[
+			#zBoardGroupAdminVo[].userno#
+		]]>
+		</iterate>
+		<![CDATA[ OR userno IS NULL) ]]>
+		</isNotNull>
+	</delete>
+	
+	<delete id="boardGroupMutilDelete" parameterClass="zBoardGroupVo">
+		<![CDATA[
+			DELETE FROM
+				ZBOARDGROUP
+			WHERE
+				groupno IN
+		]]>
+		<iterate property="arrDeleteNo" open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<select id="boardGroupAdminCount" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT COUNT(groupno)
+			FROM zboardgroupadmin
+			WHERE userno = #adminno#
+		]]>
+	</select>
+</sqlMap>

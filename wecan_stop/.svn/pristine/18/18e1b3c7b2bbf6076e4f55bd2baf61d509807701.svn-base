@@ -1,0 +1,159 @@
+<%@ page contentType="text/html;charset=utf-8"%>
+<%@ page import="java.util.*, java.text.*"%>
+<%@ include file="/WEB-INF/jsp/zcms/include.jsp" %>
+<jsp:include page="/admsys/header.html" flush="true" />
+<jsp:include page="../lnb.jsp" flush="true" />
+            <div id="contents">
+                <form:form modelAttribute="zsiteVo" name="frm" method="post">
+                    <div class="contents_top">
+                        <div class="location">
+                            <a href="/admsys/consultingmng/">HOME</a> <a href="/admsys/consultingmng/clientmng.html">상담관리</a> <strong>내담자 관리 </strong>
+                        </div>
+                        <div class="TopSearch">
+                            <span>SEARCH AREA</span>
+                            <select style="height:27px;" name="cond1">
+                                <option value="sitedatereg" <c:if test="${input.cond1=='sitedatereg'}"><c:out value='selected' /></c:if>>등록일</option>
+                                <option value="sitedatemod" <c:if test="${input.cond1=='sitedatemod'}"><c:out value='selected' /></c:if>>수정일</option>
+                            </select>
+                               <input id="d4311" name="sdate" class="Wdate" type="text" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'d4312\')}'})" value="<c:out value='${input.sdate}' />" style="width:128px;"/>
+                                        ~
+                                <input id="d4312" name="edate" class="Wdate" type="text" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'d4311\')}'})" value="<c:out value='${input.edate}' />" style="width:128px;"/>
+                            <select style="height:27px;" name="cond2">
+                                <option value="sitetitle" <c:if test="${input.cond2=='sitetitle'}"><c:out value='selected' /></c:if>>제목</option>
+                                <option value="sitedomain" <c:if test="${input.cond2=='sitedomain'}"><c:out value='selected' /></c:if>>도메인</option>
+                            </select>
+                            <input class="bor1ddd" type="text" name="keyword" value="<c:out value='${input.keyword}' />" style="width:128px;"/>
+                            <select style="height:27px;" name="sitestatus">
+                                <option value="" <c:if test="${input.sitestatus==''}"><c:out value='selected' /></c:if>>상태</option>
+                                <option value="1" <c:if test="${input.sitestatus=='1'}"><c:out value='selected' /></c:if>>사용</option>
+                                <option value="2" <c:if test="${input.sitestatus=='2'}"><c:out value='selected' /></c:if>>중지</option>
+                            </select>
+                            <input class="bt01" type="submit" value="검색" onclick="document.forms[0].action='?pageIndex=1'" />
+                        </div>
+                    </div>
+                    <div id="content">
+                        <ul class="homepagebbs">
+                            <li class="bg"><h3 class="sub">담당자별 상담관리 목록</h3><a class="btmore03" href="/admsys/consultingmng/clientmng.html">+ 홈페이지등록</a></li>
+                            <li>
+                            <div class="top_bt">
+                                <a class="btmore07" href="javascript:checkAll(true,'siteno');">전체선택</a>
+                                <a class="btmore07" href="javascript:checkAll(false,'siteno');">전체해제</a>
+                                <a class="btmore05" href="javascript:del('siteno');">삭제</a>
+                            </div>
+
+                                <div class="main_table">
+                                    <!--게시판 영역-->
+                                    <table class="main_table1" summary="번호, 그룹, 소속게시판, 그룹관리자, 관리">
+                                        <caption>관리목록</caption>
+                                        <colgroup>
+                                            <col width="5px" />
+                                            <col width="5%" />
+                                            <col />
+                                            <col width="65px" />
+                                            <col width="15%" />
+                                            <col width="7%" />
+                                            <col width="15%" />
+                                            <col width="15%" />
+                                            <col width="200px" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input class="bor_none" id="batch" type="checkbox" onclick="javascript:checkAll('','siteno')" />
+                                                </th>
+                                                <th>번호</th>
+                                                <th>홈페이지명</th>
+                                                <th>순서조정</th>
+                                                <th>도메인</th>
+                                                <th>상태</th>
+                                                <th>등록일</th>
+                                                <th>수정일</th>
+                                                <th>관리</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach items="${list}" var="each" varStatus="loop">
+                                                <c:url value="http://${each.sitedomain}" var="url" />
+                                                <tr>
+                                                    <td>
+                                                        <c:set value="${each.siteno}^${each.sitedomain}" var="k" />
+                                                        <input class="bor_none" name="siteno" value="${k}" type="checkbox" />
+                                                    </td>
+                                                    <td>
+                                                        <c:out value='${input.total-(input.pageIndex-1)*input.pageSize-loop.index}' />
+                                                    </td>
+                                                    <td>
+                                                        <a href="${url}" target="_blank"><c:out value='${each.sitetitle}(${each.cnt})' escapeXml="false" /></a>
+                                                    </td>
+                                                    <td>
+                                                        <c:url value="index.html" var="url">
+                                                            <c:param name="mode" value="order" />
+                                                            <c:param name="siteorder" value="${each.siteorder}" />
+                                                            <c:param name="act" value="" />
+                                                        </c:url>
+                                                        <a class="bt" href="${url}up">올리기</a><a class="next" href="${url}down">내리기</a>
+                                                    </td>
+                                                    <td>
+                                                        <c:out value='${each.sitedomain}' />
+                                                    </td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test='${each.sitestatus=="1"}'><span class="textbt">사용</span></c:when>
+                                                            <c:otherwise><span class="textbt01">중지</span></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>
+                                                        <fmt:parseDate value="${each.sitedatereg}" pattern="yyyyMMddHHmmss" var="isoDate" />
+                                                        <fmt:formatDate type="both" value="${isoDate}" pattern="yyyy-MM-dd HH:mm:ss" />
+                                                    </td>
+                                                    <td>
+                                                        <fmt:parseDate value="${each.sitedatemod}" pattern="yyyyMMddHHmmss" var="isoDate" />
+                                                        <fmt:formatDate type="both" value="${isoDate}" pattern="yyyy-MM-dd HH:mm:ss" />
+                                                    </td>
+                                                    <td>
+                                                        <c:url value="update.html" var="url">
+                                                            <c:param name="siteno" value="${each.siteno}" />
+                                                        </c:url>
+                                                        <a class="btmore05" href="${url}">수정</a>
+                                                        <c:set value="siteno=${each.siteno}" var="k" />
+                                                        <a class="btmore06" href="javascript:openwin('site','${k}')">사이트복사</a>
+                                                        <c:url value="config.html" var="url">
+                                                            <c:param name="siteno" value="${each.siteno}" />
+                                                        </c:url>
+                                                        <a class="btmore04" href="${url}">환경설정</a>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                            <c:if test="${input.total==0}">
+                                                <tr>
+                                                    <td colspan="9" style="padding:20;">기록이 없습니다.</td>
+                                                </tr>
+                                            </c:if>
+                                        </tbody>
+                                    </table>
+                                    <pt:pageOut pageIndex='${input.pageIndex}' pageMax='${input.pageMax}' />
+                                    <!--/게시판 영역-->
+									<!--설명-->
+									<p class="notification_right01">
+										<img src="/cms/image/excla.gif" alt="!">
+										1. [홈페이지 목록/등록] 메뉴에서 [홈페이지등록]을 클릭한 후 관련 정보를 입력 합니다. <br />
+										<img src="/cms/image/excla.gif" alt="!">
+										2. 생성된 홈페이지 목록 우측의  [환경설정]버튼을 클릭하여 홈페이지 제작에 필요한 가장 기본적인 정보를 셑팅합니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										3. [홈페이지 목록/등록] &gt; [홈페이지등록]메뉴에서 홈페이지를 등록하시면 [메뉴/콘텐츠 관리]에서 자동으로 카테고리를 관리할 수 있는 홈페이지 목록이 생성 됩니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										4. 원하시는 홈페이지를 셑팅하기 위해서는 미리 코딩해둔 메인페이지 Html 및 css파일, js파일을 각각 [메인페이지 관리], [CSS관리], [JS관리]에 미리 등록해 두어야 합니다.<br />
+										<img src="/cms/image/excla.gif" alt="!">
+										5. 따로 [메인페이지 관리]에서 메인페이지를 등록하시지 않아도 [메뉴/콘텐츠 관리]메뉴의  메인페이지 역할을 하는 페이지를 생성하여 메뉴리다이렉트 기능을 이용하셔도 무방합니다.
+										</p>
+									<!--/설명-->
+                                </div>
+                                <!--/main_table-->
+                            </li>
+                        </ul>
+                    </div>
+                    <!--/content-->
+                </form:form>
+            </div>
+            <!--/contents-->
+<jsp:include page="../end.jsp" flush="false" />

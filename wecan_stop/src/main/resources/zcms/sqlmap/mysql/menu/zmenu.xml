@@ -1,0 +1,690 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Zmenu">
+	
+	<typeAlias alias="zmenuVo" type="com.z5.zcms.admsys.menu.domain.ZmenuVo"/>
+	<resultMap id="zmenuVo" class="com.z5.zcms.admsys.menu.domain.ZmenuVo"/>
+
+	<insert id="zmenuDAO.write">
+		<![CDATA[
+			INSERT INTO ZMENU
+			(
+				  menuno
+				, menutitle
+				, menustatus
+				, menutype
+				, menusubno
+				, menulinktarget
+				, menulink
+				, menulinkother
+				, menutop
+				, menubtm
+				, menucontstype
+				, menuconts
+				, menustaffid
+				, menustaffsect
+				, menustaffname
+				, menustaffemail
+				, menustafftel
+				, menustafffax
+				, menuhis
+				, siteno
+				, userid
+				, menutopno
+				, menulevel
+				, menustep
+				, menuparentno
+				, menudatereg
+				, menusubcss
+				, menusubjs
+				, menuttpl
+				, menultpl
+				, menurtpl
+				, menubtpl
+				, menutags
+				, menuintenallinktarget
+				, menuintenallink
+				, menuintenallinkother
+				, menuarchivepath
+				, archv_no      
+			) VALUES(
+				#menuno#
+				, #menutitle#
+				, #menustatus#
+				, #menutype#
+				, #menusubno#
+				, #menulinktarget#
+				, #menulink#
+				, #menulinkother#
+				, #menutop#
+				, #menubtm#
+				, #menucontstype#
+				, #menuconts#
+				, #menustaffid#
+				, #menustaffsect#
+				, #menustaffname#
+				, #menustaffemail#
+				, #menustafftel#
+				, #menustafffax#
+				, #menuhis#
+				, #siteno#
+				, #userid#
+				, #menutopno#
+				, #menulevel#
+				, #menustep#
+				, #menuparentno#
+				, date_format(now(),'%Y%m%d%H%i%s')
+				, #menusubcss#
+				, #menusubjs#
+				, #menuttpl#
+				, #menultpl#
+				, #menurtpl#
+				, #menubtpl#
+				, #menutags#
+				, #menuintenallinktarget#
+				, #menuintenallink#
+				, #menuintenallinkother#
+				, #menuarchivepath#
+				, #archv_no# 
+			)
+		]]>
+	</insert>
+	
+	<select id="zmenuDAO.listAll" parameterClass="zmenuVo" resultClass="zmenuVo">
+		<![CDATA[
+			SELECT 
+				*
+			FROM Zmenu 
+			ORDER BY menuno DESC
+		]]>
+			
+	</select>
+	
+	<!-- <select id="zmenuDAO.list" parameterClass="zmenuVo" resultClass="zmenuVo">
+		<![CDATA[
+			SELECT
+				 menuno
+				,menutitle
+				,menuuse
+				,sitetitle
+				,menufilesave
+				,menudatereg
+				,menudatemod
+			from 
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        a.*
+						        , get_sitetitle('zmenuuse','menuno', a.menuno) as sitetitle
+				    	   from
+						        zmenu a
+						   where 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# and $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ upper($cond2$) like '%'||#keyword#||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							order by menuno desc
+					 	) row_
+					where
+						rownum <= #n#
+				)
+			where
+				rownum_ > #m#
+			]]> 
+	</select> -->
+	
+
+	<select id="zmenuDAO.listdepth" parameterClass="zmenuVo" resultClass="zmenuVo">
+		<![CDATA[
+		SELECT 
+		      (
+		        SELECT menutitle FROM ZMENU WHERE siteno = #siteno# and menuno = @r
+		      ) AS menutitle,
+		      (
+		        SELECT @r:=menuparentno FROM ZMENU WHERE siteno = #siteno# and menuno = @r
+		      ) AS menuparentno
+		      FROM (
+		        SELECT @r := #menuno#
+		     ) vars, ZMENU h , ZMENU c
+			where @r <> 0
+		      order by @r
+		 ]]> 
+	</select>
+	
+	<select id="zmenuDAO.list" parameterClass="zmenuVo" resultClass="zmenuVo">
+		<!-- SELECT 
+			  a.menuno
+			, a.menutopno
+			, a.menulevel
+			, a.menustep
+			, a.menuparentno
+			, a.siteno
+			, a.menutitle
+			, a.menudatereg
+			, a.menudatemod
+			, a.menutype
+			, a.menustatus
+			, a.menutags
+			, a.archv_no
+			, a.menusns_use_yn
+			, (SELECT COUNT(*) FROM ZMENU where siteno=#siteno# START WITH menuno=a.menuno CONNECT BY menuparentno = PRIOR menuno) cnt 
+			FROM (select * from zmenu where siteno = #siteno#) a 
+			START WITH a.menuparentno=0 
+			CONNECT BY PRIOR a.menuno=a.menuparentno -->
+		<!-- 사이트 복사시 동일한 메뉴번호로 메뉴가 생성되기 때문에 start with를 사용할경우 siteno를 확인하지 않고 무조건 가져오는 버그가 발생
+		이에 대한 대처를 실시 김문석 20140709 
+		SELECT 
+              a.menuno
+            , a.menutopno
+            , a.menulevel
+            , a.menustep
+            , a.menuparentno
+            , a.siteno
+            , a.menutitle
+            , a.menudatereg
+            , a.menudatemod
+            , a.menutype
+            , a.menustatus
+            , a.menutags
+            , a.archv_no
+            , a.menusns_use_yn
+            , (select count(*) from (SELECT * FROM ZMENU where siteno=#siteno#) b START WITH b.menuno=a.menuno CONNECT BY b.menuparentno = PRIOR b.menuno) cnt 
+            FROM (select * from zmenu where siteno = #siteno#) a 
+            START WITH a.menuparentno=0 
+            CONNECT BY PRIOR a.menuno=a.menuparentno
+            ORDER BY menutopno, menustep, menulevel, menuno -->
+         SELECT 
+              a.menuno
+            , a.menutopno
+            , a.menulevel
+            , a.menustep
+            , a.menuparentno
+            , a.siteno
+            , a.menutitle
+            , a.menudatereg
+            , a.menudatemod
+            , a.menutype
+            , a.menustatus
+            , a.menutags
+            , a.archv_no
+            , a.menusns_use_yn
+            , (select count(*) from (SELECT * FROM ZMENU where siteno=#siteno#) b where (b.menuno=a.menuno or b.menuparentno=a.menuno) order by b.menuno) cnt 
+            FROM (select * from zmenu where siteno = #siteno#) a 
+            ORDER BY menutopno, menustep, menulevel, menuno   
+	</select>
+	
+	
+	
+	<select id="zmenuDAO.listCount" parameterClass="zmenuVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				zmenu
+			where 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# and $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					$cond2$ like '%'||upper(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+	
+	<select id="zmenuDAO.getCountIsUsingOtherMenuByMenuno_siteno_cond1_cond2" parameterClass="zmenuVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT count(*) 
+			FROM ZSITEMENU 
+			WHERE menuno<>#menuno# 
+			  AND siteno=#siteno# 
+			  AND $cond1$ LIKE '%'||#cond2#||'%'
+		]]>
+
+	</select>
+	
+	
+	
+	
+	<delete id="zmenuDAO.delete" parameterClass="java.util.List">
+		        DELETE 
+		    		FROM Zmenu
+		  			where menuno in
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+		
+	</delete>
+	
+	<delete id="zmenuDAO.deleteMenuWithSiteno" parameterClass="zmenuVo">
+		        DELETE 
+		    		FROM ZMENU
+		  			where menuno in 
+		  			<iterate property="arrDeleteNo" open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+			          and siteno = #siteno#
+	</delete>	
+	
+	<select id="zmenuDAO.selectbypk"  parameterClass="zmenuVo" resultClass="zmenuVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM ZMENU
+						WHERE menuNO=#menuno#
+				]]>
+	</select>
+	
+	<select id="zmenuDAO.selectbysiteno"  parameterClass="zmenuVo" resultClass="zmenuVo">
+		SELECT 
+			  menuno
+			, menutopno
+			, menulevel
+			, menustep
+			, menuparentno
+			, siteno
+			, menutitle
+			, menudatereg
+			, menudatemod
+			, menutype
+			, menustatus
+			, menutags 
+			, menusns_use_yn
+		FROM ZMENU 
+		WHERE siteno=#siteno# 
+		
+		ORDER BY menutopno, menustep, menulevel, menuno
+	</select>
+	
+	
+	<select id="zmenuDAO.getMenuparentno"  parameterClass="zmenuVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT 
+				menuparentno 
+			FROM ZMENU 
+			WHERE menuno=#menuno#
+			  AND siteno=#siteno#
+		 ]]>
+	</select>
+	
+	
+	<select id="zmenuDAO.selectbySitenoAndMenunoForServiceImpl"  parameterClass="zmenuVo" resultClass="zmenuVo">
+		<![CDATA[
+			SELECT
+				  a.menuno
+				, a.menusubno
+				, a.menusubjs
+				, a.menusubcss
+				, a.menuttpl
+				, a.menultpl
+				, a.menurtpl
+				, a.menubtpl
+				, a.menutopno
+				, a.menulevel
+				, a.menustep
+				, a.menuparentno
+				, a.siteno
+				, a.menutitle
+				, a.menudatereg
+				, a.menudatemod
+				, a.menutype
+				, a.menustatus
+				, a.menutags 
+				, a.menusns_use_yn
+				, a.menulink
+				, a.menuintenallinkother
+				, a.menuintenallink
+				, a.archv_no
+				, a.rltd_shw_yn
+				, a.menustaff_use_yn
+				, a.menusns_use_yn
+				, a.menuscore
+				, a.menustafftel
+				, a.menustafffax
+				, a.menustaffname
+				, a.menustaffsect
+				, a.authcheck
+				, a.taskcheck
+				/*,fc_archv_catgry_name_list(b.catgry_cd) as menuarchivenamepath*/
+				/*ZMENU_TITLE_PATH(a.menuno) as zmenutitlepath,
+				,b.title as archv_title*/
+				
+			FROM ZMENU a/*, archv b  */                                                                                 
+			WHERE menuno=#menuno#
+			  AND siteno=#siteno#
+        	/* and a.archv_no = b.archv_no(+)*/      
+						
+				]]>
+	</select>
+	<select id="zmenuDAO.selectbySitenoAndMenuno"  parameterClass="zmenuVo" resultClass="zmenuVo" remapResults="true">
+		<![CDATA[
+			SELECT
+				a.*
+				/*fc_archv_catgry_name_list(b.catgry_cd) as menuarchivenamepath,*/
+				/*ZMENU_TITLE_PATH(a.menuno) as zmenutitlepath,
+				b.title as archv_title*/
+				
+			FROM ZMENU a/*, archv b  */                                                                                 
+			WHERE menuno=#menuno#
+			  AND siteno=#siteno#
+        	 /* and a.archv_no = b.archv_no(+)*/      
+						
+				]]>
+	</select>
+	
+	<select id="zmenuDAO.selectbySitenoAndMenunoForCheck"  parameterClass="zmenuVo" resultClass="zmenuVo">
+		<![CDATA[
+			SELECT
+				menuno
+			FROM ZMENU                                                                                   
+			WHERE menuno=#menuno#
+			  and siteno=#siteno#
+						
+		]]>
+	</select>
+	
+	
+	
+	<select id="zmenuDAO.getMenulevel"  parameterClass="zmenuVo" resultClass="java.lang.Integer">
+		SELECT 
+			menulevel
+		FROM ZMENU 
+		WHERE menuno=#menuno#
+		  AND siteno=#siteno#
+	</select>
+	
+	<select id="zmenuDAO.getMaxmenustepBySitenoAndMenutopno"  parameterClass="zmenuVo" resultClass="java.lang.Integer">
+		SELECT 
+			MAX(menustep) menustep
+		FROM ZMENU 
+		WHERE menutopno=#menutopno#
+		  AND siteno=#siteno#
+	</select>
+	
+	<select id="zmenuDAO.getMaxmenustepBySitenoAndMenutopnoAndParentno"  parameterClass="zmenuVo" resultClass="java.lang.Integer">
+		SELECT 
+			MAX(menustep) menustep
+		FROM ZMENU 
+		WHERE menutopno=#menutopno#
+		  AND siteno=#siteno#
+		  AND menuparentno = #menuparentno#
+	</select>
+	
+	<select id="zmenuDAO.getMaxmenunoBySiteno"  parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		SELECT IFNULL(MAX(menuno),0)+1 AS menuno FROM ZMENU
+	</select>
+	
+	
+	<update id="zmenuDAO.update">
+		<![CDATA[
+			UPDATE ZMENU SET 
+				 menutitle			= #menutitle#
+				, menustatus		= #menustatus#
+				, menutype			= #menutype#
+				, menusubno			= #menusubno#
+				, menulinktarget	= #menulinktarget#
+				, menulinkother		= #menulinkother#
+				, menulink			= #menulink#
+				, menutop			= #menutop#
+				, menubtm			= #menubtm#
+				, menucontstype		= #menucontstype#
+				, menuconts			= #menuconts#
+				, menustaffid		= #menustaffid#
+				, menustaffsect		= #menustaffsect#
+				, menustaffname		= #menustaffname#
+				, menustaffemail	= #menustaffemail#
+				, menustafftel		= #menustafftel#
+				, menustafffax		= #menustafffax#
+				, menuhis			= #menuhis#
+				, menudatemod		= date_format(now(),'%Y%m%d%H%i%s')
+				, userid			= #userid#
+				, menusubcss		= NULLIF(#menusubcss#, '')
+				, menusubjs			= NULLIF(#menusubjs#, '')
+				, menuttpl			= NULLIF(#menuttpl#, '')
+				, menultpl			= NULLIF(#menultpl#, '')
+				, menurtpl			= NULLIF(#menurtpl#, '')
+				, menubtpl			= NULLIF(#menubtpl#, '')
+				, menutags			= NULLIF(#menutags#, '')
+				, menuintenallinktarget  = #menuintenallinktarget#
+				, menuintenallink        = #menuintenallink#
+				, menuintenallinkother   = #menuintenallinkother#
+				, menuarchivepath		 = #menuarchivepath#
+				, archv_no = #archv_no#
+				, rltd_shw_yn =#rltd_shw_yn#
+				, menuscore =#menuscore#
+				, menustaff_use_yn  = #menustaff_use_yn#
+				, menusns_use_yn = #menusns_use_yn#
+				, location_use_yn = #location_use_yn#
+			WHERE menuno=#menuno#
+			  AND siteno=#siteno#
+			
+		]]>
+	</update>
+	
+	<update id="zmenuDAO.updateMenuStep">
+		<![CDATA[
+			UPDATE ZMENU SET 
+				menustep=menustep+1 
+			WHERE siteno=#siteno#
+			  AND menutopno=#menutopno#
+			  AND menustep>=#menustep#
+			
+		]]>
+	</update>
+	
+	
+	<update id="zmenuDAO.updateApply1">
+		<![CDATA[
+			UPDATE ZMENU SET 
+				  menusubcss=#menusubcss#
+				, menusubjs=#menusubjs#
+				, userid=#userid#
+				, menudatemod=date_format(now(),'%Y%m%d%H%i%s') 
+			WHERE menuno IN (SELECT 
+								menuno 
+								FROM (select * from zmenu where siteno=#siteno#)
+								START WITH menuno=#menuno#
+								CONNECT BY PRIOR menuno = menuparentno
+							)
+			  AND siteno = #siteno#
+			
+		]]>
+	</update>
+	<update id="zmenuDAO.updateApply2">
+		<![CDATA[
+			UPDATE ZMENU SET 
+				  menuttpl=#menuttpl#
+				, menultpl=#menultpl#
+				, menurtpl=#menurtpl#
+				, menubtpl=#menubtpl#
+				, userid=#userid#
+				, menudatemod=date_format(now(),'%Y%m%d%H%i%s') 
+			WHERE menuno IN (SELECT 
+								menuno 
+								FROM (select * from zmenu where siteno=#siteno#)
+								START WITH menuno=#menuno#
+								CONNECT BY PRIOR menuno = menuparentno
+							)
+			  AND siteno = #siteno#
+				
+			
+		]]>
+	</update>
+	
+	<select id="zmenuDAO.getMenunoList"  parameterClass="zmenuVo" resultClass="java.lang.Integer">
+		
+		 <![CDATA[     
+		 SELECT    ani.menuno AS menuno
+			     , ani.menuparentno AS menuparentno
+			     
+			  FROM
+			     (SELECT fnc_hierarchi() AS menuno, @level AS LEVEL
+			     FROM (SELECT @start_with:=#menuno#,@siteno:=#siteno# ,@id:=@start_with, @level:=0) vars
+			          JOIN zmenu
+			         WHERE @id IS NOT NULL
+				  ) fnc
+			  JOIN zmenu ani ON fnc.menuno = ani.menuno  and siteno=#siteno#
+		 ]]> 	
+					 
+		 
+	</select>
+		
+	<select id="zmenuDAO.selectSublistFromZmenuBySiteno"  parameterClass="zmenuVo" resultClass="zmenuVo">
+		<![CDATA[
+			select 
+				a.menuno,
+				a.menuparentno,
+				a.siteno,
+				a.menutopno,
+				a.menustep,
+				a.menulevel,
+				a.menutitle,
+				a.menudatereg,
+				a.menudatemod,
+				a.menutype,
+				a.menustatus,
+				a.menutags,
+				(select count(*) from zmenu where (menuparentno=a.menuno and menulevel=a.menulevel+1) or menuno = a.menuno) cnt 
+			from zmenu a 
+			where siteno=#siteno# 
+			order by a.menutopno, a.menustep
+		]]>
+	
+	</select>
+	
+	<select id="zmenuDAO.getTitlePath" parameterClass="int" resultClass="java.lang.String">
+		select (SELECT SUBSTR(MAX(sys_connect_by_path(menutitle, ' > ')),4) path
+				FROM zmenu
+				WHERE menuno = #menuno#
+				START WITH menuparentno = 0
+				CONNECT BY PRIOR menuno = menuparentno
+			) from db_root
+	</select>
+	
+	
+	<!-- 프로시져 대응 -->
+ 	<select id="zmenuDAO.menuInfo" parameterClass="zmenuVo" resultClass="zmenuVo">
+		<![CDATA[
+			SELECT menutopno,
+					   menulevel,
+					   menustep,
+					   menuparentno 
+			FROM ZMENU 
+		    WHERE menuno = #menuno#
+		    AND siteno = #siteno#
+		]]>
+	</select>
+	
+	<update id="zmenuDAO.updateMenu">
+		<![CDATA[
+			UPDATE ZMENU 
+			SET menustep=#menustep#
+			WHERE siteno=#siteno#
+			AND menuno = #menuno#
+		]]>
+	</update>
+	
+ 	<select id="zmenuDAO.getMenuStep" parameterClass="zmenuVo" resultClass="zmenuVo" remapResults="true">
+		<![CDATA[
+			SELECT IFNULL($nvlType$($selType$), 0) $selType$ 
+			FROM ZMENU 
+			WHERE 1=1
+		]]>
+		<isNotEmpty prepend="AND" property="siteno">
+		<![CDATA[ siteno = #siteno# ]]>
+		</isNotEmpty>	
+		<isNotEmpty prepend="AND" property="menuno">
+			<isEqual property="cond1" compareValue="1">
+				<![CDATA[ menuno > #menuno# ]]>	
+			</isEqual>
+			<isEqual property="cond1" compareValue="2">
+				<![CDATA[ menuno < #menuno# ]]>
+			</isEqual>
+		</isNotEmpty>
+		<isNotEqual prepend="AND" property="menutopno" compareValue="-1">
+		<![CDATA[ menutopno = #menutopno# ]]>
+		</isNotEqual>
+		<isNotEqual prepend="AND" property="menuparentno" compareValue="-1">
+		<![CDATA[ menuparentno = #menuparentno# ]]>
+		</isNotEqual>
+		<isNotEmpty prepend="AND" property="menulevel">
+		<![CDATA[ menulevel = #menulevel# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="menustep">
+			<isEqual property="cond2" compareValue="1">
+				<![CDATA[ menustep = #menustep# ]]>	
+			</isEqual>
+			<isEqual property="cond2" compareValue="2">
+				<![CDATA[ menustep < #menustep# ]]>
+			</isEqual>
+			<isEqual property="cond2" compareValue="3">
+				<![CDATA[ menustep > #menustep# ]]>
+			</isEqual>
+		</isNotEmpty>
+	</select>
+ 
+ 	<select id="zmenuDAO.menuNoList" parameterClass="zmenuVo" resultClass="zmenuVo">
+		<![CDATA[
+			SELECT menuno 
+			FROM ZMENU 
+			WHERE 1=1
+		]]>
+		<isNotEmpty prepend="AND" property="siteno">
+		<![CDATA[ siteno = #siteno# ]]>
+		</isNotEmpty>		
+		<isNotEmpty prepend="AND" property="menutopno">
+		<![CDATA[ menutopno = #menutopno# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="menulevel">
+		<![CDATA[ menulevel >= #menulevel# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="menustep">
+			<isEqual property="cond1" compareValue="1">
+				<![CDATA[ (menustep>=#menustep# AND menustep<#menustep2#) ]]>	
+			</isEqual>
+			<isEqual property="cond1" compareValue="2">
+				<![CDATA[ menustep>=#menustep# ]]>
+			</isEqual>
+		</isNotEmpty>
+			order by menustep
+	</select>
+	
+ 	<update id="zmenuDAO.updateMenuTopno">
+		<![CDATA[
+			UPDATE ZMENU 
+			SET 
+		]]>	
+		<isEqual property="cond1" compareValue="1">
+			<![CDATA[ 
+				menutopno=(power(10,10)-1) 
+			WHERE menutopno=#menutopno# 
+			]]>	
+		</isEqual>
+		<isEqual property="cond1" compareValue="2">
+			<![CDATA[ 
+				menutopno=#menutopno#
+			WHERE menutopno=#menutopno2# 
+			]]>	
+		</isEqual>
+		<isEqual property="cond1" compareValue="3">
+			<![CDATA[ 
+				menutopno=#menutopno#
+			WHERE menutopno=(power(10,10)-1)
+			]]>	
+		</isEqual>
+		AND siteno = #siteno#
+	</update>
+
+</sqlMap>

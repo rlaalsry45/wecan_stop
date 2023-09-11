@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+  xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+
+	<beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" >
+		<beans:constructor-arg value="256" />
+		<beans:property name="encodeHashAsBase64" value="true" />
+	</beans:bean>
+	<beans:bean id="loginSuccessHandler" class="com.z5.zcms.security.ZSavedAuthenticationSuccessHandler" />
+	<beans:bean id="loginFailureHandler" class="com.z5.zcms.security.ZSavedAuthenticationFailureHandler" />
+	<beans:bean id="logoutSuccessHandler" class="com.z5.zcms.security.ZUrlLogoutSuccessHandler" /> 
+
+	<http auto-config="true" disable-url-rewriting="true">
+		<csrf disabled="true" />
+		<intercept-url pattern="/admsys/user/**" access="hasAnyRole('ROLE_SUPER')" />
+		<intercept-url pattern="/admsys/site/**" access="hasAnyRole('ROLE_SUPER')" />
+		<intercept-url pattern="/admsys/setting/admin/login2ndCrtfc.html" access="hasAnyRole('ROLE_SUPER','ROLE_ADMIN')" />
+		<intercept-url pattern="/admsys/setting/admin/login2ndResult.html" access="hasAnyRole('ROLE_SUPER','ROLE_ADMIN')" />
+		<intercept-url pattern="/admsys/setting/**" access="hasAnyRole('ROLE_SUPER','ROLE_ADMIN')"/>
+		<intercept-url pattern="/admsys/**" access="hasAnyRole('ROLE_SUPER','ROLE_ADMIN')" />
+		<intercept-url pattern="/sym/**" access="hasAnyRole('ROLE_SUPER','ROLE_ADMIN')" />
+		
+	    <headers>
+	        <frame-options policy="SAMEORIGIN"/>
+	    </headers>
+		<!-- <intercept-url pattern="/**" requires-channel="https"/> -->
+		<!-- <intercept-url pattern="/**" access="permitAll" /> -->
+
+		<form-login 
+			login-page="/login.html" 
+			always-use-default-target="false"
+			login-processing-url="/j_spring_security_check"
+			authentication-success-handler-ref="loginSuccessHandler"
+			authentication-failure-handler-ref="loginFailureHandler" />
+			
+			<!-- authentication-failure-url="/login.jsp?fail=true" --> 
+			
+		<logout logout-url="/j_spring_security_logout" invalidate-session="true" success-handler-ref="logoutSuccessHandler" />
+		<!-- <logout invalidate-session="true" success-handler-ref="logoutSuccessHandler" logout-success-url="/" /> -->
+		<remember-me key="kfh" token-validity-seconds="864000"/>
+		
+	</http>
+	
+	<authentication-manager alias="authenticationManager">
+		<authentication-provider user-service-ref="securityService">
+			<password-encoder ref="passwordEncoder" />
+		</authentication-provider>
+	</authentication-manager>
+	
+	<beans:bean id="securityService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+		<beans:property name="dataSource" ref="egov.dataSource" />
+		<beans:property name="usersByUsernameQuery">
+			<beans:value>
+			<![CDATA[
+				select userid as username, (case when userpasswdtmp is null then userpasswd else userpasswdtmp end) as password, enabled from zuser where userid = ? 
+			]]>
+			</beans:value>
+		</beans:property>
+		<beans:property name="authoritiesByUsernameQuery">
+			<beans:value>
+			<![CDATA[
+				select userid as username, authority from zauthorities where userid = ?
+			]]>
+			</beans:value>
+		</beans:property>
+	</beans:bean>
+	
+</beans:beans>

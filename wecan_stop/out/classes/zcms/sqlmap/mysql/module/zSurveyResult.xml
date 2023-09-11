@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZSurveyResult">
+	<typeAlias alias="zSurveyResultVo" type="com.z5.zcms.admsys.module.domain.ZSurveyResultVo"/>
+	<resultMap id="zSurveyResultVo" class="com.z5.zcms.admsys.module.domain.ZSurveyResultVo"/>
+	
+	<select id="ZSurveyResult.listCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(1) AS total
+			FROM
+				ZSURVEYRESULT
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="surveyno">
+				<![CDATA[
+					surveyno = #surveyno#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="askno">
+				<![CDATA[
+					askno = #askno#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="answer">
+				<![CDATA[
+					answer = #answer#
+				]]>
+			</isNotEmpty>
+			<isEmpty prepend="and" property="answer">
+				<![CDATA[
+					answer IS NOT NULL
+				]]>
+			</isEmpty>
+	</select>
+
+	<select id="ZSurveyResult.listSubject" resultClass="zSurveyResultVo">
+		<![CDATA[
+			SELECT
+				no,
+				answer
+			FROM
+				ZSURVEYRESULT
+			WHERE 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="surveyno">
+				<![CDATA[
+					surveyno = #surveyno#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="askno">
+				<![CDATA[
+					askno = #askno#
+				]]>
+			</isNotEmpty>
+			<isEmpty prepend="and" property="answer">
+				<![CDATA[
+					answer IS NOT NULL
+				]]>
+			</isEmpty>
+			<![CDATA[
+				ORDER BY no DESC
+			]]>
+	</select>
+
+	<delete id="ZSurveyResult.surveyResultDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				zsurveyresult
+			WHERE
+				surveyno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<insert id="ZSurveyResult.surveyResultWrite" parameterClass="zSurveyResultVo">
+		<![CDATA[
+			INSERT INTO zsurveyresult(
+				SURVEY_TYPE, 
+				ORG_ID, 
+				CONSULTING_APPLICATION_NO,
+				ASKNO_0, 
+				ASKNO_1_1, 
+				ASKNO_1_2, 
+				ASKNO_1_3, 
+				ASKNO_1_4, 
+				ASKNO_2_1, 
+				ASKNO_2_2, 
+				ASKNO_2_3, 
+				ASKNO_2_4, 
+				ASKNO_3_1, 
+				ASKNO_3_2, 
+				ASKNO_3_3, 
+				ASKNO_3_4, 
+				ASKNO_3_5, 
+				ASKNO_4_1, 
+				ASKNO_4_2, 
+				ASKNO_4_3, 
+				ASKNO_4_4, 
+				ASKNO_5_1, 
+				ASKNO_5_2, 
+				ASKNO_5_3, 
+				ASKNO_5_4, 
+				ASKNO_5_5, 
+				ASKNO_6_1, 
+				ASKNO_6_2, 
+				ASKNO_6_3, 
+				ASKNO_6_4, 
+				ASKNO_6_5, 
+				ASKNO_7_1, 
+				ASKNO_7_2, 
+				ASKNO_7_3, 
+				ASKNO_7_4, 
+				ASKNO_7_5, 
+				ASKNO_7_6, 
+				ASKNO_7_7, 
+				ASKNO_7_8, 
+				ASKNO_7_OPINION, 
+				ASKNO_7_1_1, 
+				ASKNO_7_1_1_OPINION, 
+				ASKNO_7_2_1, 
+				ASKNO_7_2_1_OPINION, 
+				ASKNO_8, 
+				ASKNO_9, 
+				ASKNO_10_1, 
+				ASKNO_10_2, 
+				ASKNO_10_3, 
+				ASKNO_10_4, 
+				ASKNO_10_5, 
+				ASKNO_10_6, 
+				ASKNO_10_7, 
+				ASKNO_10_8, 
+				ASKNO_10_OPINION, 
+				ASKNO_11_1, 
+				ASKNO_11_2, 
+				ASKNO_11_3, 
+				ASKNO_11_4, 
+				ASKNO_11_5, 
+				ASKNO_11_6, 
+				ASKNO_11_OPINION, 
+				ASKNO_12_1, 
+				ASKNO_12_2, 
+				ASKNO_12_3, 
+				ASKNO_12_4, 
+				ASKNO_12_5, 
+				ASKNO_12_OPINION, 
+				ASKNO_13_OPINION, 
+				ASKNO_14, 
+				ASKNO_15, 
+				ASKNO_16, 
+				REG_ID, 
+				REG_DATE
+			)VALUES(
+				#surveyType#, 
+				#orgId#, 
+				#consulting_application_no#,
+				#askno0#, 
+				#askno1_1#, 
+				#askno1_2#, 
+				#askno1_3#, 
+				#askno1_4#, 
+				#askno2_1#, 
+				#askno2_2#, 
+				#askno2_3#, 
+				#askno2_4#, 
+				#askno3_1#, 
+				#askno3_2#, 
+				#askno3_3#, 
+				#askno3_4#, 
+				#askno3_5#, 
+				#askno4_1#, 
+				#askno4_2#, 
+				#askno4_3#, 
+				#askno4_4#, 
+				#askno5_1#, 
+				#askno5_2#, 
+				#askno5_3#, 
+				#askno5_4#, 
+				#askno5_5#, 
+				#askno6_1#, 
+				#askno6_2#, 
+				#askno6_3#, 
+				#askno6_4#, 
+				#askno6_5#, 
+				#askno7_1#, 
+				#askno7_2#, 
+				#askno7_3#, 
+				#askno7_4#, 
+				#askno7_5#, 
+				#askno7_6#, 
+				#askno7_7#, 
+				#askno7_8#, 
+				#askno7opinion#, 
+				#askno7_1_1#, 
+				#askno7_1_1opinion#, 
+				#askno7_2_1#, 
+				#askno7_2_1opinion#, 
+				#askno8#, 
+				#askno9#, 
+				#askno10_1#, 
+				#askno10_2#, 
+				#askno10_3#, 
+				#askno10_4#, 
+				#askno10_5#, 
+				#askno10_6#, 
+				#askno10_7#, 
+				#askno10_8#, 
+				#askno10opinion#, 
+				#askno11_1#, 
+				#askno11_2#, 
+				#askno11_3#, 
+				#askno11_4#, 
+				#askno11_5#, 
+				#askno11_6#, 
+				#askno11opinion#, 
+				#askno12_1#, 
+				#askno12_2#, 
+				#askno12_3#, 
+				#askno12_4#, 
+				#askno12_5#, 
+				#askno12opinion#, 
+				#askno13opinion#, 
+				#askno14#, 
+				#askno15#, 
+				#askno16#, 
+				#regId#, 
+				NOW()
+			)
+
+		]]>
+		
+	</insert>
+	
+	<update id="ZSurveyResult.surveyResultTotalUpdate" parameterClass="zSurveyResultVo">
+		<![CDATA[
+			update zsurvey
+			set   total = total+1
+			where surveyno = #surveyno#
+		]]>
+		
+	</update>
+	
+	<delete id="ZSurveyResult.surveyResultChangeDelete" parameterClass="zSurveyResultVo">
+		<![CDATA[
+			DELETE FROM 
+				zsurveyresult
+			WHERE
+				surveyno = #surveyno#
+			AND askno = #askno#
+		]]>
+	</delete>
+	
+	<update id="ZSurveyResult.surveyResultUpdate" parameterClass="zSurveyResultVo">
+		<![CDATA[
+			update zsurveyresult
+			set   askno = #change_askno#
+			where surveyno = #surveyno#
+			and askno = #askno#
+		]]>
+		
+	</update>
+	
+	
+	
+	<select id="ZSurveyResult.resultListCount" resultClass="java.lang.Integer">
+		<![CDATA[	
+			SELECT
+				 COUNT(*)
+			FROM zsurveyresult
+		   WHERE DEL_YN = 'N'
+		   ]]>
+		   <isNotEmpty prepend="and" property="cond1">
+		   		<isNotEmpty property="sdate">
+           		<isNotEmpty property="edate">
+				<![CDATA[ date_format($cond1$,'%Y%m%d') between #sdate# and #edate# ]]>
+				</isNotEmpty>
+				</isNotEmpty>
+			</isNotEmpty>
+           	<isNotEmpty prepend="and" property="cond2">
+           		<isNotEmpty property="keyword">
+				<![CDATA[ upper($cond2$) like concat('%',upper(#keyword#),'%') ]]>
+				</isNotEmpty>
+			</isNotEmpty>
+		<![CDATA[
+		   ORDER BY NO DESC
+			]]>		
+	</select>
+	
+	<select id="ZSurveyResult.surveyResultList" resultClass="zSurveyResultVo">
+		<![CDATA[
+			SELECT
+				NO no,
+				SURVEY_TYPE surveyType,
+				ORG_ID orgId,
+				REG_ID regId,
+				DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%S') regDate
+			FROM zsurveyresult
+		   WHERE DEL_YN = 'N'
+		   ]]>
+		   <isNotEmpty prepend="and" property="cond1">
+		   		<isNotEmpty property="sdate">
+           		<isNotEmpty property="edate">
+				<![CDATA[ date_format($cond1$,'%Y%m%d') between #sdate# and #edate# ]]>
+				</isNotEmpty>
+				</isNotEmpty>
+			</isNotEmpty>
+           	<isNotEmpty prepend="and" property="cond2">
+           		<isNotEmpty property="keyword">
+				<![CDATA[ upper($cond2$) like concat('%',upper(#keyword#),'%') ]]>
+				</isNotEmpty>
+			</isNotEmpty>
+		<![CDATA[
+		   ORDER BY NO DESC
+		   LIMIT #m#, #n#
+		]]>			
+	</select>
+	
+	<select id="ZSurveyResult.surveyResult" resultClass="zSurveyResultVo">
+		<![CDATA[	
+			SELECT 
+				SURVEY_TYPE surveyType, 
+				ORG_ID orgId, 
+				ASKNO_0 askno0, 
+				ASKNO_1_1 askno1_1, 
+				ASKNO_1_2 askno1_2, 
+				ASKNO_1_3 askno1_3, 
+				ASKNO_1_4 askno1_4, 
+				ASKNO_2_1 askno2_1, 
+				ASKNO_2_2 askno2_2, 
+				ASKNO_2_3 askno2_3, 
+				ASKNO_2_4 askno2_4, 
+				ASKNO_3_1 askno3_1, 
+				ASKNO_3_2 askno3_2, 
+				ASKNO_3_3 askno3_3, 
+				ASKNO_3_4 askno3_4, 
+				ASKNO_3_5 askno3_5, 
+				ASKNO_4_1 askno4_1, 
+				ASKNO_4_2 askno4_2, 
+				ASKNO_4_3 askno4_3, 
+				ASKNO_4_4 askno4_4, 
+				ASKNO_5_1 askno5_1, 
+				ASKNO_5_2 askno5_2, 
+				ASKNO_5_3 askno5_3, 
+				ASKNO_5_4 askno5_4, 
+				ASKNO_5_5 askno5_5, 
+				ASKNO_6_1 askno6_1, 
+				ASKNO_6_2 askno6_2, 
+				ASKNO_6_3 askno6_3, 
+				ASKNO_6_4 askno6_4, 
+				ASKNO_6_5 askno6_5, 
+				ASKNO_7_1 askno7_1, 
+				ASKNO_7_2 askno7_2, 
+				ASKNO_7_3 askno7_3, 
+				ASKNO_7_4 askno7_4, 
+				ASKNO_7_5 askno7_5, 
+				ASKNO_7_6 askno7_6, 
+				ASKNO_7_7 askno7_7, 
+				ASKNO_7_8 askno7_8, 
+				ASKNO_7_OPINION askno7opinion, 
+				ASKNO_7_1_1 askno7_1_1, 
+				ASKNO_7_1_1_OPINION askno7_1_1opinion, 
+				ASKNO_7_2_1 askno7_2_1, 
+				ASKNO_7_2_1_OPINION askno7_2_1opinion, 
+				ASKNO_8 askno8, 
+				ASKNO_9 askno9, 
+				ASKNO_10_1 askno10_1, 
+				ASKNO_10_2 askno10_2, 
+				ASKNO_10_3 askno10_3, 
+				ASKNO_10_4 askno10_4, 
+				ASKNO_10_5 askno10_5, 
+				ASKNO_10_6 askno10_6, 
+				ASKNO_10_7 askno10_7, 
+				ASKNO_10_8 askno10_8, 
+				ASKNO_10_OPINION askno10opinion, 
+				ASKNO_11_1 askno11_1, 
+				ASKNO_11_2 askno11_2, 
+				ASKNO_11_3 askno11_3, 
+				ASKNO_11_4 askno11_4, 
+				ASKNO_11_5 askno11_5, 
+				ASKNO_11_6 askno11_6, 
+				ASKNO_11_OPINION askno11opinion, 
+				ASKNO_12_1 askno12_1, 
+				ASKNO_12_2 askno12_2, 
+				ASKNO_12_3 askno12_3, 
+				ASKNO_12_4 askno12_4, 
+				ASKNO_12_5 askno12_5, 
+				ASKNO_12_OPINION askno12opinion, 
+				ASKNO_13_OPINION askno13opinion, 
+				ASKNO_14 askno14, 
+				ASKNO_15 askno15, 
+				ASKNO_16 askno16
+			FROM zsurveyresult
+			WHERE DEL_YN = 'N'
+			 AND NO = #no#
+		]]>			
+	</select>
+	
+</sqlMap>

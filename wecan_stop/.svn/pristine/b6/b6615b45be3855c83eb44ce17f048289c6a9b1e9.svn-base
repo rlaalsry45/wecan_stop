@@ -1,0 +1,121 @@
+#---------------------------------------------------------------------------------------------------------------------
+#   globals.properties
+#---------------------------------------------------------------------------------------------------------------------
+
+Globals.os.type         = linux
+
+# MySql
+Globals.db.type         = mysql
+#Globals.db.driver       = com.mysql.jdbc.Driver
+Globals.db.driver       = net.sf.log4jdbc.DriverSpy
+#Globals.db.url          = jdbc:log4jdbc:mysql://183.111.227.208:3306/volunteer?autoReconnect=true
+Globals.db.url          = jdbc:log4jdbc:mysql://183.111.227.208:3306/volunteer
+Globals.db.username     = volunteer
+Globals.db.password     = v0lunt22r
+
+# Oracle second database
+#Globals.db2.type        = oracle
+#Globals.db2.driver      = oracle.jdbc.OracleDriver
+#Globals.db2.url         = jdbc:oracle:thin:@115.71.232.202:1521:XE
+#Globals.db2.username    = nime
+#Globals.db2.password    = nime
+
+# Oracle
+#Globals.db.type         = oracle
+#Globals.db.driver       = oracle.jdbc.OracleDriver
+#Globals.db.driver       = core.log.jdbc.driver.OracleDriver
+#Globals.db.url          = jdbc:oracle:thin:@115.71.232.202:1521:XE
+#Globals.db.username     = zcms
+#Globals.db.password     = zfive
+
+# Altibase
+#Globals.db.driver       = Altibase.jdbc.driver.AltibaseDriver
+#Globals.db.url          = jdbc:Altibase://127.0.0.1:1721/egovfrm?encoding=UTF-8
+
+# Tibero
+#Globals.db.driver       = com.tmax.tibero.jdbc.TbDriver
+#Globals.db.url          = jdbc:tibero:thin:@127.0.0.1:1821:egovfrm
+
+# Cubrid
+#Globals.db.driver       = cubrid.jdbc.driver.CUBRIDDriver
+#Globals.db.url          = jdbc:cubrid:127.0.0.1.22:1921:egovfrm:::?charset=utf-8
+
+#---------------------------------------------------------------------------------------------------------------------
+
+# Mail
+Globals.mail.support            = tech@nes21.co.kr
+Globals.mail.admin              = master@z5.co.kr
+Globals.mail.admin.name         = \uD55C\uAD6D\uAD6D\uC81C\uAD50\uB958\uC7AC\uB2E8
+Globals.mail.declaration        = master@z5.co.kr
+Globals.post.k                  = 32151a546153a7fe21450849638266
+
+Globals.server.name             = volunteer.seoul.go.kr
+Globals.cms.license             = /cms/license.txt
+
+Globals.skin.board              = /WEB-INF/jsp/skin/board/
+Globals.skin.member             = /WEB-INF/jsp/skin/member/
+Globals.skin.login              = /WEB-INF/jsp/skin/login/
+Globals.skin.popup              = /WEB-INF/jsp/skin/popup/
+Globals.skin.layer.popup        = /WEB-INF/jsp/skin/layerpopup/
+Globals.skin.event              = /WEB-INF/jsp/skin/event/
+Globals.skin.banner             = /WEB-INF/jsp/skin/banner/
+Globals.skin.form.mail          = /WEB-INF/jsp/skin/formmail/
+Globals.skin.survey             = /WEB-INF/jsp/skin/survey/
+Globals.skin.eval               = /WEB-INF/jsp/skin/eval/
+Globals.skin.manager            = /WEB-INF/jsp/skin/manager/
+
+Globals.template.excel          = /com/tpl/excel/
+
+Globals.upload                  = /usr/upload/
+Globals.upload.editor           = /usr/upload/editor/
+Globals.upload.tmp              = /usr/upload/tmp/
+Globals.upload.popup            = /usr/upload/popup/
+Globals.upload.layer.popup      = /usr/upload/layerpopup/
+Globals.upload.banner           = /usr/upload/banner/
+Globals.upload.board            = /usr/upload/board/
+Globals.upload.board_thumb      = /usr/upload/board_thumb/
+Globals.upload.main.banner      = /usr/upload/mainbanner/
+
+Globals.common.css              = /cms/gen/css/
+Globals.common.js               = /cms/gen/js/
+Globals.template.main           = /WEB-INF/jsp/template/main
+Globals.template.menu           = /WEB-INF/jsp/template/menu
+Globals.template.file           = /WEB-INF/jsp/template/file
+
+# Conference
+Globals.conference.upload       = /usr/upload/conference/paper/
+Globals.conference.list.count   = 10
+
+Globals.file.path               = /usr/file/
+
+Globals.upload.project          = /usr/upload/project/
+Globals.upload.events           = /usr/upload/events/
+Globals.upload.repository       = /usr/upload/repository/
+Globals.upload.repo.client      = /usr/upload/repository/client/
+
+Globals.archive                 = /usr/upload/archive/
+Globals.archive.image.org       = /usr/upload/archive/images/original/
+Globals.archive.image.thumbnail = /usr/upload/archive/images/thumbnail/
+Globals.archive.thumbnail_x     = 162
+Globals.archive.thumbnail_y     = 123
+Globals.archive.image.detail    = /usr/upload/archive/images/detail/
+Globals.archive.detail_x        = 647
+Globals.archive.detail_y        = 431
+Globals.archive.docs            = /usr/upload/archive/docs/
+Globals.archive.image.watermark = watermark.gif
+Globals.archive.menuno          = 476
+
+Globals.zcms.items              = 20
+Globals.list.count              = 10
+Globals.ssl.use                 = N
+
+#Use in board attach for prevent to upload file
+Globals.forbidden.extension     = jsp,asp,php,html,htm,jspx
+
+#\uD30C\uC77C \uB9E4
+Globals.default.groupno         = 1
+
+Globals.cafe                    = /usr/upload/cafe/
+Globals.ftp                     = /usr/upload/ftp/
+
+Globals.file.manager            = /opt/filemanager/

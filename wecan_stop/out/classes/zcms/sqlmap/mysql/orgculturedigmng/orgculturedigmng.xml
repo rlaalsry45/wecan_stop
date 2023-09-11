@@ -1,0 +1,1525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="orgculturedigmng">
+	<typeAlias alias="WOrgCultureDigMngVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.WOrgCultureDigMngVo"/>
+	<resultMap id="WOrgCultureDigMngVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.WOrgCultureDigMngVo"/>
+	<typeAlias alias="ManagerListVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.ManagerListVo"/>
+	<resultMap id="ManagerListVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.ManagerListVo"/>
+	<typeAlias alias="ActionManagerVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.ActionManagerVo"/>
+	<resultMap id="ActionManagerVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.ActionManagerVo"/>	
+	<typeAlias alias="CommInfoVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.CommInfoVo"/>
+	<resultMap id="CommInfoVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.CommInfoVo"/>
+	<typeAlias alias="ConInfoRelActionVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.ConInfoRelActionVo"/>
+	<resultMap id="ConInfoRelActionVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.ConInfoRelActionVo"/>
+	<typeAlias alias="FrontApplicationVo" type="com.z5.zcms.frontsys.front.domain.FrontApplicationVo"/>
+	<resultMap id="FrontApplicationVo" class="com.z5.zcms.frontsys.front.domain.FrontApplicationVo"/>
+	<typeAlias alias="AppActionMergeVo" type="com.z5.zcms.admsys.orgculturedigmng.domain.AppActionMergeVo"/>
+	<resultMap id="AppActionMergeVo" class="com.z5.zcms.admsys.orgculturedigmng.domain.AppActionMergeVo"/>
+
+	<insert id="actionRegistration">
+		<![CDATA[
+			INSERT INTO w_consulting_action_master
+			(
+					manager
+				,	consulting_action_no
+				,	action_consulting_type	
+			]]>
+				<isNotEmpty property="registration_date">
+				,	registration_date
+				</isNotEmpty>
+				<isNotEmpty property="registration_strtime">
+				,	registration_strtime
+				</isNotEmpty>
+				<isNotEmpty property="registration_endtime">
+				,   registration_endtime
+				</isNotEmpty>
+		<![CDATA[
+				,	action_received_type
+				,	contact_tel_no
+				,	contact_email
+				,	client_name
+				,	client_gender
+				,	client_belong
+				,	client_victim_rel_type
+				,	client_victim_rel_type_etc
+				,	org_accident_step
+				,	org_accident_step_etc
+
+				,	action_type_monitoring
+				,	action_type_info
+				,	action_type_req_listening
+				,	action_type_other_org_info
+				,	action_type_other_org_min
+				,	action_type_other_org_civil_criminal
+				,	action_type_other_org_rights
+				,	action_type_other_org_etc
+				,	action_type_other_org_etc_txt
+				,	action_type_servie_rel
+				,	action_type_servie_rel_consulting
+				,	action_type_servie_rel_law_min
+				,	action_type_servie_rel_medic
+				,	action_type_servie_rel_etc
+				,	action_type_servie_rel_etc_txt
+				,	action_type_etc, action_type_etc_txt
+
+				,	action_contents
+				,	action_type_cont
+				
+				,	action_type_cont_etc_txt
+				
+				,	after_plan
+				,	action_etc
+				,	consulting_history_no
+				,	action_consulting_date_from
+				,	action_consulting_date_to
+				,	counselNum
+				,	action_contents_etc
+				,	delete_reason
+				,	create_user
+				,	create_date
+				,	delete_yn
+			)
+			VALUES
+			(
+					#manager#
+	]]>				<isNotEmpty property="consulting_action_no">
+				,	#consulting_action_no#
+					</isNotEmpty>
+					<isEmpty property="consulting_action_no">
+				,	#consulting_action_no#
+					</isEmpty>
+	<![CDATA[	,	#action_consulting_type# ]]>
+					<isNotEmpty property="registration_date">
+				,	#registration_date#
+					</isNotEmpty>
+					<isNotEmpty property="registration_strtime">
+				,	#registration_strtime#
+					</isNotEmpty>
+					<isNotEmpty property="registration_endtime">
+				,   #registration_endtime#
+					</isNotEmpty>
+	<![CDATA[
+				,	#action_received_type#
+				,	#contact_tel_no#
+				,	#contact_email#
+				,	#client_name#
+				,	#client_gender#
+				,	#client_belong#
+				,	#client_victim_rel_type#
+				,	#client_victim_rel_type_etc#
+				,	#org_accident_step#
+				,	#org_accident_step_etc#
+				
+				,	#action_type_monitoring#
+				,	#action_type_info#
+				,	#action_type_req_listening#
+				,	#action_type_other_org_info#
+				,	#action_type_other_org_min#
+				,	#action_type_other_org_civil_criminal#
+				,	#action_type_other_org_rights#
+				,	#action_type_other_org_etc#
+				,	#action_type_other_org_etc_txt#
+				,	#action_type_servie_rel#
+				,	#action_type_servie_rel_consulting#
+				,	#action_type_servie_rel_law_min#
+				,	#action_type_servie_rel_medic#
+				,	#action_type_servie_rel_etc#
+				,	#action_type_servie_rel_etc_txt#
+				,	#action_type_etc#
+				,	#action_type_etc_txt#
+				
+				,	#action_contents#
+				,	#action_type_cont#
+				
+				,	#action_type_cont_etc_txt#
+				
+				,	#after_plan#
+				,	#action_etc#
+				,	#consulting_history_no#
+				,	CASE WHEN #action_consulting_date_from# = '' THEN NULL ELSE #action_consulting_date_from# END 
+				,	CASE WHEN #action_consulting_date_to# = '' THEN NULL ELSE #action_consulting_date_to# END
+				,	#counselNum#
+				,	#action_contents_etc#
+				,	#delete_reason#
+				,	#create_user#
+				,	now()
+				,	'N'
+			)
+		]]>
+		<selectKey keyProperty="NO" resultClass="Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<sql id="whereOrgCultureList">
+		<isNotEmpty property="consulting_action_no_search">
+			AND a.consulting_action_no = #consulting_action_no_search#
+		</isNotEmpty>
+		<isNotEmpty property="manager_name">
+			AND a.consulting_action_no IN (	SELECT 
+													consulting_action_no 
+											FROM 
+												w_consulting_action_rel_managesr 
+											WHERE 
+													manager IN (
+																SELECT
+																	USERID
+																FROM
+																	ZUSER
+																WHERE
+																	USERNAME LIKE CONCAT('%',#manager_name#,'%')
+															)
+												AND	con_ac_type = 'ac'
+										)
+		</isNotEmpty>
+		<isNotEmpty property="action_consulting_type">
+			AND action_consulting_type = #action_consulting_type#
+		</isNotEmpty>
+		<isNotEmpty property="registration_date">
+			AND str_to_date( date_format(registration_date,'%Y-%m-%d') ,'%Y-%m-%d') = #registration_date#
+		</isNotEmpty>
+		<isNotEmpty property="action_received_type">
+			AND action_received_type = #action_received_type#
+		</isNotEmpty>
+		<isNotEmpty property="contact_tel_no">
+			AND contact_tel_no LIKE CONCAT('%',#contact_tel_no#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="contact_email">
+			AND contact_email LIKE CONCAT('%',#contact_email#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="client_name">
+			AND client_name LIKE CONCAT('%',#client_name#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="client_gender">
+			AND client_gender = #client_gender#
+		</isNotEmpty>
+		<isNotEmpty property="client_belong">
+			AND client_belong LIKE CONCAT('%',#client_belong#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="client_victim_rel_type">
+			AND client_victim_rel_type = #client_victim_rel_type#
+		</isNotEmpty>
+		<isNotEmpty property="client_victim_rel_type_etc">
+			AND client_victim_rel_type_etc LIKE CONCAT('%',#client_victim_rel_type_etc#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="org_accident_step">
+			AND org_accident_step = #org_accident_step#
+		</isNotEmpty>
+		<isNotEmpty property="org_accident_step_etc">
+			AND org_accident_step_etc LIKE CONCAT('%',#org_accident_step_etc#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="action_type_monitoring">
+			<isEqual property="action_type_monitoring" compareValue="Y">
+			AND action_type_monitoring = #action_type_monitoring#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_info">
+			<isEqual property="action_type_info" compareValue="Y">
+			AND action_type_info = #action_type_info#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_req_listening">
+			<isEqual property="action_type_req_listening" compareValue="Y">
+			AND action_type_req_listening = #action_type_req_listening#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_other_org_info">
+			<isEqual property="action_type_other_org_info" compareValue="Y">
+			AND action_type_other_org_info = #action_type_other_org_info#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_other_org_min">
+			<isEqual property="action_type_other_org_min" compareValue="Y">
+			AND action_type_other_org_min = #action_type_other_org_min#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_other_org_civil_criminal">
+			<isEqual property="action_type_other_org_civil_criminal" compareValue="Y">
+			AND action_type_other_org_civil_criminal = #action_type_other_org_civil_criminal#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_other_org_rights">
+			<isEqual property="action_type_other_org_rights" compareValue="Y">
+			AND action_type_other_org_rights = #action_type_other_org_rights#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_other_org_etc">
+			<isEqual property="action_type_other_org_etc" compareValue="Y">
+			AND action_type_other_org_etc = #action_type_other_org_etc#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_other_org_etc_txt">
+			AND action_type_other_org_etc_txt LIKE CONCAT('%',#action_type_other_org_etc_txt#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="action_type_servie_rel">
+			<isEqual property="action_type_servie_rel" compareValue="Y">
+			AND action_type_servie_rel = #action_type_servie_rel#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_servie_rel_consulting">
+			<isEqual property="action_type_servie_rel_consulting" compareValue="Y">
+			AND action_type_servie_rel_consulting = #action_type_servie_rel_consulting#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_servie_rel_law_min">
+			<isEqual property="action_type_servie_rel_law_min" compareValue="Y">
+			AND action_type_servie_rel_law_min = #action_type_servie_rel_law_min#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_servie_rel_medic">
+			<isEqual property="action_type_servie_rel_medic" compareValue="Y">
+			AND action_type_servie_rel_medic = #action_type_servie_rel_medic#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_servie_rel_etc">
+			<isEqual property="action_type_servie_rel_etc" compareValue="Y">
+			AND action_type_servie_rel_etc = #action_type_servie_rel_etc#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_servie_rel_etc_txt">
+			AND action_type_servie_rel_etc_txt LIKE CONCAT('%',#action_type_servie_rel_etc_txt#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="action_type_etc">
+			<isEqual property="action_type_etc" compareValue="Y">
+			AND action_type_etc = #action_type_etc#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_type_etc_txt">
+			AND action_type_etc_txt LIKE CONCAT('%',#action_type_etc_txt#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="action_contents">
+			AND action_contents LIKE CONCAT('%',#action_contents#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="after_plan">
+			AND after_plan LIKE CONCAT('%',#after_plan#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="action_etc">
+			AND action_etc LIKE CONCAT('%',#action_etc#,'%')
+		</isNotEmpty>
+
+		<!--상담일 조건절 해당부-->		
+		<isNotEmpty property="action_consulting_date_from">
+			<isNotEmpty property="action_consulting_date_to">
+				AND (	action_consulting_date_from >= STR_TO_DATE(#action_consulting_date_from#,'%Y-%m-%d')
+						AND
+						action_consulting_date_to<![CDATA[	<=	]]>STR_TO_DATE(#action_consulting_date_to#,'%Y-%m-%d') 
+					)
+			</isNotEmpty>
+			<isEmpty property="action_consulting_date_to">
+				AND action_consulting_date_from >= STR_TO_DATE(#action_consulting_date_from#,'%Y-%m-%d')
+			</isEmpty>			
+		</isNotEmpty>
+		
+		<isEmpty property="action_consulting_date_from">
+			<isNotEmpty property="action_consulting_date_to">
+				AND action_consulting_date_to<![CDATA[	<=	]]>STR_TO_DATE(#action_consulting_date_to#,'%Y-%m-%d')
+			</isNotEmpty>
+		</isEmpty>
+		<!--상담일 조건절 해당부-->
+		
+		
+		<!--등록일기준 조건절 해당부-->
+		<isNotEmpty property="action_register_date_from">
+			<isNotEmpty property="action_register_date_to">
+				AND (	date_format(a.create_date,'%Y-%m-%d') >= STR_TO_DATE(#action_register_date_from#,'%Y-%m-%d')
+						AND
+						date_format(a.create_date,'%Y-%m-%d')  <![CDATA[	<=	]]>STR_TO_DATE(#action_register_date_to#,'%Y-%m-%d') 
+					)
+			</isNotEmpty>
+			<isEmpty property="action_register_date_to">
+				AND date_format(a.create_date,'%Y-%m-%d') >= STR_TO_DATE(#action_register_date_from#,'%Y-%m-%d')
+			</isEmpty>		
+		</isNotEmpty>
+		
+		<isEmpty property="action_register_date_from">
+			<isNotEmpty property="action_register_date_to">
+				AND action_consulting_date_to<![CDATA[	<=	]]>STR_TO_DATE(#action_register_date_to#,'%Y-%m-%d')
+			</isNotEmpty>
+		</isEmpty>
+		<!--등록일기준 조건절 해당부-->
+		
+		<isNotEmpty property="counselName">
+			AND consulting_action_no IN ( SELECT consulting_action_no FROM w_consulting_action_rel_commissioner
+			WHERE counselNum IN (
+									select
+										wc.counselNum 
+									from 
+										w_counselor wc
+									where
+										wc.counselName like concat('%',#counselName#,'%')
+								) 
+			)
+		</isNotEmpty>
+		<isNotEmpty property="action_type_cont">
+			<isEqual property="action_type_cont" compareValue="Y">
+			AND action_type_cont = #action_type_cont#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_contents_etc">
+			<isEqual property="action_contents_etc" compareValue="Y">
+			AND action_contents_etc = #action_contents_etc#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="action_no_type">
+			AND a.consulting_action_no LIKE CONCAT('%',#action_no_type#,'%')
+		</isNotEmpty>
+		
+		<isGreaterThan property="step_status" compareValue="0">
+			<isNotEmpty property="joinYn">
+				<isEqual property="joinYn" compareValue="Y">
+					AND D.step_status = #step_status#
+				</isEqual>
+			</isNotEmpty>
+		</isGreaterThan>
+		<isNotEmpty property="org_name">
+			AND D.org_name LIKE CONCAT('%',#org_name#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="org_type">
+			AND D.org_type = #org_type#
+		</isNotEmpty>
+		<isNotEmpty property="upper_org_name">
+			AND D.upper_org_name LIKE CONCAT('%',#upper_org_name#,'%')
+		</isNotEmpty>
+		<isGreaterThan property="step_status" compareValue="0">
+			<isNotEmpty property="joinYn">
+				<isEqual property="joinYn" compareValue="Y">
+					AND D.org_member_count = #org_member_count#
+				</isEqual>
+			</isNotEmpty>
+		</isGreaterThan>
+		<isNotEmpty property="org_type_gov_detail">
+			AND D.org_type_gov_detail = #org_type_gov_detail#
+		</isNotEmpty>
+		<isNotEmpty property="belong_job_title">
+			AND D.belong_job_title LIKE CONCAT('%',#belong_job_title#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="org_client_name">
+			AND D.org_client_name LIKE CONCAT('%',#org_client_name#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="org_client_tel_no">
+			AND D.org_client_tel_no LIKE CONCAT('%',#org_client_tel_no#,'%')
+		</isNotEmpty>		
+		<isNotEmpty property="org_client_email">
+			AND D.org_client_email LIKE CONCAT('%',#org_client_email#,'%')
+		</isNotEmpty>		
+		<isNotEmpty property="accident_response_hist">
+			AND D.accident_response_hist = #accident_response_hist#
+		</isNotEmpty>
+		<isNotEmpty property="accident_date">
+			AND str_to_date( date_format(D.accident_date,'%Y-%m-%d') ,'%Y-%m-%d') = #accident_date#
+		</isNotEmpty>		
+		<isNotEmpty property="receipt_date">
+			AND str_to_date( date_format(D.receipt_date,'%Y-%m-%d') ,'%Y-%m-%d') = #receipt_date#
+		</isNotEmpty>			
+		<isNotEmpty property="harm_type_verbals">
+			<isEqual property="harm_type_verbals" compareValue="Y">
+			AND D.harm_type_verbals = #harm_type_verbals#
+			</isEqual>
+		</isNotEmpty>		
+		<isNotEmpty property="harm_type_body">
+			<isEqual property="harm_type_body" compareValue="Y">
+			AND D.harm_type_body = #harm_type_body#
+			</isEqual>
+		</isNotEmpty>		
+		<isNotEmpty property="harm_type_visual">
+			<isEqual property="harm_type_visual" compareValue="Y">
+			AND D.harm_type_visual = #harm_type_visual#
+			</isEqual>
+		</isNotEmpty>			
+		<isNotEmpty property="harm_type_second">
+			<isEqual property="harm_type_second" compareValue="Y">
+			AND D.harm_type_second = #harm_type_second#
+			</isEqual>
+		</isNotEmpty>		
+		<isNotEmpty property="harm_type_etc">
+			<isEqual property="harm_type_etc" compareValue="Y">
+			AND D.harm_type_etc = #harm_type_etc#
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty property="harm_etc_txt">
+			AND D.harm_etc_txt LIKE CONCAT('%',#harm_etc_txt#,'%')
+		</isNotEmpty>		
+		<isNotEmpty property="accident_step">
+			AND D.accident_step = #accident_step#
+		</isNotEmpty>		
+		<isNotEmpty property="application_etc_txt">
+			AND D.application_etc_txt LIKE CONCAT('%',#application_etc_txt#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="first_org_type_all">
+			<isEqual property="first_org_type_all" compareValue="Y">
+			AND D.first_org_type_all = #first_org_type_all#
+			</isEqual>
+		</isNotEmpty>		
+		<isNotEmpty property="first_org_type_inorg">
+			<isEqual property="first_org_type_inorg" compareValue="Y">
+			AND D.first_org_type_inorg = #first_org_type_inorg#
+			</isEqual>
+		</isNotEmpty>			
+		<isNotEmpty property="first_org_type_protect">
+			<isEqual property="first_org_type_protect" compareValue="Y">
+			AND D.first_org_type_protect = #first_org_type_protect#
+			</isEqual>
+		</isNotEmpty>		
+		<isNotEmpty property="first_org_type_etc">
+			<isEqual property="first_org_type_etc" compareValue="Y">
+			AND D.first_org_type_etc = #first_org_type_etc#
+			</isEqual>
+		</isNotEmpty>		
+		<isNotEmpty property="first_org_type_etc_txt">
+			AND D.first_org_type_etc_txt LIKE CONCAT('%',#first_org_type_etc_txt#,'%')
+		</isNotEmpty>		
+		<isNotEmpty property="dup_org_type_check">
+			<isEqual property="dup_org_type_check" compareValue="Y">
+			AND D.dup_org_type_check = #dup_org_type_check#
+			</isEqual>
+		</isNotEmpty>	
+		<isNotEmpty property="dup_org_type_protect">
+			<isEqual property="dup_org_type_protect" compareValue="Y">
+			AND D.dup_org_type_protect = #dup_org_type_protect#
+			</isEqual>
+		</isNotEmpty>		
+		<isNotEmpty property="dup_org_type_all">
+			<isEqual property="dup_org_type_all" compareValue="Y">
+			AND D.dup_org_type_all = #dup_org_type_all#
+			</isEqual>
+		</isNotEmpty>		
+		<isNotEmpty property="dup_org_type_inorg">
+			<isEqual property="dup_org_type_inorg" compareValue="Y">
+			AND D.dup_org_type_inorg = #dup_org_type_inorg#
+			</isEqual>
+		</isNotEmpty>			
+		<isNotEmpty property="dup_org_type_etc">
+			<isEqual property="dup_org_type_etc" compareValue="Y">
+			AND D.dup_org_type_etc = #dup_org_type_etc#
+			</isEqual>
+		</isNotEmpty>		
+		<isNotEmpty property="dup_org_type_etc_txt">
+			AND D.dup_org_type_etc_txt LIKE CONCAT('%',#dup_org_type_etc_txt#,'%')
+		</isNotEmpty>
+	</sql>
+	
+	
+	<select id="listCount" parameterClass="AppActionMergeVo" resultClass="Integer">
+		<![CDATA[
+			SELECT
+				count(*) AS total
+			FROM
+				W_CONSULTING_ACTION_MASTER a
+		]]>
+		
+		<isNotEmpty property="joinYn">
+			<isEqual property="joinYn" compareValue="Y">
+				JOIN
+				W_CONSULTING_APPLICATION_MASTER D
+				ON
+				a.consulting_action_no = D.consulting_application_no
+			</isEqual>
+		</isNotEmpty>
+			WHERE
+				a.DELETE_YN = 'N'			
+
+		<isNotEmpty property="bbsType">
+			<isEqual property="bbsType" compareValue="P">
+			AND a.consulting_action_no IN (	SELECT 
+													consulting_action_no 
+											FROM 
+												w_consulting_action_rel_managesr 
+											WHERE 
+													manager = #loginUserId#
+												AND	con_ac_type = 'ac'
+										)
+			</isEqual>
+		</isNotEmpty>
+		<include refid="whereOrgCultureList"/>
+	</select>
+
+	<select id="list" parameterClass="AppActionMergeVo" resultClass="AppActionMergeVo">
+		<![CDATA[
+			SELECT *
+			FROM
+				(
+					SELECT row_.*,
+							@rownum := @rownum + 1 AS rownum_
+					FROM (
+							SELECT
+									a.actionNO
+								,	a.consulting_action_no
+								,	a.manager
+								,	(	CASE WHEN ccnt > 1 THEN concat(b.username,'외 ',ccnt-1,'인 ') 
+										ELSE b.username END 
+									)	AS manager_name
+								,	a.action_consulting_type
+								,	a.registration_date
+								,	a.action_received_type
+								,	a.contact_tel_no
+								,	a.contact_email
+								,	a.client_name
+								,	a.client_gender
+								,	a.client_belong
+								,	a.client_victim_rel_type
+								,	a.client_victim_rel_type_etc
+								,	a.org_accident_step
+								,	a.org_accident_step_etc
+								
+								,	a.action_type_monitoring
+								,	a.action_type_info
+								,	a.action_type_req_listening
+								,	a.action_type_other_org_info
+								,	a.action_type_other_org_min
+								,	a.action_type_other_org_civil_criminal
+								,	a.action_type_other_org_rights
+								,	a.action_type_other_org_etc
+								,	a.action_type_other_org_etc_txt
+								,	a.action_type_servie_rel
+								,	a.action_type_servie_rel_consulting
+								,	a.action_type_servie_rel_law_min
+								,	a.action_type_servie_rel_medic
+								,	a.action_type_servie_rel_etc
+								,	a.action_type_servie_rel_etc_txt
+								,	a.action_type_etc
+								,	a.action_type_etc_txt
+								
+								,	a.action_contents
+								,	a.action_type_cont
+								
+								,	a.action_type_cont_etc_txt
+								
+								,	a.after_plan
+								,	a.action_etc
+								,	a.consulting_history_no
+								,	a.action_consulting_date_from
+								,	a.action_consulting_date_to
+								,	a.counselNum
+								,	a.action_contents_etc
+								,	a.delete_reason
+								,	a.create_user
+								,	DATE_FORMAT(a.create_date,'%Y-%m-%d') create_date
+								,	a.update_user
+								,	a.update_date
+								,	a.delete_user
+								,	a.delete_date
+								,	a.delete_yn
+								
+								,	rel_manager
+								,	CASE WHEN D.step_status = '1' THEN '신청'
+							         	WHEN D.step_status = '2' THEN '접수대기'
+							         	WHEN D.step_status = '3' THEN '접수승인'
+							         	WHEN D.step_status = '4' THEN '접수불가'
+							         	WHEN D.step_status = '5' THEN '심사대기'
+							         	WHEN D.step_status = '6' THEN '심사거절'
+							         	WHEN D.step_status = '7' THEN '심사승인'
+							         	WHEN D.step_status = '8' THEN '진단 완료'
+							         	ELSE '' END
+							         	AS step_status_txt
+								,	CASE WHEN a.action_consulting_type = 'init' THEN '초기상담'
+							         	WHEN a.action_consulting_type = 'continuing' THEN '지속상담'
+							         	WHEN a.action_consulting_type = 'ending' THEN '종결상담'
+							         	WHEN a.action_consulting_type = 'monitoring1' THEN '모니터링(1차)'
+							         	WHEN a.action_consulting_type = 'monitoring2' THEN '모니터링(2차)'
+							         	ELSE '' END
+							         	AS action_consulting_type_txt
+								,	CASE WHEN a.action_received_type = 'tel' THEN '전화'
+							         	WHEN a.action_received_type = 'email' THEN '메일'
+							         	WHEN a.action_received_type = 'sms' THEN '문자'
+							         	WHEN a.action_received_type = 'etc' THEN '기타'
+							         	ELSE '' END
+							         	AS action_received_type_txt
+							    ,	CASE WHEN a.client_gender = 'female' THEN '여성'
+							         	WHEN a.client_gender = 'male' THEN '남성'
+							         	WHEN a.client_gender = 'unknown' THEN '미상'
+							         	ELSE '' END
+							         	AS client_gender_txt
+							    ,	CASE WHEN a.client_victim_rel_type = 'me' THEN '본인'
+							         	WHEN a.client_victim_rel_type = 'agent' THEN '대리인/조력자'
+							         	WHEN a.client_victim_rel_type = 'relmanager' THEN '관련 담당자'
+							         	WHEN a.client_victim_rel_type = 'etc' THEN CONCAT('기타-',a.client_victim_rel_type_etc)
+							         	ELSE '' END
+							         	AS client_victim_rel_type_txt
+							     ,	CASE WHEN a.org_accident_step = 'before_declaration' THEN '신고전'
+							         	WHEN a.org_accident_step = 'after_declaration' THEN '신고 접수/상담'
+							         	WHEN a.org_accident_step = 'investigation' THEN '조사'
+							         	WHEN a.org_accident_step = 'review' THEN '심의'
+							         	WHEN a.org_accident_step = 'punishment' THEN '징계'
+							         	WHEN a.org_accident_step = 'followup' THEN '후속조치'
+							         	WHEN a.org_accident_step = 'etc' THEN CONCAT('기타-',a.org_accident_step_etc)
+							         	WHEN a.org_accident_step = 'unknown' THEN '미파악'
+							         	ELSE '' END
+							         	AS org_accident_step_txt
+							     ,	CONCAT(CASE WHEN a.action_type_monitoring = 'Y' THEN '진행상황 모니터링,'
+							     		ELSE '' END,
+							        CASE WHEN a.action_type_info = 'Y' THEN '절차 안내 및 정보 제공,'
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_req_listening = 'Y' THEN '추가정보 및 요구사항 청취,'
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_other_org_info = 'Y' THEN '타 신고기관 안내-'
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_other_org_min = 'Y' THEN '고용노동부,'
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_other_org_civil_criminal = 'Y' THEN '민/형사,'
+							        	ELSE '' END, 	
+							        CASE WHEN a.action_type_other_org_rights = 'Y' THEN '국가인권위원회,'
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_other_org_etc = 'Y' THEN CONCAT('그외-',a.action_type_other_org_etc_txt,',')
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_servie_rel = 'Y' THEN '서비스 연계/지원-'
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_servie_rel_consulting = 'Y' THEN '상담,'
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_servie_rel_law_min = 'Y' THEN '법률/노무,'
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_servie_rel_medic = 'Y' THEN '의료,'
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_servie_rel_etc = 'Y' THEN CONCAT('그외-',a.action_type_servie_rel_etc_txt,',')
+							        	ELSE '' END,
+							        CASE WHEN a.action_type_etc = 'Y' THEN CONCAT('기타-',a.action_type_etc_txt,',')
+							        	ELSE '' END) 	
+							         AS action_type_txt
+							    , CONCAT(CASE WHEN a.action_type_cont = 'coun' THEN '초기상담'
+							         	WHEN a.action_type_cont = 'act' THEN '기관조치'
+							         	WHEN a.action_type_cont = 'con' THEN '수사/조사의뢰'
+							         	WHEN a.action_type_cont = 'move' THEN '이관'
+							         	WHEN a.action_type_cont = 'cancel' THEN '각하'
+							         	WHEN a.action_type_cont = 'giveup' THEN '취하'
+							         	WHEN a.action_type_cont = 'etc' THEN CONCAT('기타-',a.action_type_cont_etc_txt)
+							         	ELSE '' END, ' ',
+							         	a.action_contents)
+							         	AS action_type_cont_txt
+							     , 	e.counselName
+							     , CASE WHEN D.org_type = '1' THEN '공공'
+							         	WHEN D.org_type = '2' THEN '민간'
+							         	ELSE '' END
+							         	AS org_type_txt
+							     , D.org_name
+							     , D.upper_org_name
+							     , D.org_member_count
+							     , CASE WHEN D.org_type_gov_detail = 'national' THEN '국가기관'
+							         	WHEN D.org_type_gov_detail = 'local' THEN '지방자치단체(지자체)'
+							         	WHEN D.org_type_gov_detail = 'public' THEN '공공기관'
+							         	WHEN D.org_type_gov_detail = 'school' THEN '각급학교'
+							         	ELSE '' END
+							         	AS org_type_gov_detail_txt
+							     , D.belong_job_title
+							     , D.org_client_name
+							     , D.org_client_tel_no
+							     , D.org_client_email
+							     , CASE WHEN D.accident_response_hist = 'yes' THEN '유'
+							         	WHEN D.accident_response_hist = 'no' THEN '무'
+							         	WHEN D.accident_response_hist = 'none' THEN '발생했으나 공식처리되지 않음'
+							         	ELSE '' END
+							         	AS accident_response_hist_txt
+							     , D.accident_date
+							     , D.receipt_date
+							     , CONCAT(CASE WHEN D.harm_type_verbals = 'Y' THEN '언어적 성희롱,'
+							     		ELSE '' END,
+							       CASE WHEN D.harm_type_body = 'Y' THEN '신체적 성희롱,'
+							        	ELSE '' END,
+							       CASE WHEN D.harm_type_visual = 'Y' THEN '시각적 성희롱,'
+							        	ELSE '' END,
+							       CASE WHEN D.harm_type_second = 'Y' THEN '2차 피해,'
+							        	ELSE '' END,
+							       CASE WHEN D.harm_type_etc = 'Y' THEN CONCAT('기타-',D.harm_etc_txt)
+							        	ELSE '' END)
+							       AS harm_type_txt
+							     , CASE WHEN D.accident_step = 'step1' THEN '인지 및 접수 (삼당)'
+							         	WHEN D.accident_step = 'step2' THEN '조사'
+							         	WHEN D.accident_step = 'step3' THEN '고충심의위원회'
+							         	WHEN D.accident_step = 'step4' THEN '종결 (후속조치)'
+							         	ELSE '' END
+							         	AS accident_step_txt
+							     , D.application_etc_txt
+							     , CONCAT(CASE WHEN D.first_org_type_all = 'Y' THEN '전수 설문조사 (조직문화 및 성희롱 성폭력 실태 파악),'
+							     		ELSE '' END,
+							       CASE WHEN D.first_org_type_inorg = 'Y' THEN '기관 내 성희롱ㆍ성폭력 사건처리 절차 및 제도* 자문* 성희롱 방지조치, 폭력예방교육, 성희롱ㆍ성폭력 예방지침 등,'
+							        	ELSE '' END,
+							       CASE WHEN D.first_org_type_protect = 'Y' THEN '피해자 보호, 2차 피해 방지 방안 자문,'
+							        	ELSE '' END,
+							       CASE WHEN D.first_org_type_etc = 'Y' THEN CONCAT('기타-',D.first_org_type_etc_txt)
+							        	ELSE '' END)
+							       AS first_org_type_txt
+							     , CONCAT(CASE WHEN D.dup_org_type_check = 'Y' THEN '기관 내 성희롱ㆍ성폭력 사건처리절차 검토 및 자문,'
+							     		ELSE '' END,
+							       CASE WHEN D.dup_org_type_protect = 'Y' THEN '피해자 보호, 2차 피해 방지 및 재발방지대책 수립 자문,'
+							        	ELSE '' END,
+							       CASE WHEN D.dup_org_type_all = 'Y' THEN '전수 설문조사 (조직문화 및 성희롱ㆍ성폭력 실태 파악),'
+							        	ELSE '' END,
+							       CASE WHEN D.dup_org_type_inorg = 'Y' THEN '기관 내 성희롱ㆍ성폭력 사건처리 제도*자문*  폭력예방교육, 성희롱ㆍ성폭력 예방지침 등,'
+							        	ELSE '' END,
+							       CASE WHEN D.dup_org_type_etc = 'Y' THEN CONCAT('기타-',D.dup_org_type_etc_txt)
+							        	ELSE '' END)
+							       AS dup_org_type_txt
+							     , CONCAT(CASE WHEN D.wish_consulting_date_1_yn = 'Y' THEN CONCAT(SUBSTRING(D.wish_consulting_date_1,2,2),'년 ',SUBSTRING(D.wish_consulting_date_1,4,2),'분기,')
+							     		ELSE '' END,
+							       CASE WHEN D.wish_consulting_date_2_yn = 'Y' THEN CONCAT(SUBSTRING(D.wish_consulting_date_2,2,2),'년 ',SUBSTRING(D.wish_consulting_date_2,4,2),'분기,')
+							        	ELSE '' END,
+							       CASE WHEN D.wish_consulting_date_3_yn = 'Y' THEN CONCAT(SUBSTRING(D.wish_consulting_date_3,2,2),'년 ',SUBSTRING(D.wish_consulting_date_3,4,2),'분기,')
+							        	ELSE '' END,
+							       CASE WHEN D.wish_consulting_date_4_yn = 'Y' THEN CONCAT(SUBSTRING(D.wish_consulting_date_4,2,2),'년 ',SUBSTRING(D.wish_consulting_date_4,4,2),'분기,')
+							        	ELSE '' END) 
+							       AS wish_consulting_date_txt
+							     , D.reference_etc
+							         	
+							FROM
+								W_CONSULTING_ACTION_MASTER a
+								JOIN
+								zuser b
+								on
+								a.manager = b.userid
+								LEFT OUTER JOIN
+								(
+									SELECT 
+										consulting_action_no
+										, (select USERNAME from zuser where userid = manager) as rel_manager
+										, COUNT(*) AS ccnt
+									FROM 
+										w_consulting_action_rel_managesr
+									GROUP BY consulting_action_no										
+								) C
+								on
+								A.consulting_action_no = C.consulting_action_no
+								LEFT OUTER JOIN
+								w_counselor e
+								on
+								a.counselNum = e.counselNum
+								JOIN
+								W_CONSULTING_APPLICATION_MASTER D
+								ON
+								a.consulting_action_no = D.consulting_application_no		
+								,   (SELECT @rownum := #m#) R
+							WHERE
+								a.DELETE_YN = 'N'
+		]]>
+				<include refid="whereOrgCultureList"/>
+				<isNotEmpty property="bbsType">
+					<isEqual property="bbsType" compareValue="P">
+					AND a.consulting_action_no IN ( SELECT 
+															consulting_action_no 
+													FROM 
+														w_consulting_action_rel_managesr 
+													WHERE 
+															manager = #loginUserId#
+														AND	con_ac_type = 'ac'
+													)
+					</isEqual>
+				</isNotEmpty>
+		
+				<![CDATA[
+							order by create_date desc
+							LIMIT #m#, #n#
+						) row_
+					WHERE @rownum < (#n#+#m#)
+				) c
+
+		]]>
+	</select>
+
+	<select id="view" parameterClass="AppActionMergeVo" resultClass="AppActionMergeVo">
+		<![CDATA[
+							SELECT
+									a.actionNO
+								,	a.consulting_action_no
+								,	a.manager
+								,	c.username as manager_name
+								,	a.action_consulting_type
+								,	a.registration_date
+								,   a.registration_strtime
+								,   a.registration_endtime
+								,	a.action_received_type
+								,	a.contact_tel_no
+								,	a.contact_email
+								,	a.client_name
+								,	a.client_gender
+								,	a.client_belong
+								,	a.client_victim_rel_type
+								,	a.client_victim_rel_type_etc
+								,	a.org_accident_step
+								,	a.org_accident_step_etc								
+								,	a.action_type_monitoring
+								,	a.action_type_info
+								,	a.action_type_req_listening
+								,	a.action_type_other_org_info
+								,	a.action_type_other_org_min
+								,	a.action_type_other_org_civil_criminal
+								,	a.action_type_other_org_rights
+								,	a.action_type_other_org_etc
+								,	a.action_type_other_org_etc_txt
+								,	a.action_type_servie_rel
+								,	a.action_type_servie_rel_consulting
+								,	a.action_type_servie_rel_law_min
+								,	a.action_type_servie_rel_medic
+								,	a.action_type_servie_rel_etc
+								,	a.action_type_servie_rel_etc_txt
+								,	a.action_type_etc, action_type_etc_txt								
+								,	a.action_contents
+								,	a.action_type_cont
+								,	a.action_type_cont_etc_txt
+								,	a.after_plan
+								,	a.action_etc
+								,	a.consulting_history_no
+								,	DATE_FORMAT(a.action_consulting_date_from,'%Y-%m-%d') AS action_consulting_date_from
+								,	DATE_FORMAT(a.action_consulting_date_to,'%Y-%m-%d') AS action_consulting_date_to
+								,	a.counselNum
+								,	b.counselName
+								,	a.action_contents_etc
+								,	a.delete_reason
+								,	a.create_user
+								,	a.create_date
+								,	a.update_user
+								,	a.update_date
+								,	a.delete_user
+								,	a.delete_date
+								,	a.delete_yn
+							FROM
+								W_CONSULTING_ACTION_MASTER	a
+								JOIN
+								zuser c
+								on
+								a.manager = c.userid
+								LEFT OUTER JOIN
+								W_COUNSELOR					b
+								ON
+								a.counselNum = b.counselNum
+								AND b.delYn = 'N'
+							WHERE
+									a.delete_yn = 'N'
+		]]>
+								<isNotEmpty property="consulting_action_no">
+								AND	a.consulting_action_no = #consulting_action_no#
+								</isNotEmpty>
+								<isEmpty property="consulting_action_no">
+								AND	a.actionNO = #actionNO#
+								</isEmpty>
+		
+	</select>
+	
+	<update id="actionUpdate">
+		<![CDATA[
+			UPDATE W_CONSULTING_ACTION_MASTER
+			SET
+					manager = #manager#
+				,	action_consulting_type = #action_consulting_type#
+			]]>
+			<isNotEmpty property="registration_date">
+				,   registration_date = #registration_date#
+			</isNotEmpty>
+			<isNotEmpty property="registration_strtime">	
+				,	registration_strtime = #registration_strtime#
+			</isNotEmpty>
+			<isNotEmpty property="registration_endtime">
+				,	registration_endtime = #registration_endtime#
+			</isNotEmpty>
+		<![CDATA[
+				,	action_received_type = #action_received_type#
+				,	contact_tel_no = #contact_tel_no#
+				,	contact_email = #contact_email#
+				,	client_name = #client_name#
+				,	client_gender = #client_gender#
+				,	client_belong = #client_belong#
+				,	client_victim_rel_type = #client_victim_rel_type#
+				,	client_victim_rel_type_etc = #client_victim_rel_type_etc#
+				,	org_accident_step = #org_accident_step#
+				,	org_accident_step_etc = #org_accident_step_etc#
+				
+				,	action_type_monitoring = #action_type_monitoring#
+				,	action_type_info = #action_type_info#
+				,	action_type_req_listening = #action_type_req_listening#
+				,	action_type_other_org_info = #action_type_other_org_info#
+				,	action_type_other_org_min = #action_type_other_org_min#
+				,	action_type_other_org_civil_criminal = #action_type_other_org_civil_criminal#
+				,	action_type_other_org_rights = #action_type_other_org_rights#
+				,	action_type_other_org_etc = #action_type_other_org_etc#
+				,	action_type_other_org_etc_txt = #action_type_other_org_etc_txt#
+				,	action_type_servie_rel = #action_type_servie_rel#
+				,	action_type_servie_rel_consulting = #action_type_servie_rel_consulting#
+				,	action_type_servie_rel_law_min = #action_type_servie_rel_law_min#
+				,	action_type_servie_rel_medic = #action_type_servie_rel_medic#
+				,	action_type_servie_rel_etc = #action_type_servie_rel_etc#
+				,	action_type_servie_rel_etc_txt = #action_type_servie_rel_etc_txt#
+				,	action_type_etc = #action_type_etc#
+				,	action_type_etc_txt = #action_type_etc_txt#
+
+				,	action_contents = #action_contents#
+				,	action_type_cont = #action_type_cont#
+				,	action_type_cont_etc_txt = #action_type_cont_etc_txt#
+				,	after_plan = #after_plan#
+				,	action_etc = #action_etc#
+				,	consulting_history_no = #consulting_history_no#
+				,	action_consulting_date_from =  CASE WHEN #action_consulting_date_from# = '' THEN NULL ELSE #action_consulting_date_from# END 
+				,	action_consulting_date_to = CASE WHEN #action_consulting_date_to# = '' THEN NULL ELSE #action_consulting_date_to# END
+				,	counselNum = #counselNum#
+				,	action_contents_etc = #action_contents_etc#
+				
+				,	update_user = #update_user#
+				,	update_date = NOW()
+			WHERE
+					consulting_action_no = #consulting_action_no#
+		]]>
+	</update>
+	
+	<update id="deleteRequestByTeacher" parameterClass="AppActionMergeVo">
+		<![CDATA[
+			UPDATE W_CONSULTING_ACTION_MASTER 
+				SET 	DELETE_YN = 'Q'
+					,	DELETE_USER = #delete_user#
+					,	DELETE_DATE = NOW()	 
+			WHERE
+				actionNO IN
+		]]>
+		<iterate property="delList" open="(" close=")" conjunction=",">
+			#delList[]#
+		</iterate>
+	</update>
+	
+	<delete id="delPermanent" parameterClass="AppActionMergeVo">
+		<![CDATA[
+			DELETE
+			FROM W_CONSULTING_ACTION_MASTER
+			WHERE consulting_action_no IN
+		]]>
+		<iterate property="delList" open="(" close=")" conjunction=",">
+			#delList[]#
+		</iterate>
+	</delete>
+	
+	<update id="updDelYn" parameterClass="AppActionMergeVo">
+		<![CDATA[
+			UPDATE W_CONSULTING_ACTION_MASTER 
+				SET 	DELETE_YN = 'N'
+					,	update_user = #update_user#
+					,	update_date = NOW()	 
+			WHERE
+			consulting_action_no IN
+		]]>
+		<iterate property="updList" open="(" close=")" conjunction=",">
+			#updList[]#
+		</iterate>
+	</update>
+	
+	<select id="delListCount" parameterClass="AppActionMergeVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				count(*) AS total
+			FROM
+				W_CONSULTING_ACTION_MASTER
+			WHERE
+				DELETE_YN = 'Q'
+			]]>	
+			<isNotEmpty prepend="and" property="cond1">
+		   		<isNotEmpty property="sdate">
+           		<isNotEmpty property="edate">
+				<![CDATA[ date_format($cond1$,'%Y%m%d') between #sdate# and #edate# ]]>
+				</isNotEmpty>
+				</isNotEmpty>
+			</isNotEmpty>
+          	<isNotEmpty prepend="and" property="cond2">
+           		<isNotEmpty property="keyword">
+				<![CDATA[ UPPER($cond2$) LIKE '%'||UPPER(#keyword#)||'%' ]]>
+				</isNotEmpty>
+			</isNotEmpty>
+
+	</select>
+	
+	<select id="delList" parameterClass="AppActionMergeVo" resultClass="AppActionMergeVo">
+		<![CDATA[
+			SELECT *
+			FROM
+				(
+					SELECT row_.*,
+							@rownum := @rownum + 1 AS rownum_
+					FROM (
+							SELECT
+									`actionNO`
+								,	a.consulting_action_no
+								,	a.manager
+								,	(	CASE WHEN ccnt > 1 THEN concat(b.username,'외 ',ccnt-1,'인 ') 
+										ELSE b.username END 
+									)	AS manager_name
+								,	a.action_consulting_type
+								,	a.registration_date
+								,	a.action_received_type
+								,	a.contact_tel_no
+								,	a.contact_email
+								,	a.client_name
+								,	a.client_gender
+								,	a.client_belong
+								,	a.client_victim_rel_type
+								,	a.client_victim_rel_type_etc
+								,	a.org_accident_step
+								,	a.org_accident_step_etc
+								
+								,	a.action_type_monitoring
+								,	a.action_type_info
+								,	a.action_type_req_listening
+								,	a.action_type_other_org_info
+								,	a.action_type_other_org_min
+								,	a.action_type_other_org_civil_criminal
+								,	a.action_type_other_org_rights
+								,	a.action_type_other_org_etc
+								,	a.action_type_other_org_etc_txt
+								,	a.action_type_servie_rel
+								,	a.action_type_servie_rel_consulting
+								,	a.action_type_servie_rel_law_min
+								,	a.action_type_servie_rel_medic
+								,	a.action_type_servie_rel_etc
+								,	a.action_type_servie_rel_etc_txt
+								,	a.action_type_etc, a.action_type_etc_txt
+								
+								,	a.action_contents
+								,	a.action_type_cont
+								,	a.action_type_cont_etc_txt
+								,	a.after_plan
+								,	a.action_etc
+								,	a.consulting_history_no
+								,	a.action_consulting_date_from
+								,	a.action_consulting_date_to
+								,	a.counselNum
+								,	a.action_contents_etc
+								
+								,	a.delete_reason
+								,	a.create_user
+								,	a.create_date
+								,	a.update_user
+								,	a.update_date
+								,	a.delete_user
+								,	a.delete_date
+								,	a.delete_yn
+								
+								, CASE WHEN D.org_type_gov_detail = 'national' THEN '국가기관'
+							         	WHEN D.org_type_gov_detail = 'local' THEN '지방자치단체(지자체)'
+							         	WHEN D.org_type_gov_detail = 'public' THEN '공공기관'
+							         	WHEN D.org_type_gov_detail = 'school' THEN '각급학교'
+							         	ELSE '' END
+							         	AS org_type_gov_detail_txt
+								,  CASE WHEN D.step_status = '1' THEN '신청'
+							         	WHEN D.step_status = '2' THEN '접수대기'
+							         	WHEN D.step_status = '3' THEN '접수승인'
+							         	WHEN D.step_status = '4' THEN '접수불가'
+							         	WHEN D.step_status = '5' THEN '심사대기'
+							         	WHEN D.step_status = '6' THEN '심사거절'
+							         	WHEN D.step_status = '7' THEN '심사승인'
+							         	WHEN D.step_status = '8' THEN '진단 완료'
+							         	ELSE '' END
+							         	AS step_status_txt
+							         	
+							FROM
+								W_CONSULTING_ACTION_MASTER a
+								JOIN
+								zuser b
+								on
+								a.manager = b.userid
+								LEFT OUTER JOIN
+								(
+									SELECT consulting_action_no, COUNT(*) AS ccnt
+									FROM 
+										w_consulting_action_rel_managesr
+									GROUP BY consulting_action_no										
+								) C
+								on
+								a.consulting_action_no = C.consulting_action_no
+								JOIN
+								W_CONSULTING_APPLICATION_MASTER D
+								ON
+								a.consulting_action_no = D.consulting_application_no,   (SELECT @rownum := #m#) R
+							WHERE
+								a.DELETE_YN = 'Q'
+		]]>
+				<isNotEmpty prepend="and" property="cond1">
+			   		<isNotEmpty property="sdate">
+	           		<isNotEmpty property="edate">
+					<![CDATA[ DATE_FORMAT($cond1$,'%Y%m%d') BETWEEN #sdate# AND #edate# ]]>
+					</isNotEmpty>
+					</isNotEmpty>
+				</isNotEmpty>
+	          	<isNotEmpty prepend="and" property="cond2">
+	           		<isNotEmpty property="keyword">
+					<![CDATA[ UPPER($cond2$) LIKE CONCAT('%',UPPER(#keyword#),'%') ]]>
+					</isNotEmpty>
+				</isNotEmpty>
+				<![CDATA[
+							ORDER BY a.registration_date DESC
+							LIMIT #m#, #n#
+						) row_
+					WHERE @rownum < (#n#+#m#)
+				) c
+
+		]]>
+	</select>
+	
+	<select id="managerList" parameterClass="ManagerListVo" resultClass="ManagerListVo">
+		<![CDATA[
+			SELECT
+					C.USERID	AS manager_id
+				,	C.USERNAME	AS manager_name
+			FROM
+				ZAUTH_GROUP_MEMBER A
+				JOIN
+				ZAUTH_EMP B
+				ON
+				A.GROUPNO = 2
+				AND A.AUTH_NO  = B.EMP_NO	
+				JOIN
+				ZUSER C 
+				ON
+				C.USERID  = B.EMP_ID
+		]]>
+	</select>
+	
+	<insert id="insertRelManager" parameterClass="AppActionMergeVo">
+		<![CDATA[
+			INSERT INTO w_consulting_action_rel_managesr
+			(
+					consulting_action_no
+				,	manager
+				,	con_ac_type
+				,	create_user
+				,	create_date
+			)
+			VALUES
+		]]>
+		<iterate property="managerList" conjunction=",">
+			(
+					#consulting_action_no#
+				,	#managerList[]#
+				,	#con_ac_type#
+				,	#create_user#
+				,	NOW()
+			)
+		</iterate>
+	</insert>
+	
+	<select id="retrieveManagerListByConsultIngActionNO" parameterClass="String" resultClass="ManagerListVo">
+		<![CDATA[
+			SELECT
+					a.manager as manager_id
+				,	b.USERNAME as manager_name
+			FROM
+				w_consulting_action_rel_managesr a
+				join
+				zuser b
+				on
+				a.manager  = b.USERID
+			WHERE
+				 consulting_action_no = #consulting_action_no#
+		]]>
+	</select>
+	
+	<delete id="deleteRelManagerByConsultingActionNO" parameterClass="String">
+		<![CDATA[
+			DELETE FROM w_consulting_action_rel_managesr
+			WHERE consulting_action_no = #consulting_action_no# 
+		]]>
+	</delete>
+	
+	<insert id="insertRelComissioner" parameterClass="AppActionMergeVo">
+		<![CDATA[
+			INSERT INTO w_consulting_action_rel_commissioner
+			(
+					consulting_action_no
+				,	counselNum
+				,	ac_com_date_from
+				,	ac_com_date_to
+				,	create_user
+				,	create_date
+			)
+			VALUES
+		]]>
+		<iterate property="cmmList" conjunction=",">
+			(
+					#consulting_action_no#
+				,	#cmmList[].counselNum#
+				,	CASE WHEN #cmmList[].ac_com_date_from# = '' THEN NULL ELSE #cmmList[].ac_com_date_from# END
+				,	CASE WHEN #cmmList[].ac_com_date_to# = '' THEN NULL ELSE #cmmList[].ac_com_date_to# END
+				,	#create_user#
+				,	NOW()
+			)
+		</iterate>
+	</insert>
+	
+	<select id="retrieveCommissionoerList" parameterClass="String" resultClass="CommInfoVo">
+		<![CDATA[
+			SELECT
+					a.counselNum
+				,	b.counselName
+				,	a.ac_com_date_from
+				,	a.ac_com_date_to
+			FROM
+				w_consulting_action_rel_commissioner	a
+				join
+				w_counselor								b
+				on
+					a.counselNum  = b.counselNum
+			WHERE
+				 		a.consulting_action_no = #consulting_action_no#
+				 AND	a.delete_yn = 'N'
+			ORDER BY create_date DESC
+		]]>
+	</select>
+	
+	<delete id="deleteRelCommissionerByConsultingActionNO" parameterClass="String">
+		<![CDATA[
+			DELETE FROM w_consulting_action_rel_commissioner
+			WHERE consulting_action_no = #consulting_action_no# 
+		]]>
+	</delete>
+	
+	<insert id="insertRelAcWithCon" parameterClass="AppActionMergeVo">
+		<![CDATA[
+			INSERT INTO w_consulting_action_rel_con
+			(
+					action_no
+				,	consulting_no
+				,	create_user
+				,	create_date
+			)
+			VALUES
+		]]>
+		<iterate property="consultingNoList" conjunction=",">
+			(
+					#consulting_action_no#
+				,	#consultingNoList[]#
+				,	#create_user#
+				,	NOW()
+			)
+		</iterate>
+	</insert>
+
+	<select id="retrieveRelConList" parameterClass="String" resultClass="ConInfoRelActionVo">
+		<![CDATA[
+			SELECT
+					a.NO
+				,	a.action_no
+				,	a.consulting_no
+				,	b.consulting_history_no
+				,	a.create_user
+				,	a.create_date
+				,	a.update_user
+				,	a.update_date
+				,	a.delete_user
+				,	a.delete_date
+				,	a.delete_yn
+			FROM
+				w_consulting_action_rel_con	a
+				JOIN
+				w_consulting_history_master b
+				ON
+				a.consulting_no = b.NO
+			WHERE
+				 		a.action_no = #consulting_action_no#
+				 AND	a.delete_yn = 'N'
+		]]>
+	</select>
+	
+	<delete id="deleteRelConsultingByConsultingActionNO" parameterClass="String">
+		<![CDATA[
+			DELETE FROM w_consulting_action_rel_con
+			WHERE action_no = #consulting_action_no# 
+		]]>
+	</delete>
+	
+	<update id="applicationStepChange" parameterClass="FrontApplicationVo">
+		<![CDATA[
+			UPDATE w_consulting_application_master
+				SET 	step_status = #step_status#
+					,	update_user = #update_user#
+					,	update_date	= NOW()
+			WHERE
+				consulting_application_no = #consulting_application_no#
+		]]>
+	</update>
+	
+	<select id="checkCurStat" parameterClass="FrontApplicationVo" resultClass="Integer">
+		<![CDATA[
+			SELECT
+					CASE WHEN a.step_status = #step_status# THEN 0 ELSE 1 END AS result
+			FROM
+				w_consulting_application_master a
+			WHERE
+				 a.consulting_application_no = #consulting_application_no#
+		]]>
+	</select>
+	
+	<insert id="registrationAppHistory"	parameterClass="FrontApplicationVo">
+		<![CDATA[
+			INSERT INTO w_application_step_history
+			(	
+					consulting_application_no
+				,	step_status
+				,	create_user
+				,	create_date
+			)
+			VALUES
+			(
+					#consulting_application_no#
+				,	#step_status#
+				,	#create_user#
+				,	NOW()
+			)
+		]]>
+	</insert>
+	
+ 	<sql id="whereScheduleList">
+		<isNotEmpty property="registration_date_from">
+			<isNotEmpty property="registration_date_to">
+				AND a.registration_date BETWEEN STR_TO_DATE(#registration_date_from#,'%Y-%m-%d')
+						AND STR_TO_DATE(#registration_date_to#,'%Y-%m-%d')
+			</isNotEmpty>
+			<isEmpty property="registration_date_to">
+				AND a.registration_date >= STR_TO_DATE(#registration_date_from#,'%Y-%m-%d')
+			</isEmpty>			
+		</isNotEmpty>
+		
+		<isEmpty property="registration_date_from">
+			<isNotEmpty property="registration_date_to">
+				AND a.registration_date<![CDATA[	<=	]]>STR_TO_DATE(#registration_date_to#,'%Y-%m-%d')
+			</isNotEmpty>
+		</isEmpty> 	
+
+		<isNotEmpty property="manager_name">
+			AND a.consulting_action_no IN (	SELECT 
+													consulting_action_no 
+											FROM 
+												w_consulting_action_rel_managesr 
+											WHERE 
+													manager = (
+																SELECT
+																	USERID
+																FROM
+																	ZUSER
+																WHERE
+																	USERNAME LIKE CONCAT('%',#manager_name#,'%')
+															)
+												AND	con_ac_type = 'ac'
+										)
+		</isNotEmpty>
+		
+	 	<isNotEmpty property="org_name">
+			AND b.org_name = #org_name#
+		</isNotEmpty>
+		
+		<isNotEmpty property="action_consulting_date_from">
+			<isNotEmpty property="action_consulting_date_to">
+				AND (	a.action_consulting_date_from >= STR_TO_DATE(#action_consulting_date_from#,'%Y-%m-%d')
+						AND
+						a.action_consulting_date_to<![CDATA[	<=	]]>STR_TO_DATE(#action_consulting_date_to#,'%Y-%m-%d') 
+					)
+			</isNotEmpty>
+			<isEmpty property="action_consulting_date_to">
+				AND a.action_consulting_date_from >= STR_TO_DATE(#action_consulting_date_from#,'%Y-%m-%d')
+			</isEmpty>			
+		</isNotEmpty>
+		
+		<isNotEmpty property="step_status">
+			<isGreaterThan property="step_status" compareValue="0">
+				AND	b.step_status = #step_status#
+			</isGreaterThan>
+		</isNotEmpty>	
+	</sql>
+	
+	<select id="allScheduleList" parameterClass="AppActionMergeVo" resultClass="AppActionMergeVo">
+		<![CDATA[
+			select
+				*
+			from
+				(
+				select
+					row_.*,
+					@rownum := @rownum + 1 as rownum_
+				from
+					(
+					select
+							count(*) over () as totalCount			
+						,	a.consulting_action_no
+						,	DATE_FORMAT(a.registration_date, '%Y-%m-%d') as registration_date
+						,	(	CASE WHEN ccnt > 1 THEN concat(d.username,'외 ',ccnt-1,'인 ') 
+								ELSE d.username END 
+							)	AS manager_name
+						,	b.org_name 									
+						,	DATE_FORMAT(a.action_consulting_date_from, '%Y-%m-%d') as action_consulting_date_from
+						,	DATE_FORMAT(a.action_consulting_date_to, '%Y-%m-%d') as action_consulting_date_to
+						,	b.step_status
+						,	e.CODE_NM as step_status_name
+					from
+						w_consulting_action_master a
+						join
+						w_consulting_application_master b
+						on
+						a.consulting_action_no  = b.consulting_application_no 
+						LEFT OUTER JOIN
+						(
+							SELECT consulting_action_no, COUNT(*) AS ccnt
+							FROM 
+								w_consulting_action_rel_managesr
+							GROUP BY consulting_action_no										
+						) c
+						ON
+						a.consulting_action_no = c.consulting_action_no
+						
+														JOIN
+											zuser d
+											on
+											a.manager = d.userid
+						join
+						comtccmmndetailcode e 
+						on
+						b.step_status = e.CODE
+						and e.CODE_ID  = 'STEP'
+						,(SELECT @rownum := #m#) R
+					where
+						1 = 1
+		]]>
+					<include refid="whereScheduleList"/>	
+		<![CDATA[
+					order by
+						a.action_consulting_date_from desc
+					LIMIT #m#, #n#
+						) row_
+					WHERE @rownum < (#n#+#m#)
+				) c
+		]]>
+	</select>
+	
+	<select id="allScheduleListCount" parameterClass="AppActionMergeVo">
+		<![CDATA[
+			select
+				count(*)
+			from
+				w_consulting_action_master a
+				join
+				w_consulting_application_master b
+				on
+				a.consulting_action_no  = b.consulting_application_no 
+				LEFT OUTER JOIN
+				(
+					SELECT consulting_action_no, COUNT(*) AS ccnt
+					FROM 
+						w_consulting_action_rel_managesr
+					GROUP BY consulting_action_no										
+				) c
+				ON
+				a.consulting_action_no = c.consulting_action_no
+				
+												JOIN
+									zuser d
+									on
+									a.manager = d.userid
+				join
+				comtccmmndetailcode e 
+				on
+				b.step_status = e.CODE
+				and e.CODE_ID  = 'STEP'
+				, ( select @rownum := 0) R
+			where
+				1 = 1
+		]]>	<include refid="whereScheduleList"/>
+	</select>
+	
+	<select id="validation" parameterClass="String" resultClass = "String">
+		<![CDATA[
+			
+			SELECT COUNT(*) FROM w_consulting_action_master
+			WHERE consulting_action_no = #data#;
+		
+		]]>	
+	</select>
+	
+</sqlMap>

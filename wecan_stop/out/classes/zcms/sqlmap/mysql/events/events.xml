@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="events">
+
+	<typeAlias alias="events" 			type="com.z5.zcms.admsys.events.domain.Events" />
+	<typeAlias alias="eventsEntryFee" 	type="com.z5.zcms.admsys.events.domain.EventsEntryFee" />
+
+	<!-- 이벤트 추가 -->
+    <insert id="insertEvents" parameterClass="events">
+    	<selectKey type="pre" resultClass="java.lang.String" keyProperty="evIdx">
+		<![CDATA[
+			SELECT EVENTS_MAIN_SEQ.nextval  FROM db_root
+		]]>
+		</selectKey>
+		<![CDATA[
+			INSERT INTO TBL_EVENTS_MAIN (
+				evIdx,
+				evTitle,
+				evCategory,
+				evStartDate,
+				evEndDate,
+				evRegisStartTime,
+				evRegisEndTime,
+				evOpenSite,
+				evOpenDate,
+				evContents,
+				evAttFileName,
+				evAttRealName,
+				evRegistDate
+			)
+			VALUES
+			(
+				#evIdx#,
+				#evTitle#,
+				#evCategory#,
+				TO_DATE(#evStartDate#, 'YY%Y%m%d'),
+				TO_DATE(#evEndDate#, 'YY%Y%m%d'),
+				TO_DATE(#evRegisStartTime#, '%Y%m%d%H%i%s'),
+				TO_DATE(#evRegisEndTime#, '%Y%m%d%H%i%s'),
+				#evOpenSite#,
+				TO_DATE(#evOpenDate#, 'YY%Y%m%d'),
+				#evContents#,
+				#evAttFileName#,
+				#evAttRealName#,
+				now()
+			)
+		]]>
+    </insert>
+
+	<!-- 이벤트 List Count -->
+	<select id="getEventsListCount" parameterClass="events"  resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*)
+			FROM TBL_EVENTS_MAIN
+			WHERE
+				1=1
+		]]>
+	</select>
+
+	<!-- 이벤트 List -->
+	<select id="selectEventsList" parameterClass="events" resultClass="events">
+		<![CDATA[
+			SELECT
+				evIdx,
+				evTitle,
+				evCategory,
+				DATE_FORMAT(evStartDate, 'YYYY. MM. DD') AS evStartDate,
+				DATE_FORMAT(evEndDate, 'YYYY. MM. DD') AS evEndDate,
+				DATE_FORMAT(evRegisStartTime, 'YYYY. MM. DD HH24 : MI') AS evRegisStartTime,
+				DATE_FORMAT(evRegisEndTime, 'YYYY. MM. DD HH24 : MI') AS evRegisEndTime,
+				evOpenSite,
+				DATE_FORMAT(evOpenDate, 'YYYY. MM. DD') AS evOpenDate,
+				evContents,
+				evAttFileName,
+				evAttRealName
+			FROM
+				(
+				SELECT
+					row_.*
+					, @rownum := @rownum + 1 AS rownum_
+				FROM
+					(
+					SELECT
+				        *
+					FROM
+				        TBL_EVENTS_MAIN,   (SELECT @rownum := #m#) R
+					WHERE 1=1
+					ORDER BY evIdx DESC
+				 	) row_
+				WHERE
+					rownum <= (#n# + #m#)
+				) rows_
+
+		]]>
+	</select>
+
+	<!-- 이벤트 상세정보 -->
+	<select id="getEventsInfoById" parameterClass="events" resultClass="events">
+		<![CDATA[
+			SELECT
+				evIdx,
+				evTitle,
+				evCategory,
+				DATE_FORMAT(evStartDate, '%Y-%m-%d') AS evStartDate,
+				DATE_FORMAT(evEndDate, '%Y-%m-%d') AS evEndDate,
+				DATE_FORMAT(evRegisStartTime, '%Y-%m-%d %H%i%s') AS evRegisStartTime,
+				DATE_FORMAT(evRegisEndTime, '%Y-%m-%d %H%i%s') AS evRegisEndTime,
+				evOpenSite,
+				DATE_FORMAT(evOpenDate, '%Y-%m-%d') AS evOpenDate,
+				evContents,
+				evAttFileName,
+				evAttRealName
+			FROM TBL_EVENTS_MAIN
+			WHERE evIdx= #evIdx#
+		]]>
+	</select>
+
+	<!-- 이벤트 수정 -->
+	<update id="updateEvents" parameterClass="events"  >
+		<![CDATA[
+			UPDATE TBL_EVENTS_MAIN SET
+				evTitle          = #evTitle#,
+				evCategory       = #evCategory#,
+				evStartDate      = TO_DATE(#evStartDate#, '%Y-%m-%d'),
+				evEndDate        = TO_DATE(#evEndDate#, '%Y-%m-%d'),
+				evRegisStartTime = TO_DATE(#evRegisStartTime#, '%Y-%m-%d %H%i%s'),
+				evRegisEndTime   = TO_DATE(#evRegisEndTime#, '%Y-%m-%d %H%i%s'),
+				evOpenSite       = #evOpenSite#,
+				evOpenDate       = TO_DATE(#evOpenDate#, '%Y-%m-%d'),
+				evContents       = #evContents#,
+				evAttFileName    = #evAttFileName#,
+				evAttRealName	 = #evAttRealName#,
+				evRegistDate	 = now()
+			WHERE
+				evIdx = #evIdx#
+		]]>
+    </update>
+
+	<!-- 이벤트 삭제 -->
+	<delete id="deleteEvents" parameterClass="events" >
+		<![CDATA[
+			DELETE
+			FROM TBL_CONFERENCE
+			WHERE
+				evIdx = #evIdx#
+		]]>
+    </delete>
+
+	<!-- 참가비 추가 -->
+    <insert id="insertEventsEntryFee" parameterClass="eventsEntryFee"  >
+		<![CDATA[
+			INSERT INTO TBL_EVENTS_ENTRYFEE (
+				efIdx,
+				efEvIdx,
+				efChargeTarget,
+				efTargetLevel,
+				efChargeSum,
+				efTitle
+			)
+			VALUES
+			(
+				EVENTS_ENTRYFEE_SEQ.nextval,
+				#efEvIdx#,
+				#efChargeTarget#,
+				#efTargetLevel#,
+				#efChargeSum#,
+				#efTitle#
+			)
+		]]>
+    </insert>
+
+	<!-- 특정 이벤트 참가비  목록 -->
+	<select id="selectEntryFeeListByFk" parameterClass="eventsEntryFee" resultClass="eventsEntryFee">
+		<![CDATA[
+			SELECT
+				efIdx,
+				efEvIdx,
+				efChargeTarget,
+				efTargetLevel,
+				efChargeSum,
+				efTitle
+			FROM TBL_EVENTS_ENTRYFEE
+			WHERE efEvIdx= #efEvIdx#
+			ORDER BY efIdx
+		]]>
+	</select>
+
+	<!-- 특정 이벤트 특정 회원레벨 참가비  -->
+	<select id="getEntryFeeSumOfLevel" parameterClass="eventsEntryFee" resultClass="eventsEntryFee">
+		<![CDATA[
+			SELECT
+				*
+			FROM TBL_EVENTS_ENTRYFEE
+			WHERE efEvIdx=#efEvIdx#
+		]]>
+			<isNotEmpty property="efTargetLevel">
+				<![CDATA[	AND efTargetLevel=#efTargetLevel#	]]>
+			</isNotEmpty>
+	</select>
+
+	<!-- 참가비 삭제 -->
+	<delete id="deleteEventsEntryFee" parameterClass="eventsEntryFee" >
+		<![CDATA[
+			DELETE
+			FROM TBL_EVENTS_ENTRYFEE
+			WHERE
+				efEvIdx = #efEvIdx#
+		]]>
+    </delete>
+
+
+	<delete id="deleteMainByFk" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM TBL_EVENTS_MAIN
+			WHERE EVIDX IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<delete id="deleteFeeByFk" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM TBL_EVENTS_ENTRYFEE
+			WHERE EFEVIDX IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<delete id="deleteEntriesByFk" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM TBL_EVENTS_ENTRIES
+			WHERE ENEVIDX IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<delete id="deletePaperByFk" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM TBL_EVENTS_PAPERS
+			WHERE EPEVIDX IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+
+	<delete id="deleteEntriesByFk2" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM TBL_EVENTS_ENTRIES
+			WHERE ENIDX IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<delete id="deletePaperByFk2" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM TBL_EVENTS_PAPERS
+			WHERE EPENIDX IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+</sqlMap>

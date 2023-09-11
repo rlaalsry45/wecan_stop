@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZJS">
+	
+	<typeAlias alias="zjsVo" type="com.z5.zcms.admsys.js.domain.ZjsVo"/>
+	<resultMap id="zjsVo" class="com.z5.zcms.admsys.js.domain.ZjsVo"/>
+
+	<insert id="zjsDAO.write">
+		<![CDATA[
+			INSERT INTO ZJS
+			(
+				 jstitle
+				, jstype
+				, jsconts
+				, jsfileorg
+				, jsfilesave
+				, userid
+				, jsdatereg
+				, jsmemo
+			) 
+			VALUES
+			(
+				 #jstitle#
+				, #jstype#
+				, #jsconts#
+				, #jsfileorg#
+				, #jsfilesave#
+				, #userid#
+				, date_format(now(),'%Y%m%d%H%i%s')
+				, #jsmemo#
+			)
+		]]>
+	</insert>
+	
+	<select id="zjsDAO.list" parameterClass="zjsVo" resultClass="zjsVo">
+		<![CDATA[
+			SELECT
+				 jsno
+				,jstitle
+				,jsuse
+				,sitetitle
+				,jsfilesave
+				,jsdatereg
+				,jsdatemod
+			from 
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        a.*
+						        ,(SELECT GROUP_CONCAT(SITETITLE) FROM zjsuse where jsno = a.jsno) AS sitetitle
+						        /*, get_sitetitle('zjsuse','jsno', a.jsno) as sitetitle*/
+				    	   from
+						        zjs a,   (SELECT @rownum := #m#) R
+						   where 1 = 1
+			]]>
+							<isNotEmpty prepend="and" property="cond1">
+								<![CDATA[ $cond1$ >= #sdate# and $cond1$ <= #edate# ]]>
+							</isNotEmpty>
+							<isNotEmpty prepend="and" property="cond2">
+								<![CDATA[ upper($cond2$) like '%'||upper(#keyword#)||'%' ]]>
+							</isNotEmpty>
+			<![CDATA[
+							order by jsno desc
+							LIMIT #m#, #n#
+					 	) row_
+					where
+						@rownum < (#n#+#m#)
+				)t
+			
+			]]> 
+	</select>
+	
+	
+	<select id="zjsDAO.listCount" parameterClass="zjsVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*) as total
+			from
+				zjs
+			where 1 = 1
+		]]>
+			<isNotEmpty prepend="and" property="cond1">
+				<![CDATA[
+					$cond1$ >= #sdate# and $cond1$ <= #edate#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cond2">
+				<![CDATA[
+					upper($cond2$) like '%'||upper(#keyword#)||'%'
+				]]>
+			</isNotEmpty>
+	</select>
+	
+	<select id="zjsDAO.listAll" parameterClass="zjsVo" resultClass="zjsVo">
+		SELECT 
+			*
+		FROM ZJS 
+		ORDER BY jsno DESC
+	</select>
+	
+	
+	
+	
+	
+	<delete id="zjsDAO.delete" parameterClass="java.util.List">
+		        DELETE 
+		    		FROM ZJS
+		  			where jsno in
+			        <iterate open="(" close=")" conjunction=",">
+			            #arrDeleteNo[]#
+			        </iterate>
+		
+	</delete>	
+	
+	<select id="zjsDAO.selectbypk"  parameterClass="zjsVo" resultClass="zjsVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM ZJS
+						WHERE jsNO=#jsno#
+				]]>
+	</select>
+	
+	<update id="zjsDAO.update">
+		<![CDATA[
+			UPDATE ZJS
+			SET   jstitle=#jstitle#
+				, jstype=#jstype#
+				, jsfileorg=#jsfileorg#
+				, jsfilesave=#jsfilesave#
+				, jsconts=#jsconts#
+				, jsmemo=#jsmemo#
+				, jshis=#jshis#
+				, userid=#userid#
+				, jsdatemod=date_format(now(),'%Y%m%d%H%i%s')
+			WHERE jsno=#jsno#
+		]]>
+	</update>
+	
+
+</sqlMap>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="accessLog">
+    <typeAlias alias="AccessLogVo" type="com.z5.zcms.admsys.ftp.domain.AccessLogVo" />
+    <typeAlias alias="EgovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" />
+    
+	<resultMap id="AccessLogVo" class="com.z5.zcms.admsys.ftp.domain.AccessLogVo"/>
+
+    <select id="accessLog.listCount" resultClass="java.lang.Integer">
+        <![CDATA[
+			select
+			count(*) as total
+			
+			from accesslog
+			where 1=1
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<![CDATA[
+				date_format(regDt,'%Y%m%d') between #sdate# and #edate#
+        	]]>
+			</isNotEmpty>     
+			<isNotEmpty prepend="AND" property="regId">
+			<![CDATA[
+				regId LIKE CONCAT('%',UPPER(#regId#),'%')
+        	]]>
+       		</isNotEmpty>
+			<isNotEmpty prepend="AND" property="action">
+			<![CDATA[
+				action = #action#
+        	]]>
+        	</isNotEmpty>
+
+    </select>
+
+    <select id="accessLog.getList" parameterClass="AccessLogVo" resultClass="AccessLogVo">
+        <![CDATA[
+        
+			select
+            	no,
+            	ip,
+				informationObject, 
+				action, 
+				regDt, 
+				regId		
+            from
+                accesslog
+			where 1=1
+        ]]>     
+			<isNotEmpty prepend="AND" property="sdate">
+			<![CDATA[
+				date_format(regDt,'%Y%m%d') between #sdate# and #edate#
+        	]]>
+			</isNotEmpty>       
+			<isNotEmpty prepend="AND" property="regId">
+			<![CDATA[
+				regId LIKE CONCAT('%',UPPER(#regId#),'%')
+        	]]>
+       		</isNotEmpty>
+			<isNotEmpty prepend="AND" property="action">
+			<![CDATA[
+				action = #action#
+        	]]>
+        	</isNotEmpty>	        	        	     		          
+            
+			order by no desc
+            LIMIT #m#, #n#
+
+    </select>
+    
+	<insert id="accessLog.actionRegistration" parameterClass="AccessLogVo">
+    	<![CDATA[
+    	insert into accesslog
+            (
+            	ip,
+				informationObject, 
+				action, 
+				regDt, 
+				regId
+			)
+			values
+			(
+			#ip#,
+			#informationObject#,
+			#action#,
+			now(),
+			#regId#
+			)
+				                
+        ]]>
+    	
+    </insert>
+</sqlMap>

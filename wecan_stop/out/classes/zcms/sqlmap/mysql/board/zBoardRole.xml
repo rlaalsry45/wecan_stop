@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZBoardRole">
+	<typeAlias alias="zBoardRoleVo" type="com.z5.zcms.admsys.board.domain.ZBoardRoleVo"/>
+	<resultMap id="zBoardRoleVo" class="zBoardRoleVo"/>
+	<typeAlias alias="zBoardAuthVo" type="com.z5.zcms.admsys.board.domain.ZBoardAuthVo"/>
+	<resultMap id="zBoardAuthVo" class="zBoardAuthVo"/>
+	
+	<select id="getRoleList" resultClass="zBoardRoleVo">
+		<![CDATA[
+			SELECT *
+			FROM zboardrole
+			ORDER BY no asc
+		]]>
+	</select>
+
+	<select id="getAuthListByBoardnoAndRole" parameterClass="zBoardAuthVo" resultClass="zBoardAuthVo">
+		<![CDATA[
+			SELECT *
+			FROM ZBOARDAUTH a
+			LEFT JOIN ZBOARDROLE b
+			ON a.role_no = b.no
+			WHERE a.boardno = #boardno#
+			AND b.role = #role#
+		]]>
+	</select>
+	<select id="getMixedAuthListByBoardnoAndRole" parameterClass="zBoardAuthVo" resultClass="zBoardAuthVo">
+		<![CDATA[
+			SELECT 
+				sum(abs(role_l)) as role_l
+				,sum(abs(role_v)) as role_v
+				,sum(abs(role_w)) as role_w
+				,sum(abs(role_m)) as role_m
+				,sum(abs(role_d)) as role_d
+				,sum(abs(role_m_nm)) as role_m_nm
+				,sum(abs(role_r)) as role_r
+				,sum(abs(role_c)) as role_c
+				,sum(abs(role_n)) as role_n
+			FROM ZBOARDAUTH a
+			LEFT JOIN ZBOARDROLE b
+			ON a.role_no = b.no
+			WHERE a.boardno = #boardno#
+			  AND b.role in 
+		]]>
+		 <iterate open="(" close=")" conjunction="," property="roles">
+		         #roles[]#
+		 </iterate>
+	</select>
+	
+	<select id="getMixedAuthListByBoardnoAndRoleNew" parameterClass="zBoardAuthVo" resultClass="zBoardAuthVo">
+		<![CDATA[
+			SELECT
+				b.role 
+				,a.role_l
+				,a.role_v
+				,a.role_w
+				,a.role_m
+				,a.role_d
+				,a.role_m_nm
+				,a.role_r
+				,a.role_c
+				,a.role_n
+			FROM ZBOARDAUTH a
+			LEFT JOIN ZBOARDROLE b
+			ON a.role_no = b.no
+			WHERE a.boardno = #boardno#
+			 AND b.role in
+		]]>
+		 <iterate open="(" close=")" conjunction="," property="roles">
+		         #roles[]#
+		 </iterate>
+	</select>
+</sqlMap>

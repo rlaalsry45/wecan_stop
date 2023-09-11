@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZEventHis">
+	<typeAlias alias="zEventHisVo" type="com.z5.zcms.admsys.module.domain.ZEventHisVo"/>
+	<typeAlias alias="zEventVo" type="com.z5.zcms.admsys.module.domain.ZEventVo"/>
+	<resultMap id="zEventHisVo" class="zEventHisVo"/>
+	
+	<select id="ZEventHis.list" parameterClass="zEventVo" resultClass="zEventHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZEVENTHIS
+			WHERE
+				eventno=#eventno#
+			ORDER BY
+				hisno DESC
+		]]>
+	</select>
+
+	<select id="ZEventHis.getByPk" parameterClass="zEventHisVo" resultClass="zEventHisVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				ZEVENTHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</select>
+	
+	<delete id="ZEventHis.delete" parameterClass="zEventHisVo">
+		<![CDATA[
+			DELETE FROM 
+				ZEVENTHIS
+			WHERE
+				hisno=#hisno#
+		]]>
+	</delete>
+	
+	<delete id="ZEventHis.deleteMuti" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM 
+				ZEVENTHIS
+			WHERE
+				eventno
+			IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+	
+	<insert id="ZEventHis.insert" parameterClass="zEventVo">
+		<![CDATA[
+			INSERT INTO ZEVENTHIS
+			(
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				target,
+				contstype,
+				conts,
+				required,
+				added,
+				memo,
+				datereg,
+				datemod,
+				userid,
+				datehis,
+				eventno
+			)
+			SELECT
+				
+				title,
+				skin,
+				sdate,
+				edate,
+				target,
+				contstype,
+		]]>
+		<isEqual property="contstype" compareValue="1"><![CDATA[#conts#,]]></isEqual>
+		<isEqual property="contstype" compareValue="3"><![CDATA[#ckeditorConts#,]]></isEqual>
+		<![CDATA[
+				required,
+				added,
+				memo,
+				datereg,
+				datemod,
+				#userid#,
+				now(),
+				eventno
+			FROM
+				ZEVENTCFG
+			WHERE
+				eventno=#eventno#
+		]]>
+	</insert>
+
+</sqlMap>

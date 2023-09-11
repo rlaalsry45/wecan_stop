@@ -1,0 +1,929 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZBoard">
+	<typeAlias alias="zBoardVo" type="com.z5.zcms.admsys.board.domain.ZBoardVo"/>
+	<typeAlias alias="zBoardGroupVo" type="com.z5.zcms.admsys.board.domain.ZBoardGroupVo"/>
+	<typeAlias alias="zBoardGroupAdminVo" type="com.z5.zcms.admsys.board.domain.ZBoardGroupAdminVo"/>
+	<typeAlias alias="zBoardGroupMemberVo" type="com.z5.zcms.admsys.board.domain.ZBoardGroupMemberVo"/>
+	<typeAlias alias="zBoardAuthVo" type="com.z5.zcms.admsys.board.domain.ZBoardAuthVo"/>
+	<typeAlias alias="zBoardAuthAdminVo" type="com.z5.zcms.admsys.board.domain.ZBoardAuthAdminVo"/>
+	<resultMap id="zBoardVo" class="zBoardVo"/>
+	<resultMap id="zBoardGroupVo" class="zBoardGroupVo"/>
+	<resultMap id="zBoardGroupAdminVo" class="zBoardGroupAdminVo"/>
+	<resultMap id="zBoardGroupMemberVo" class="zBoardGroupMemberVo"/>
+	<resultMap id="zBoardAuthVo" class="zBoardAuthVo"/>
+	<resultMap id="zBoardAuthAdminVo" class="zBoardAuthAdminVo"/>
+
+	<typeAlias alias="frontBoardVo" type="com.z5.zcms.admsys.board.domain.FrontBoardVo"/>
+	<resultMap id="frontBoardVo" class="com.z5.zcms.admsys.board.domain.FrontBoardVo"/>
+
+	<select id="listCount" parameterClass="zBoardVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(boardno) AS total
+			FROM zboard
+			WHERE 1 = 1
+		]]>
+		<isNotEmpty prepend="AND" property="adminno">
+		<![CDATA[
+			boardno IN ((SELECT b.boardno FROM zboardgroupadmin a LEFT JOIN zboardgroupmember b ON a.groupno=b.groupno WHERE userno=#adminno#) UNION (SELECT boardno FROM zboardauthadmin WHERE userno=#adminno#))
+		]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond1">
+			<![CDATA[ $cond1$ >= #sdate# AND $cond1$ <= #edate# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+			<![CDATA[ UPPER($cond2$) LIKE CONCAT('%',UPPER(#keyword#),'%') ]]>
+		</isNotEmpty>
+	   <isNotEmpty prepend="and" property="cond3">
+			<![CDATA[ boardno IN (SELECT boardno FROM zboarduse WHERE siteno = #cond3#) ]]>
+		</isNotEmpty>
+	</select>
+
+	<select id="list" parameterClass="zBoardVo" resultClass="zBoardVo">
+		<![CDATA[
+			SELECT
+				boardno,
+				boardtitle,
+				datereg,
+				skin,
+				tblname,
+				type,
+				boarduseyn,
+				(SELECT GROUP_CONCAT(SITETITLE) FROM zboarduse where boardno = c.boardno) AS sitetitle
+				/*get_sitetitle('zboarduse','boardno', boardno) AS sitetitle,*/
+				/*(SELECT b.emp_nm FROM ZBOARDAUTHADMIN a LEFT JOIN ZAUTH_EMP b ON b.emp_no=a.userno WHERE boardno=c.boardno ORDER BY a.no ASC) AS adminname*/
+				/*get_adminname(boardno) AS adminname*/
+			FROM zboard c
+			WHERE 1 = 1
+		]]>
+		<isNotEmpty prepend="AND" property="adminno">
+		<![CDATA[
+			boardno IN ((SELECT b.boardno FROM zboardgroupadmin a LEFT JOIN zboardgroupmember b ON a.groupno=b.groupno WHERE userno=#adminno#) UNION (SELECT boardno FROM zboardauthadmin WHERE userno=#adminno#))
+		]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond1">
+			<![CDATA[ $cond1$ >= replace(CONCAT(#sdate#,'000000'),'-','') AND $cond1$ <= replace(CONCAT(#edate#,'235959'),'-','') ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cond2">
+			<![CDATA[ $cond2$ LIKE '%$keyword$%' ]]>
+		</isNotEmpty>
+		<![CDATA[
+			ORDER BY datereg DESC
+		]]>
+	</select>
+
+
+	<select id="listPaging" parameterClass="zBoardVo" resultClass="zBoardVo">
+		<![CDATA[
+			SELECT
+				 *
+			from
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+						        boardno,
+								boardtitle,
+								datereg,
+								skin,
+								tblname,
+								type,
+								boarduseyn,
+								(SELECT GROUP_CONCAT(SITETITLE) FROM zboarduse where boardno = c.boardno) AS sitetitle
+								/*get_sitetitle('zboarduse','boardno', boardno) AS sitetitle,*/
+								/*(SELECT b.emp_nm FROM ZBOARDAUTHADMIN a LEFT JOIN ZAUTH_EMP b ON b.emp_no=a.userno WHERE boardno=c.boardno ORDER BY a.no ASC) AS adminname*/
+								/*get_adminname(boardno) AS adminname*/
+				    	   from
+						        zboard c
+					]]>
+					<isNotEqual property="n" compareValue="0">
+						<![CDATA[ ,   (SELECT @rownum := #m#) R ]]>
+					</isNotEqual>
+					   where 1 = 1
+						   <isNotEmpty prepend="and" property="cond3">
+								<![CDATA[ boardno IN (SELECT boardno FROM zboarduse WHERE siteno = #cond3#) ]]>
+							</isNotEmpty>
+					<![CDATA[
+							order by datereg desc
+					 	) row_
+					]]>
+					<isNotEqual property="n" compareValue="0">
+						<![CDATA[ where @rownum < (#n#+#m#) ]]>
+					</isNotEqual>
+					<![CDATA[
+				)t
+			]]>
+
+	</select>
+
+	<select id="getTblCount" parameterClass="zBoardVo" resultClass="frontBoardVo" remapResults="true">
+
+		<isNotEmpty property="cond2">
+			select count(*) as cnt
+		</isNotEmpty>
+
+		<isEmpty property="cond2">
+			select  DATE_FORMAT(TO_DATETIME(bbsdatereg,'%Y%m%d%H%i%s'),'%Y-%m-%d') AS bbsdatereg
+				   ,COUNT(*) as cnt
+		</isEmpty>
+		<![CDATA[
+			from $tblname$
+			where 1=1
+		]]>
+		<isNotEmpty prepend="and" property="cond1">
+			<![CDATA[
+				DATE_FORMAT(TO_DATETIME($cond1$,'%Y%m%d%H%i%s'),'%Y-%m-%d') >= DATE_FORMAT(#sdate#,'%Y-%m-%d')
+			and DATE_FORMAT(TO_DATETIME($cond1$,'%Y%m%d%H%i%s'),'%Y-%m-%d') <= DATE_FORMAT(#edate#,'%Y-%m-%d')
+			]]>
+		</isNotEmpty>
+		and bbstitle IS NOT NULL
+		and shw_yn=1
+		and (etc6='I' or etc6='U')
+		<isEmpty property="cond2">
+			GROUP BY DATE_FORMAT(TO_DATETIME(bbsdatereg,'%Y%m%d%H%i%s'),'%Y-%m-%d')
+			HAVING COUNT(*)
+		</isEmpty>
+	</select>
+
+
+	<select id="listAll" resultClass="zBoardVo">
+		<![CDATA[
+			SELECT
+				boardno,
+				tblname,
+				boardtitle
+			FROM
+				zboard
+			ORDER BY boardno DESC
+		]]>
+	</select>
+
+	<parameterMap class="java.util.HashMap" id="sequenceMap">
+		<parameter property="seqName" jdbcType="VARCHAR" javaType="java.lang.String" mode="IN"/>
+		<parameter property="seq" jdbcType="INTEGER" javaType="java.lang.Integer" mode="OUT"/>
+	</parameterMap>
+
+	<select id="boardTableSeq" parameterClass="java.lang.String" resultClass="java.lang.String">
+		<![CDATA[
+			SELECT tblname
+			FROM zboard
+			WHERE skintype=#skintype#
+			ORDER BY tblname desc
+			LIMIT 1
+		]]>
+	</select>
+
+	<select id="boardTableSeq1" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		<![CDATA[ select count(*) from db_SERIAL where name=LOWER(#seqName#) ]]>
+	</select>
+
+	<statement id="boardTableSeq2" parameterClass="java.lang.String">
+		<![CDATA[ CREATE serial $seqName$
+                 START WITH 1
+                 MAXVALUE 999999999999999999999999999
+                 MINVALUE 1
+                 NOCYCLE
+                 NOCACHE
+        ]]>
+	</statement>
+
+	<select id="boardTableSeq3" parameterClass="java.util.HashMap" resultClass="java.lang.Integer" remapResults="true">
+		<![CDATA[ SELECT $seqName$.nextval FROM db_root ]]>
+	</select>
+
+
+
+	<insert id="boardCreate" parameterClass="zBoardVo">
+		<![CDATA[
+			INSERT INTO zboard
+			(
+				boardtitle,
+				skin,
+				type,
+				tblname,
+				cateyn,
+				secretyn,
+				editoryn,
+				titlelen,
+				shownew,
+				uploadcnt,
+				uploadbytes,
+				uploadext,
+				datereg,
+				userid,
+				boarduseyn,
+				skintype,
+				pagecnt
+		]]>
+		<isEqual prepend="," property="skintype" compareValue="1">
+		<![CDATA[
+				thumbnail,
+				listimg
+		]]>
+		</isEqual>
+		<![CDATA[
+			)
+			VALUES
+			(
+				#boardtitle#,
+				#skin#,
+				#type#,
+				#tblname#,
+				#cateyn#,
+				#secretyn#,
+				#editoryn#,
+				#titlelen#,
+				#shownew#,
+				#uploadcnt#,
+				#uploadbytes#,
+				#uploadext#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#,
+				#boarduseyn#,
+				#skintype#,
+				#pagecnt#
+		]]>
+		<isEqual prepend="," property="skintype" compareValue="1">
+		<![CDATA[
+				CONCAT(#thumbnailw#,'X',#thumbnailh#),
+				CONCAT(#listimgw#,'X',#listimgh#)
+		]]>
+		</isEqual>
+		<![CDATA[
+			)
+		]]>
+		<selectKey resultClass="java.lang.Integer" keyProperty="boardno">
+		<![CDATA[
+			SELECT LAST_INSERT_ID()
+		]]>
+		</selectKey>
+	</insert>
+
+	<update id="boardUpdate" parameterClass="zBoardVo">
+		<![CDATA[
+		UPDATE
+			zboard
+		SET
+			boardtitle=#boardtitle#,
+			skin=#skin#,
+			cateyn=#cateyn#,
+			secretyn=#secretyn#,
+			editoryn=#editoryn#,
+			titlelen=#titlelen#,
+			shownew=#shownew#,
+			uploadcnt=#uploadcnt#,
+			uploadbytes=#uploadbytes#,
+			uploadext=#uploadext#,
+			datemod=date_format(now(),'%Y%m%d%H%i%s'),
+			userid=#userid#,
+			boarduseyn=#boarduseyn#,
+			pagecnt=#pagecnt#
+		]]>
+		<isEqual prepend="," property="skintype" compareValue="1">
+		<![CDATA[
+			thumbnail = CONCAT(#thumbnailw#,'X',#thumbnailh#),
+			listimg = CONCAT(#listimgw#,'X',#listimgh#)
+		]]>
+		</isEqual>
+		<![CDATA[
+		WHERE
+			boardno=#boardno#
+		]]>
+	</update>
+
+	<insert id="boardGroupInsert" parameterClass="zBoardVo">
+		<![CDATA[
+			INSERT INTO zboardgroupmember
+			(
+				groupno,
+				boardno,
+				datereg,
+				userid
+			)
+			VALUES
+			(
+				#groupno#,
+				#boardno#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#
+			)
+		]]>
+	</insert>
+<!--
+	<insert id="boardAuthInsert" parameterClass="zBoardVo">
+		<![CDATA[
+			INSERT INTO zboardauth
+			(
+				no,
+				boardno,
+				role_no,
+				role_l,
+				role_v,
+				role_w,
+				role_m,
+				role_d,
+				role_m_nm,
+				role_r,
+				role_c,
+				role_n
+			)
+			SELECT ZBOARDAUTH_SEQ.NEXTVAL, a.*
+			FROM
+		]]>
+		<iterate open="(" close=") a" conjunction="UNION ALL" property="authlist">
+		<![CDATA[
+			SELECT
+				#boardno#,
+				#authlist[].role_no#,
+				#authlist[].role_l#,
+				#authlist[].role_v#,
+				#authlist[].role_w#,
+				#authlist[].role_m#,
+				#authlist[].role_d#,
+				#authlist[].role_m_nm#,
+				#authlist[].role_r#,
+				#authlist[].role_c#,
+				#authlist[].role_n#
+			FROM db_root
+		]]>
+		</iterate>
+	</insert>
+
+	<insert id="boardAdminInsert" parameterClass="zBoardVo">
+		<![CDATA[
+			INSERT INTO zboardauthadmin
+			(
+				no,
+				boardno,
+				userno
+			)
+			SELECT ZBOARDAUTHADMIN_SEQ.NEXTVAL, a.*
+			FROM
+		]]>
+		<iterate open="(" close=") a" conjunction="UNION ALL" property="adminlist">
+		<![CDATA[
+			SELECT
+				#boardno#,
+				#adminlist[].userno#
+			FROM db_root
+		]]>
+		</iterate>
+	</insert>
+-->
+	<select id="boardDupCheck" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT
+				COUNT(*) AS total
+			FROM
+				zboard
+			WHERE tblname = #tblname#
+		]]>
+	</select>
+
+	<resultMap id="authList" class="zBoardVo" >
+		<result column="boardno" property="boardno"/>
+		<result column="boardtitle" property="boardtitle"/>
+		<result column="boarduseyn" property="boarduseyn"/>
+		<result column="skin" property="skin"/>
+		<result column="skintype" property="skintype"/>
+		<result column="editoryn" property="editoryn"/>
+		<result column="cateyn" property="cateyn"/>
+		<result column="secretyn" property="secretyn"/>
+		<result column="titlelen" property="titlelen"/>
+		<result column="shownew" property="shownew"/>
+		<result column="uploadcnt" property="uploadcnt"/>
+		<result column="uploadbytes" property="uploadbytes"/>
+		<result column="uploadext" property="uploadext"/>
+		<result column="thumbnail" property="thumbnail"/>
+		<result column="listimg" property="listimg"/>
+		<result column="pagecnt" property="pagecnt"/>
+		<result column="{boardno=boardno}" property="authlist" select="ZBoard.getAuthList" />
+		<result column="{boardno=boardno}" property="adminlist" select="ZBoard.getAdminList" />
+	</resultMap>
+
+	<select id="boardDetail" parameterClass="java.lang.Integer" resultMap="authList">
+		<![CDATA[
+			SELECT
+				a.boardno,
+				a.boardtitle,
+				a.skin,
+				a.cateyn,
+				a.secretyn,
+				a.editoryn,
+				a.titlelen,
+				a.shownew,
+				a.uploadcnt,
+				a.uploadbytes,
+				a.uploadext,
+				a.boarduseyn,
+				a.skintype,
+				a.thumbnail,
+				a.listimg,
+				a.pagecnt
+			FROM zboard a
+			WHERE a.boardno = #boardno#
+		]]>
+	</select>
+
+
+	<select id="getBoardGrouplist" parameterClass="java.lang.Integer" resultClass="zBoardGroupVo">
+		SELECT a.groupno, a.groupnm, IFNULL(b.boardno, -1) as boardno
+		FROM zboardgroup a
+		LEFT JOIN zboardgroupmember b
+		ON a.groupno = b.groupno and b.boardno = #boardno#
+		ORDER BY b.no
+	</select>
+
+
+	<select id="getAuthList" parameterClass="ZBoardAuthVo" resultClass="ZBoardAuthVo">
+		<![CDATA[
+			SELECT *
+			FROM zboardauth
+			WHERE boardno = #boardno#
+			ORDER BY no ASC
+		]]>
+	</select>
+
+	<select id="getAdminList" parameterClass="ZBoardAuthAdminVo" resultClass="ZBoardAuthAdminVo">
+		<![CDATA[
+			SELECT a.*, b.emp_nm AS username
+			FROM zboardauthadmin a
+			LEFT JOIN zauth_emp b
+			ON b.emp_no = a.userno
+			WHERE a.boardno = #boardno#
+			ORDER BY a.no ASC
+		]]>
+	</select>
+
+	<select id="boardAdminBoard" parameterClass="zBoardAuthAdminVo" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT COUNT(*)
+			FROM zboardauthadmin
+			WHERE userno = #userno#
+			AND boardno = #boardno#
+		]]>
+	</select>
+
+	<update id="boardGroupUpdate" parameterClass="zBoardVo">
+		<![CDATA[
+		INSERT into zboardgroupmember(
+				groupno,
+				boardno,
+				datereg,
+				userid
+			)
+ 			VALUES(
+				#groupno#,
+				#boardno#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#
+			)
+			ON DUPLICATE KEY
+			UPDATE
+				datemod = date_format(now(),'%Y%m%d%H%i%s'),
+				userid = #userid#
+		]]>
+
+		<!-- UPDATE
+			zboardgroupmember
+		SET
+			groupno=#groupno#
+		WHERE
+			boardno=#boardno#
+		AND groupno=#groupno_org# -->
+
+	</update>
+
+	<delete id="boardGroupDelete" parameterClass="zBoardVo">
+		<![CDATA[
+			DELETE FROM
+				zboardgroupmember
+			WHERE
+				boardno=#boardno#
+		]]>
+		<isNotNull property="groupno_dest">
+		<![CDATA[
+			AND ( groupno NOT IN
+		]]>
+		<iterate open="(" close=")" conjunction="," property="groupno_dest">
+		<![CDATA[
+			#groupno_dest[]#
+		]]>
+		</iterate>
+			<![CDATA[ ) ]]>
+		</isNotNull>
+
+	</delete>
+
+	<insert id="boardAuthSet" parameterClass="zBoardVo">
+		<![CDATA[
+			INSERT into zboardauth(
+				boardno,
+				role_no,
+				role_l,
+				role_v,
+				role_w,
+				role_m,
+				role_d,
+				role_m_nm,
+				role_r,
+				role_c,
+				role_n,
+				datereg,
+				userid
+			)
+ 			VALUES(
+				#boardno#,
+				#authVo.role_no#,
+				#authVo.role_l#,
+				#authVo.role_v#,
+				#authVo.role_w#,
+				#authVo.role_m#,
+				#authVo.role_d#,
+				#authVo.role_m_nm#,
+				#authVo.role_r#,
+				#authVo.role_c#,
+				#authVo.role_n#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#
+			)
+			ON DUPLICATE KEY
+			UPDATE
+				role_l = #authVo.role_l#,
+				role_v = #authVo.role_v#,
+				role_w = #authVo.role_w#,
+				role_m = #authVo.role_m#,
+				role_d = #authVo.role_d#,
+				role_m_nm = #authVo.role_m_nm#,
+				role_r = #authVo.role_r#,
+				role_c = #authVo.role_c#,
+				role_n = #authVo.role_n#,
+				datemod = date_format(now(),'%Y%m%d%H%i%s'),
+				userid = #userid#
+		]]>
+	</insert>
+
+	<statement id="boardAdminSet" parameterClass="zBoardVo">
+		<![CDATA[
+			MERGE INTO zboardauthadmin a
+			USING
+		]]>
+		<iterate open="(" close=") b" conjunction="UNION ALL" property="adminlist">
+		<![CDATA[
+			SELECT
+				#boardno# AS boardno,
+				#adminlist[].userno# AS userno
+			FROM db_root
+		]]>
+		</iterate>
+		<![CDATA[
+			ON (a.boardno = b.boardno AND a.userno = b.userno AND a.boardno=#boardno#)
+			WHEN NOT MATCHED THEN
+			INSERT VALUES
+			(
+				ZBOARDAUTHADMIN_SEQ.NEXTVAL,
+				b.boardno,
+				b.userno,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				'',
+				#userid#
+			)
+			WHEN MATCHED THEN
+			UPDATE
+			SET
+				a.datemod = date_format(now(),'%Y%m%d%H%i%s'),
+				a.userid = #userid#
+		]]>
+	</statement>
+
+	<delete id="boardAdminOmitDelete" parameterClass="zBoardVo">
+		<![CDATA[
+			DELETE FROM
+				zboardauthadmin
+			WHERE
+				boardno = #boardno#
+		]]>
+		<isNotEmpty property="adminlist">
+		<![CDATA[
+			AND ( userno NOT IN
+		]]>
+		<iterate open="(" close=")" conjunction="," property="adminlist">
+		<![CDATA[
+			#adminlist[].userno#
+		]]>
+		</iterate>
+		<![CDATA[ OR userno IS NULL) ]]>
+		</isNotEmpty>
+	</delete>
+
+	<select id="boardAdminList" resultClass="zBoardAuthAdminVo">
+		<![CDATA[
+			SELECT emp_nm AS username, emp_id AS userid
+			FROM zauth_emp
+			ORDER BY emp_no ASC
+		]]>
+	</select>
+
+	<delete id="boardDelete" parameterClass="java.util.List">
+		<![CDATA[
+			DELETE FROM zboard
+			WHERE boardno IN
+		]]>
+		<iterate open="(" close=")" conjunction=",">
+			<![CDATA[#arrDeleteNo[]#]]>
+		</iterate>
+	</delete>
+
+	<!-- <procedure id="boardTableCreate" parameterClass="java.lang.String">
+		<![CDATA[
+			{call pro_create_table(#tblname#)}
+		]]>
+	</procedure> -->
+
+	<statement id="boardTableCreate1" parameterClass="java.lang.String">
+		<![CDATA[ CREATE TABLE $tblnam$ AS SELECT * FROM ZBBS WHERE 1=0 ]]>
+	</statement>
+
+	<statement id="boardTableCreate2" parameterClass="java.lang.String">
+		<![CDATA[ ALTER TABLE $tblname$ MODIFY  BBSNO INT NOT NULL AUTO_INCREMENT PRIMARY KEY ]]>
+	</statement>
+
+	<statement id="boardTableCreate3" parameterClass="java.lang.String">
+		<![CDATA[ ALTER TABLE $tblname$ MODIFY  BBSNO INT NOT NULL AUTO_INCREMENT PRIMARY KEY ]]>
+	</statement>
+	<statement id="boardTableCreate4" parameterClass="java.lang.String">
+		<![CDATA[
+		   CREATE serial $tblname$_SEQ
+           START WITH 1
+           MAXVALUE 999999999999999999999999999
+           MINVALUE 1
+           NOCYCLE
+           NOCACHE
+		 ]]>
+	</statement>
+	<statement id="boardTableCreate5" parameterClass="java.lang.String">
+		<![CDATA[
+		   CREATE TRIGGER $tblname$_TRG
+           BEFORE INSERT
+           ON $tblname$
+           REFERENCING NEW AS New OLD AS Old
+           FOR EACH ROW
+           DECLARE
+             N NUMBER;
+           BEGIN
+              Select $tblname$_SEQ.nextval into N from db_root;
+             :new.BBSNO := N;
+           END $tblname$_TRG;
+		 ]]>
+	</statement>
+
+	<!-- <procedure id="boardTableDrop" parameterClass="java.lang.String">
+		<![CDATA[
+			{call pro_drop_table(#tblname#)}
+		]]>
+	</procedure> -->
+
+
+	<select id="boardTableDrop1" parameterClass="java.lang.String" resultClass="java.lang.String">
+		<![CDATA[
+			select count(*) into cnt
+			from db_class
+			where class_name = #tblname#
+		]]>
+	</select>
+
+	<statement id="boardTableDrop2" parameterClass="java.lang.String">
+		<![CDATA[ DROP TABLE $tblname$ ]]>
+	</statement>
+
+	<statement id="boardTableDrop3" parameterClass="java.lang.String">
+		<![CDATA[ DROP SERIAL $tblname$_SEQ ]]>
+	</statement>
+
+	<select id="boardTableName" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		<![CDATA[
+			SELECT tblname
+			FROM zboard
+			WHERE boardno = #boardno#
+		]]>
+	</select>
+
+	<insert id="boardCopy" parameterClass="zBoardVo">
+		<![CDATA[
+			INSERT INTO zboard
+			(
+				boardtitle,
+				skin,
+				type,
+				tblname,
+				cateyn,
+				secretyn,
+				editoryn,
+				titlelen,
+				shownew,
+				uploadcnt,
+				uploadbytes,
+				uploadext,
+				datereg,
+				userid,
+				boarduseyn,
+				skintype,
+				thumbnail,
+				listimg
+			)
+			SELECT
+				#boardtitle#,
+				skin,
+				'1',
+				#tblname#,
+				cateyn,
+				secretyn,
+				editoryn,
+				titlelen,
+				shownew,
+				uploadcnt,
+				uploadbytes,
+				uploadext,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#,
+				boarduseyn,
+				skintype,
+				thumbnail,
+				listimg
+			FROM zboard
+			WHERE boardno = #boardno_org#
+		]]>
+		<selectKey resultClass="java.lang.Integer" keyProperty="boardno">
+		<![CDATA[
+			SELECT LAST_INSERT_ID()
+		]]>
+		</selectKey>
+	</insert>
+
+	<insert id="boardGroupCopy" parameterClass="zBoardVo">
+		<![CDATA[
+			INSERT INTO zboardgroupmember
+			(
+				groupno,
+				boardno,
+				datereg,
+				userid
+			)
+			SELECT
+				groupno,
+				#boardno#,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#
+			FROM zboardgroupmember
+			WHERE boardno = #boardno_org#
+		]]>
+	</insert>
+
+	<insert id="boardAuthCopy" parameterClass="zBoardVo">
+		<![CDATA[
+			INSERT INTO zboardauth
+			(
+				boardno,
+				role_no,
+				role_l,
+				role_v,
+				role_w,
+				role_m,
+				role_d,
+				role_m_nm,
+				role_r,
+				role_c,
+				role_n,
+				datereg,
+				userid
+			)
+			SELECT
+				#boardno#,
+				role_no,
+				role_l,
+				role_v,
+				role_w,
+				role_m,
+				role_d,
+				role_m_nm,
+				role_r,
+				role_c,
+				role_n,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#
+			FROM zboardauth
+			WHERE boardno = #boardno_org#
+		]]>
+	</insert>
+
+	<insert id="boardAdminCopy" parameterClass="zBoardVo">
+		<![CDATA[
+			INSERT INTO zboardauthadmin
+			(
+				boardno,
+				userno,
+				datereg,
+				userid
+			)
+			SELECT
+				#boardno#,
+				userno,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#
+			FROM zboardauthadmin
+			WHERE boardno = #boardno_org#
+		]]>
+	</insert>
+
+	<insert id="boardCateCopy" parameterClass="zBoardVo">
+		<![CDATA[
+			INSERT INTO zbbscate
+			(
+				boardno,
+				cname,
+				cstatus,
+				datereg,
+				userid,
+				ctopno,
+				clevel,
+				cstep,
+				cparentno,
+				confirmyn
+  			)
+			SELECT
+				#boardno#,
+				cname,
+				cstatus,
+				date_format(now(),'%Y%m%d%H%i%s'),
+				#userid#,
+				ctopno,
+				clevel,
+				cstep,
+				cparentno,
+				confirmyn
+			FROM zbbscate
+			WHERE boardno = #boardno_org#
+		]]>
+	</insert>
+
+	<select id="boardGroupSel" resultClass="zBoardGroupVo" parameterClass="java.lang.String">
+		<![CDATA[
+			SELECT * FROM zboardgroup
+		]]>
+		<isNotEmpty prepend="WHERE">
+			<![CDATA[ groupno IN (SELECT groupno FROM zboardgroupadmin WHERE userno=#adminno#) ]]>
+		</isNotEmpty>
+		<![CDATA[ ORDER BY groupno DESC ]]>
+	</select>
+
+	<select id="boardTitleDupChk" resultClass="java.lang.Integer" parameterClass="zBoardVo">
+		<![CDATA[
+			SELECT count(*) FROM zboard
+			WHERE boardtitle = #boardtitle#
+		]]>
+		<isNotEmpty prepend="AND" property="boardno">
+		<![CDATA[
+			boardno <> #boardno#
+		]]>
+		</isNotEmpty>
+	</select>
+
+	<select id="boardPostsAuthChk" resultClass="java.lang.Integer" parameterClass="zBoardVo">
+		<![CDATA[
+			SELECT
+				COUNT(boardno) AS total
+			FROM
+			((SELECT b.boardno FROM zboardgroupadmin a LEFT JOIN zboardgroupmember b ON a.groupno=b.groupno WHERE userno=#adminno#) UNION (SELECT boardno FROM zboardauthadmin WHERE userno=#adminno#)) a
+			WHERE boardno = #boardno#
+		]]>
+	</select>
+
+	<select id="boardUseSite" resultClass="java.lang.Integer" parameterClass="java.lang.Integer">
+		<![CDATA[
+			SELECT IFNULL(max(siteno),-1)
+			FROM ZBOARDUSE
+			WHERE boardno = #boardno#
+		]]>
+	</select>
+
+	<select id="boardUserno" resultClass="java.lang.String" parameterClass="java.lang.String">
+		<![CDATA[
+			SELECT IFNULL(emp_no,0) AS userno
+			FROM zauth_emp
+			WHERE emp_id = #userid#
+		]]>
+	</select>
+
+	<select id="boardUserid" resultClass="java.lang.String" parameterClass="java.lang.String">
+		<![CDATA[
+			SELECT IFNULL(emp_id,'') AS userid
+			FROM zauth_emp
+			WHERE emp_no = #userno#
+		]]>
+	</select>
+</sqlMap>

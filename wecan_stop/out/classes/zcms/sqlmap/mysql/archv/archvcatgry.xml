@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ArchvCatgry">
+<typeAlias alias="archvCatgry" type="com.z5.zcms.frontsys.archv.domain.ArchvCatgry" />
+<typeAlias alias="archvCatgryVO" type="com.z5.zcms.frontsys.archv.domain.ArchvCatgryVO" />
+<typeAlias alias="archvLangOpt" type="com.z5.zcms.frontsys.archv.domain.ArchvLangOpt" />
+
+	<select id="list" parameterClass="archvCatgry" resultClass="archvCatgry">
+		<![CDATA[
+			select
+				*
+			from
+				archv_catgry
+		]]>
+		<isNotNull property="prnt_catgry_cd">
+			where
+				prnt_catgry_cd = #prnt_catgry_cd#
+		</isNotNull>
+		<![CDATA[
+			order by
+		]]>
+		<isNull property="is_sort">
+			catgry_cd
+		</isNull>
+		<isNotNull property="is_sort">
+			name
+		</isNotNull>
+	</select>
+	
+	<select id="getNamePath" parameterClass="java.lang.Integer" resultClass="archvCatgryVO">
+		SELECT
+			  a.path as path
+			 ,(	SELECT GROUP_CONCAT(t.name SEPARATOR ' > ') "Path"
+			 	FROM(
+				SELECT 
+					  (SELECT `name` FROM archv_catgry WHERE catgry_cd = @r ) AS `name`
+			 	  , (SELECT @r:=prnt_catgry_cd FROM archv_catgry WHERE catgry_cd = @r) AS prnt_catgry_cd
+		        FROM (SELECT @r := #catgry_cd#) vars, archv_catgry h , archv_catgry c
+		        WHERE h.name = '디지털아카이브'
+		       )t
+			 )as name_path	
+		FROM
+			archv_catgry a
+		where
+			a.catgry_cd = #catgry_cd#
+	</select>
+	
+	<select id="is_exst_prnt" resultClass="java.lang.Integer">
+		SELECT
+			count(prnt_catgry_cd) as cnt
+		FROM
+			archv_catgry
+		WHERE
+			prnt_catgry_cd = #catgry_cd#
+	</select>
+	
+	<select id="is_exst_in_archv" resultClass="java.lang.Integer">
+		SELECT
+			count(catgry_cd) as cnt
+		FROM
+			archv
+		WHERE
+			catgry_cd = #catgry_cd#
+	</select>
+	
+	<select id="getPath" resultClass="java.lang.String">
+		SELECT
+            SUBSTR(MAX(sys_connect_by_path(catgry_cd, '/')),4) "Path"
+        INTO R_RETURN_VAL
+        FROM
+            archv_catgry
+        WHERE
+            catgry_cd = #prnt_catgry_cd#
+        START WITH catgry_cd = 0
+        connect by prior catgry_cd = prnt_catgry_cd;
+	</select>
+	
+	<insert id="create" parameterClass="archvCatgry">
+		INSERT INTO archv_catgry ( prnt_catgry_cd, name, reg_date, path)
+		VALUES (#prnt_catgry_cd#, #name#, now(), #path#)
+	</insert>
+	
+	<update id="update" parameterClass="archvCatgry">
+		UPDATE
+			archv_catgry
+		SET
+			name = #name#
+		WHERE
+			catgry_cd = #catgry_cd#
+	</update>
+	
+
+	<delete id="del" parameterClass="archvCatgry">
+		DELETE
+		FROM
+			archv_catgry
+		WHERE
+			catgry_cd = #catgry_cd# 
+	</delete>
+	
+	<select id="getCatgryLang" resultClass="archvCatgryVO">
+		SELECT 
+			a.name
+			,a.name_1
+			,a.catgry_cd
+			,level
+		FROM archv_catgry a
+		START WITH a.catgry_cd=0
+		CONNECT BY PRIOR a.catgry_cd=a.prnt_catgry_cd
+	</select>
+	
+	<select id="getCatgryLangOpt" resultClass="archvLangOpt">
+		SELECT 
+			*
+		FROM archv_lang_opt 
+		where use_yn =1
+	</select>
+	
+	<update id="updateCatgryLang" >
+		UPDATE
+			archv_catgry
+		SET
+			name_1 = #name_1#
+		WHERE
+			catgry_cd = #catgry_cd#
+	</update>
+	
+</sqlMap>

@@ -1,0 +1,347 @@
+package com.z5.zcms.security;
+
+import com.z5.zcms.admsys.common.domain.ComSetVO;
+import com.z5.zcms.admsys.user.domain.ZUserVo;
+import com.z5.zcms.admsys.user.service.ZUserLogService;
+import com.z5.zcms.admsys.user.service.ZUserService;
+import com.z5.zcms.security.SSO.service.GinueSSOService;
+import com.z5.zcms.util.Converter;
+import com.z5.zcms.util.DeviceUtil;
+import com.z5.zcms.util.SecuritySessionUtil;
+import egovframework.com.cmm.ComDefaultCodeVO;
+import egovframework.com.cmm.service.CmmnDetailCode;
+import egovframework.com.cmm.service.EgovCmmUseService;
+import egovframework.com.cmm.service.EgovProperties;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+
+import javax.annotation.Resource;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.List;
+
+import static com.z5.zcms.util.ZPrint.enter;
+import static com.z5.zcms.util.ZPrint.print;
+
+
+public class ZSavedAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+
+    @Autowired
+    ZUserService    userService;
+    @Autowired
+    ZUserLogService userLogService;
+    @Autowired
+    GinueSSOService ginueSSOService;
+
+    @Resource(name = "EgovCmmUseService")
+    private EgovCmmUseService cmmUseService;
+
+    @Override
+    protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response) {
+        enter();
+
+        String to   = request.getParameter("_to");
+        String with = request.getParameter("_with");
+        print("_to:" + to + " | _with:" + with);
+
+        //폴더방식에 대한 고려
+        String subname = "/";
+        if (StringUtils.isNotBlank(request.getParameter("subname"))) {
+            subname = "/" + request.getParameter("subname") + "/";
+        } 
+        print("subname = " + subname + " | to = " + to);
+
+        String target = request.getContextPath() + subname; // 일반 로그인
+        if (StringUtils.isNotBlank(to)) {
+            if (to.equals("aseanrok")) { // 관리자
+                target = request.getContextPath() + "/admsys/init/adminInitCheck.html";
+            } else {
+                // by superbolt
+                target = request.getContextPath() + to + (StringUtils.isNotBlank(with) ? with : "");
+            }
+        }
+
+        print("target = " + target);
+        return target;
+    }
+
+    /**
+     * MethodName : onAuthenticationSuccess
+     * ClassName  : ZSavedAuthenticationSuccessHandler
+     * Comment   : 로그인한 유저를 로그정보에 남긴다.
+     * 작성자    : 김문석
+     * 작성일    : 2014. 1. 3. 오후 4:54:44
+     *
+     * @see org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler#onAuthenticationSuccess(
+     *javax.servlet.http.HttpServletRequest,
+     * javax.servlet.http.HttpServletResponse,
+     * org.springframework.security.core.Authentication)
+     */
+    @SuppressWarnings("unchecked")
+    public void onAuthenticationSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication
+    ) throws ServletException, IOException {
+        enter();
+        try {
+        	
+            User user = (User) authentication.getPrincipal();
+
+            //zuser에서 해당정보를 삭제하기 전에 미리 정보를 뽀아놓는다.
+            ZUserVo userVo = new ZUserVo();
+            userVo.setUserid(user.getUsername());
+            
+        	int logincount = userLogService.selectLoginCount(userVo);
+            if(logincount>=5) {
+            	response.sendRedirect(request.getContextPath() + "/login.html?pwfivefail=true");
+            }
+            
+            userVo = userService.getInfo(userVo);
+
+            HttpSession session = request.getSession();
+            session.setAttribute("zUserVo", userVo);
+
+            //공통으로 사용하는 기본 내용을 여기에서 세팅한다.
+            ComSetVO comSetVO = new ComSetVO();
+
+            ComDefaultCodeVO codeVO = new ComDefaultCodeVO();
+            codeVO.setCodeId("ZCM003"); //프로젝트 이름 superbolt todo
+            String serverName = EgovProperties.getProperty("Globals.server.name");
+            if(serverName.equals(request.getServerName())) {
+            	codeVO.setCode("Z00301");
+            }else {
+            	codeVO.setCode("Z00302");
+            }
+            List<CmmnDetailCode> list = cmmUseService.selectCmmCodeDetail(codeVO);
+            if (list.size() > 0) {
+                comSetVO.setProjectName(list.get(0).getCodeNm());
+            }
+
+            codeVO.setCodeId("ZCM002"); //adminIPCheck
+            list = cmmUseService.selectCmmCodeDetail(codeVO);
+            if (list.size() > 0) {
+                comSetVO.setAdminIPCheck(list.get(0).getCode());
+            }
+
+            session.setAttribute("ComSetVO", comSetVO);
+
+            /*
+            //아래는 ginue에서만 사용하는 로직임.*******************************************
+            //로그인시 임시 생성된 SSO password는 삭제한다.
+            GinueSSOVO ginueSSOVO = new GinueSSOVO();
+            ginueSSOVO.setUserid(userid);
+
+            //SSO로긴을 위해 임시로 발행한 비밀번호를 삭제한다.
+            ginueSSOService.updateSSOPasswordNull(ginueSSOVO);
+
+            //관리자가 아닌 경우 정보를 보관하면 안되는 관계로 로그인 zuser에서 삭제한다.
+            if(null == this.ginueSSOService.getAdminInfoForGinue(ginueSSOVO)){
+                ginueSSOService.deleteSSOUser(ginueSSOVO);
+            }
+            //SSO로긴을 위해 임시로 추가한 권한을 삭제한다(admin권한은 삭제하지 않는다.)
+            ginueSSOService.deleteSSOAuthority(ginueSSOVO);
+            //********************************************************************
+            */
+
+            userVo.setUseripmod(userVo.getUseripreg());
+            userVo.setUseripreg(request.getRemoteAddr());
+            userVo.setDevice(DeviceUtil.getDevice(request));
+            
+            userLogService.insertLog(userVo); //로그인 시 로그인 로그를 기록한다.
+
+            //회원 로그인 관련 정책을 사용시 아래의 로직을 풀고 사용할 것
+            /*GregorianCalendar gc = new GregorianCalendar();
+            gc.add(Calendar.YEAR, -2);
+            Date time = gc.getTime();
+
+            boolean isLogOk = false;
+
+            if(zUserVo.getUsermemo() != null){
+                int year =Integer.parseInt(zUserVo.getUsermemo().substring(0, 4));
+                int month =Integer.parseInt(zUserVo.getUsermemo().substring(4, 6)) - 1;
+                int day =Integer.parseInt(zUserVo.getUsermemo().substring(6, 8));
+                int hour =Integer.parseInt(zUserVo.getUsermemo().substring(8, 10));
+                int min =Integer.parseInt(zUserVo.getUsermemo().substring(10, 12));
+                int sec =Integer.parseInt(zUserVo.getUsermemo().substring(12, 14));
+                GregorianCalendar usergc = new GregorianCalendar();
+                usergc.set(year, month, day, hour, min, sec);
+                Date usertime = usergc.getTime();
+
+                if(time.before(usertime)){
+                    isLogOk = true;
+                }
+            }
+
+            //비밀번호 5회이상 틀린 ID인지 확인한다.
+            int logincount = userLogService.selectLoginCount(zUserVo);
+            session.setAttribute("userid", userid);
+
+            if(userid.equals("admin")){
+                if(zUserVo.getUserauth() == null){
+                    zUserVo.setUseripreg(null);
+                }else if(zUserVo.getUserauth().equals("1") || zUserVo.getUserauth().equals("2")){
+                    zUserVo.setUseripreg(request.getRemoteAddr());
+                }else{
+                    zUserVo.setUseripreg(null);
+                }
+                //관리항목 : SEQ,  ID,  로그인 시간, 로그인IP
+                userLogService.insertLog(zUserVo); //로그인 시 로그인 로그를 기록한다.
+                userLogService.updateUserMemo(zUserVo); //정상로그인 시 usermemo에 로그인시간을 업데이트함.
+
+                //HttpSession session = request.getSession();
+                session.setAttribute("yearex", "true");
+            }else{
+                if((zUserVo.getUsermemo() == null || isLogOk == true) && logincount < 5){
+                    if(zUserVo.getUserauth() == null){
+                        zUserVo.setUseripreg(null);
+                    }else if(zUserVo.getUserauth().equals("1") || zUserVo.getUserauth().equals("2")){
+                        zUserVo.setUseripreg(request.getRemoteAddr());
+                    }else{
+                        zUserVo.setUseripreg(null);
+                    }
+
+                    //관리항목 : SEQ,  ID,  로그인 시간, 로그인IP
+                    userLogService.insertLog(zUserVo); //로그인 시 로그인 로그를 기록한다.
+                    userLogService.updateUserMemo(zUserVo); //정상로그인 시 usermemo에 로그인시간을 업데이트함.
+
+                    //HttpSession session = request.getSession();
+                    session.setAttribute("yearex", "true");
+                }else{
+                    //메일 발송========================================================
+                    String title =null;
+
+                    String masterName="관리자";
+                    String masterEmail = EgovProperties.getProperty("Globals.mail.admin");
+
+                    String userEmailBase64 = URLEncoder.encode(StringUtil.makeBase64ForObject(zUserVo.getUseremail()),"utf-8");
+                    String serverName = null;
+                    if(request.getServerName().replaceFirst("www.", "").equals("kf.or.kr")){
+                        if(logincount < 5){
+                            title = "휴면계정인증메일입니다.";
+                            serverName = URLEncoder.encode(StringUtil.makeBase64ForObject("https://www."+request.getServerName().replaceFirst("www.", "")),"utf-8");
+                        }else{
+                            title = "인증메일입니다.";
+                            serverName = URLEncoder.encode(StringUtil.makeBase64ForObject("https://www."+request.getServerName().replaceFirst("www.", "")),"utf-8");
+                        }
+                    }else{
+                        if(logincount < 5){
+                            title = "Korea Foundation dormant accounts mail.";
+                            serverName = URLEncoder.encode(StringUtil.makeBase64ForObject("https://"+request.getServerName().replaceFirst("www.", "")),"utf-8");
+                        }else{
+                            title = "Korea Foundation certified mail.";
+                            serverName = URLEncoder.encode(StringUtil.makeBase64ForObject("https://"+request.getServerName().replaceFirst("www.", "")),"utf-8");
+                        }
+                    }
+
+                    //메시지 가져오기==================================================
+                    String certURL = "https://www.kf.or.kr/user/twoea/logReset.html?" + "&account=" + userEmailBase64 + "&serverName=" + serverName + "&logincount=" + logincount;
+                    String msg = this.getEmailMessage(zUserVo.getUseremail(),certURL,request.getServerName().replaceFirst("www.", "").equals("kf.or.kr")?1:2, logincount);
+
+                    //폼메일 발송
+                    FormMailUtil.sendMail(zUserVo.getUseremail(), masterEmail, masterName, title, msg);
+
+                    //session out
+                    //HttpSession session = request.getSession();
+                    session.setAttribute("yearex", "false");
+                    session.setAttribute("userid", userid);
+                }
+            } */
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //이 아래 손대지 말것.
+        super.onAuthenticationSuccess(request, response, authentication);
+        clearAuthenticationAttributes(request);
+    }
+
+    private String getEmailMessage(String useremail, String certURL, int lang, int logincount) {
+        String msg = "";
+        if (logincount < 5) {
+            if (lang == 1) {
+                msg += "<body style=\"margin:0;padding:0;\">" +
+                        "   <div class=\"mail-wrap\" style=\"width:482px;\">" +
+                        "   <div class=\"password\">" +
+                        "       <img style=\"border:0;\"src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/img_dormant.gif\" alt=\"이메일 인증 개인정보 보호를 위해서 이메일 인증을 진행합니다. 안녕하세요?  휴면계정인증를 위해 이메일 인증을 진행합니다. 아래의 “휴면계정재설정” 버튼을 클릭하시면 휴면계정이 재설정됩니다.\" />" +
+                        "   </div>" +
+                        "   <div class=\"btn-c\" style=\"margin-top:15px;text-align:center;\">" +
+                        "       <a href=\"" + certURL + "\"><img style=\"border:0;\" src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/btn_dormant.gif\" alt=\"휴면계정 재설정\" /></a>" +
+                        "   </div>" +
+                        "   <ul class=\"clist\" style=\"margin:14px 0 0 0;padding:0;list-style:none;\">" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ “이메일 인증” 버튼을 클릭하여도 연결이 되지 않으면,  아래의 주소를 복사하여 브라우저의 주소창에 입력하여 주세요.</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">" + certURL + "</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ 이 메일은 발신전용 메일이므로 회신이 불가능합니다.</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">잘못 수신된 메일이라면 본 메일을 무시해 주십시오.</li>" +
+                        "   </ul>" +
+                        "   <p class=\"text\">감사합니다.</p>" +
+                        "   </div>" +
+                        "</body>";
+            } else if (lang == 2) {
+                msg += "<body style=\"margin:0;padding:0;\">" +
+                        "   <div class=\"mail-wrap\" style=\"width:482px;\">" +
+                        "   <div class=\"password\">" +
+                        "       <img style=\"border:0;\"src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/img_dormant_en.gif\" alt=\"이메일 인증 개인정보 보호를 위해서 이메일 인증을 진행합니다. 안녕하세요?  휴면계정인증를 위해 이메일 인증을 진행합니다. 아래의 “휴면계정재설정” 버튼을 클릭하시면 휴면계정이 재설정됩니다.\" />" +
+                        "   </div>" +
+                        "   <div class=\"btn-c\" style=\"margin-top:15px;text-align:center;\">" +
+                        "       <a href=\"" + certURL + "\"><img style=\"border:0;\" src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/btn_dormant_en.gif\" alt=\"휴면계정 재설정\" /></a>" +
+                        "   </div>" +
+                        "   <ul class=\"clist\" style=\"margin:14px 0 0 0;padding:0;list-style:none;\">" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ If ‘Verify E-mail’ does not work, copy the following address in your browser.</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">" + certURL + "</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ This is an automated e-mail. Pleas do not reply directly to this e-mail.</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ If you received this by error, please ignore this e-mail.</li>" +
+                        "   </ul>" +
+                        "   <p class=\"text\">Thank you.</p>" +
+                        "   </div>" +
+                        "</body>";
+            }
+        } else {
+            if (lang == 1) {
+                msg += "<body style=\"margin:0;padding:0;\">" +
+                        "   <div class=\"mail-wrap\" style=\"width:482px;\">" +
+                        "   <div class=\"password\">" +
+                        "       <img style=\"border:0;\"src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/img_login.gif\" alt=\"이메일 인증 개인정보 보호를 위해서 이메일 인증을 진행합니다. 안녕하세요? 로그인 시 비밀번호를 5회이상 잘못입력하였기 때문에 이메일 인증을 진행합니다. 아래의 “로그인 재설정” 버튼을 클릭하시면 다시 로그인을 시도할 수 있습니다.\" />" +
+                        "   </div>" +
+                        "   <div class=\"btn-c\" style=\"margin-top:15px;text-align:center;\">" +
+                        "       <a href=\"" + certURL + "\"><img style=\"border:0;\" src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/btn_resetlogin.gif\" alt=\"로그인 재설정\" /></a>" +
+                        "   </div>" +
+                        "   <ul class=\"clist\" style=\"margin:14px 0 0 0;padding:0;list-style:none;\">" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ “이메일 인증” 버튼을 클릭하여도 연결이 되지 않으면,  아래의 주소를 복사하여 브라우저의 주소창에 입력하여 주세요.</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">" + certURL + "</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ 이 메일은 발신전용 메일이므로 회신이 불가능합니다.</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">잘못 수신된 메일이라면 본 메일을 무시해 주십시오.</li>" +
+                        "   </ul>" +
+                        "   <p class=\"text\">감사합니다.</p>" +
+                        "   </div>" +
+                        "</body>";
+            } else if (lang == 2) {
+                msg += "<body style=\"margin:0;padding:0;\">" +
+                        "   <div class=\"mail-wrap\" style=\"width:482px;\">" +
+                        "   <div class=\"password\">" +
+                        "       <img style=\"border:0;\"src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/img_login_en.gif\" alt=\"이메일 인증 개인정보 보호를 위해서 이메일 인증을 진행합니다. 안녕하세요? 로그인 시 비밀번호를 5회이상 잘못입력하였기 때문에 이메일 인증을 진행합니다. 아래의 “로그인 재설정” 버튼을 클릭하시면 다시 로그인을 시도할 수 있습니다.\" />" +
+                        "   </div>" +
+                        "   <div class=\"btn-c\" style=\"margin-top:15px;text-align:center;\">" +
+                        "       <a href=\"" + certURL + "\"><img style=\"border:0;\" src=\"https://www.kf.or.kr/skin/member/kf/emailskin/images/btn_resetlogin_en.gif\" alt=\"로그인 재설정\" /></a>" +
+                        "   </div>" +
+                        "   <ul class=\"clist\" style=\"margin:14px 0 0 0;padding:0;list-style:none;\">" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ If ‘Verify E-mail’ does not work, copy the following address in your browser.</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">" + certURL + "</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ This is an automated e-mail. Pleas do not reply directly to this e-mail.</li>" +
+                        "       <li style=\"font-size:12px;line-height:18px;list-style:none;\">※ If you received this by error, please ignore this e-mail.</li>" +
+                        "   </ul>" +
+                        "   <p class=\"text\">Thank you.</p>" +
+                        "   </div>" +
+                        "</body>";
+            }
+        }
+        return msg;
+    }
+}

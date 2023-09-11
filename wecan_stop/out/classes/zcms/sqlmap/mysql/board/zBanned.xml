@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ZBanned">
+	<typeAlias alias="zBannedVo" type="com.z5.zcms.admsys.board.domain.ZBannedVo"/>
+	<resultMap id="zBannedVo" class="zBannedVo"/>
+
+	<select id="detail" resultClass="zBannedVo">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+				zbanned
+			WHERE
+				bannedno = 1
+		]]>
+	</select>
+
+	<statement id="write">
+		<![CDATA[
+			MERGE INTO ZBANNED a
+			USING db_root
+			ON (a.bannedno = 1)
+			WHEN MATCHED THEN
+			UPDATE SET
+				a.bannedword=#bannedword#
+			WHEN NOT MATCHED THEN
+			INSERT
+			(
+				a.bannedword
+			)
+			VALUES
+			(
+				#bannedword#
+			)
+		]]>
+	</statement>
+</sqlMap>

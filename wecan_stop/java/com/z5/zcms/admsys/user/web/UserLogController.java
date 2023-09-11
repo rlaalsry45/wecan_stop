@@ -1,0 +1,492 @@
+package com.z5.zcms.admsys.user.web;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.z5.zcms.admsys.user.dao.ZUserLogDAO;
+import com.z5.zcms.admsys.user.domain.ZUserVo;
+import com.z5.zcms.admsys.user.service.ZUserLogService;
+import com.z5.zcms.util.DataTable;
+import com.z5.zcms.util.DeviceUtil;
+import com.z5.zcms.util.IpUtil;
+import com.z5.zcms.util.SecuritySessionUtil;
+import com.z5.zcms.util.StringUtil;
+
+@Controller
+public class UserLogController {
+    @Autowired
+    ZUserLogService zUserLogService;
+
+    @Autowired
+    ZUserLogDAO zUserLogDAO;
+
+    @RequestMapping("user/twoea/logFail.html")
+    public String logFail(
+            @ModelAttribute("zUserVo") ZUserVo zUserVo,
+            Model model, HttpServletRequest req,
+            @RequestParam(value = "userid") String userid
+    ) throws Exception {
+        zUserVo.setUserid(userid);
+        int logincount = zUserLogService.selectLoginCount(zUserVo);
+        System.out.println("logincount??......ㅠ.ㅠ..." + logincount);
+
+        if (logincount < 5) {
+            if (req.getServerName().replaceFirst("www.", "").equals("kf.or.kr")) {
+                model.addAttribute("lang", "0");
+            } else {
+                model.addAttribute("lang", "1");
+            }
+        } else {
+            if (req.getServerName().replaceFirst("www.", "").equals("kf.or.kr")) {
+                model.addAttribute("lang", "2");
+            } else {
+                model.addAttribute("lang", "3");
+            }
+        }
+        return "/zcms/admsys/user/common/logFail";
+    }
+
+    @RequestMapping("user/twoea/logReset.html")
+    public String logReset(
+            @ModelAttribute("zUserVo") ZUserVo zUserVo,
+            Model model,
+            HttpServletRequest req
+    ) throws Exception {
+        DataTable input = new DataTable(req);
+        String userid = StringUtil.getObjectFromBase64(input.get("account"));
+        zUserVo.setUserid(userid);
+        String serverName = StringUtil.getObjectFromBase64(input.get("serverName"));
+        //System.out.println("안들어오나??......ㅠ.ㅠ..." + serverName);https://www.
+        if (serverName.replaceFirst("https://www.", "").equals("kf.or.kr")) {
+            zUserLogService.updateUserMemo(zUserVo); //메일인증 시 usermemo에 로그인시간을 업데이트함.
+            model.addAttribute("lang", "0");
+            model.addAttribute("logincount", input.get("logincount"));
+        } else {
+            zUserLogService.updateUserMemo(zUserVo); //메일인증 시 usermemo에 로그인시간을 업데이트함.
+            model.addAttribute("lang", "1");
+            model.addAttribute("logincount", input.get("logincount"));
+        }
+        return "/zcms/admsys/user/common/logReset";
+    }
+
+	@RequestMapping("/admsys/setting/log/index.html")
+    public String log(
+            @ModelAttribute("zUserVo") ZUserVo zUserVo,
+            Model model,
+            HttpServletRequest req
+    ) throws Exception {
+    	
+        DataTable input = new DataTable(req);
+        
+        //1:개인회원 , 2:기관회원
+        String work_grade = input.get("work_grade", "0");
+        zUserVo.setWork_grade(work_grade);
+        input.put("work_grade", work_grade);
+        
+        
+//      int pageSize = input.getInt("pageSize", Integer.parseInt(EgovProperties.getProperty("Globals.list.count")));
+        int pageSize = input.getInt("pageSize", 20);
+        if (input.getInt("pageIndex") == 0) {
+            input.put("pageIndex", 1);
+        } 
+        int    pageIndex = input.getInt("pageIndex") - 1;
+        String keyword   = input.get("keyword");
+
+        int m = pageIndex * pageSize;
+        int n = pageSize;
+
+        if (keyword.equals("")) {
+            zUserVo.setCond2("");
+        } else {
+            zUserVo.setCond2(input.get("cond2"));
+        }
+        
+        if (input.get("sdate").trim().isEmpty() && input.get("edate").trim().isEmpty()) {
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    		
+    		Calendar cal = Calendar.getInstance();
+    		String endYmd = df.format(new Date(cal.getTimeInMillis()));
+    		
+    		cal.add(Calendar.MONTH, -1); 
+    		String staYmd = df.format(new Date(cal.getTimeInMillis()));
+    		
+    		input.put("sdate", staYmd);
+    		input.put("edate", endYmd);
+        }
+        
+		zUserVo.setCond1("logdate");
+		zUserVo.setSdate(input.get("sdate"));
+		zUserVo.setEdate(input.get("edate"));
+        
+        zUserVo.setM(m);
+        zUserVo.setN(n);
+
+        //Total users
+        int total = this.zUserLogService.listWorkCount(zUserVo);
+        
+        input.put("pageSize", pageSize);
+        input.put("total", total);
+        input.put("pageMax", (int) Math.ceil((double) total / pageSize));
+        
+        List<ZUserVo> list = zUserLogService.selectWorkLog(zUserVo);
+        
+        model.addAttribute("list", list);
+        model.addAttribute("input", input);
+
+        return "/zcms/admsys/setting/log/index";
+    }
+    
+    @RequestMapping("/admsys/setting/log/excel.html")
+    public String excel(
+        Model model,
+        @ModelAttribute("zUserVo") ZUserVo zUserVo, BindingResult err, HttpServletRequest req)
+        throws Exception {
+    	
+    	DataTable input = new DataTable(req);
+    	
+    	input.put("downid", SecuritySessionUtil.getLoginid(req));
+    	input.put("downname", SecuritySessionUtil.getUserVo(req).getUsername());
+    	input.put("downip", IpUtil.getIpAddr(req));
+    	input.put("device", DeviceUtil.getDevice(req));
+    	input.put("downmenu", "관리자로그");
+    	String period = input.get("sdate")+"~"+input.get("edate");
+    	if ("~".equals(period)) period = "전체"; 
+    	input.put("downdetail", "기간("+period+") / 검색어("+input.get("keyword").trim()+")"+" / 건수("+StringUtil.AddComma(input.get("total"))+"건)");
+    	input.put("downreason", input.get("reason"));
+    	
+    	this.zUserLogService.downLog(input);
+    	
+    	//1:개인회원 , 2:기관회원
+        String work_grade = input.get("work_grade", "0");
+        zUserVo.setWork_grade(work_grade);
+        input.put("work_grade", work_grade);
+        
+        String keyword   = input.get("keyword");
+
+        if (keyword.equals("")) {
+            zUserVo.setCond2("");
+        } else {
+            zUserVo.setCond2(input.get("cond2"));
+        }
+    	
+    	List<ZUserVo> list = this.zUserLogService.listExcelWork(zUserVo);
+    	model.addAttribute("list", list);
+    	model.addAttribute("input", input);
+    	
+        return "/zcms/admsys/setting/log/excel";
+    }
+    
+    @RequestMapping("/admsys/setting/custLog/index.html")
+    public String custLog(
+    		@ModelAttribute("zUserVo") ZUserVo zUserVo,
+    		Model model,
+    		HttpServletRequest req
+    		) throws Exception {
+    	
+    	DataTable input = new DataTable(req);
+    	
+    	int pageSize = input.getInt("pageSize", 20);
+    	if (input.getInt("pageIndex") == 0) {
+    		input.put("pageIndex", 1);
+    	} 
+    	int    pageIndex = input.getInt("pageIndex") - 1;
+    	String keyword   = input.get("keyword");
+    	
+    	int m = pageIndex * pageSize;
+    	int n = pageSize;
+    	
+    	if (keyword.equals("")) {
+    		zUserVo.setCond2("");
+    	} else {
+    		zUserVo.setCond2(input.get("cond2"));
+    	}
+    	
+    	if (input.get("sdate").trim().isEmpty() && input.get("edate").trim().isEmpty()) {
+    		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    		
+    		Calendar cal = Calendar.getInstance();
+    		String endYmd = df.format(new Date(cal.getTimeInMillis()));
+    		
+    		cal.add(Calendar.MONTH, -1); 
+    		String staYmd = df.format(new Date(cal.getTimeInMillis()));
+    		
+    		input.put("sdate", staYmd);
+    		input.put("edate", endYmd);
+    	}
+    	
+    	zUserVo.setCond1("logdate");
+    	zUserVo.setSdate(input.get("sdate"));
+    	zUserVo.setEdate(input.get("edate"));
+    	
+    	zUserVo.setM(m);
+    	zUserVo.setN(n);
+    	
+    	//Total users
+    	int total = this.zUserLogService.listCustCount(zUserVo);
+    	
+    	input.put("pageSize", pageSize);
+    	input.put("total", total);
+    	input.put("pageMax", (int) Math.ceil((double) total / pageSize));
+    	
+    	List<ZUserVo> list = zUserLogService.selectCustLog(zUserVo);
+    	
+    	model.addAttribute("list", list);
+    	model.addAttribute("input", input);
+    	
+    	return "/zcms/admsys/setting/custLog/index";
+    }
+    
+    @RequestMapping("/admsys/setting/custLog/excel.html")
+    public String custExcel(
+    		Model model,
+    		@ModelAttribute("zUserVo") ZUserVo zUserVo, BindingResult err, HttpServletRequest req)
+    				throws Exception {
+    	
+    	DataTable input = new DataTable(req);
+    	
+    	input.put("downid", SecuritySessionUtil.getLoginid(req));
+    	input.put("downname", SecuritySessionUtil.getUserVo(req).getUsername());
+    	input.put("downip", IpUtil.getIpAddr(req));
+    	input.put("device", DeviceUtil.getDevice(req));
+    	input.put("downmenu", "국민제보로그");
+    	String period = input.get("sdate")+"~"+input.get("edate");
+    	if ("~".equals(period)) period = "전체"; 
+    	input.put("downdetail", "기간("+period+") / 검색어("+input.get("keyword").trim()+")"+" / 건수("+StringUtil.AddComma(input.get("total"))+"건)");
+    	input.put("downreason", input.get("reason"));
+    	
+    	this.zUserLogService.downLog(input);
+    	
+    	String keyword   = input.get("keyword").trim();
+    	
+    	if (keyword.equals("")) {
+    		zUserVo.setCond2("");
+    	} else {
+    		zUserVo.setCond2(input.get("cond2"));
+    	}
+    	
+    	List<ZUserVo> list = this.zUserLogService.listExcelCust(zUserVo);
+    	
+    	model.addAttribute("list", list);
+    	model.addAttribute("input", input);
+                
+        return "/zcms/admsys/setting/custLog/excel";
+    }
+    
+    @RequestMapping("/admsys/setting/downLog/index.html")
+    public String downLog(
+    		Model model,
+    		@ModelAttribute("zUserVo") ZUserVo zUserVo, BindingResult err, HttpServletRequest req)
+    				throws Exception {
+    	
+    	DataTable input = new DataTable(req);
+    	
+    	int pageSize = input.getInt("pageSize", 20);
+    	if (input.getInt("pageIndex") == 0) {
+    		input.put("pageIndex", 1);
+    	} 
+    	int    pageIndex = input.getInt("pageIndex") - 1;
+    	String keyword   = input.get("keyword");
+    	
+    	int m = pageIndex * pageSize;
+    	int n = pageSize;
+    	
+    	if (keyword.equals("")) {
+    		zUserVo.setCond2("");
+    	} else {
+    		zUserVo.setCond2(input.get("cond2"));
+    	}
+    	
+    	if (input.get("sdate").trim().isEmpty() && input.get("edate").trim().isEmpty()) {
+    		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    		
+    		Calendar cal = Calendar.getInstance();
+    		String endYmd = df.format(new Date(cal.getTimeInMillis()));
+    		
+    		cal.add(Calendar.MONTH, -1); 
+    		String staYmd = df.format(new Date(cal.getTimeInMillis()));
+    		
+    		input.put("sdate", staYmd);
+    		input.put("edate", endYmd);
+    	}
+    	
+    	zUserVo.setCond1("downdate");
+    	zUserVo.setSdate(input.get("sdate"));
+    	zUserVo.setEdate(input.get("edate"));
+    	
+    	zUserVo.setM(m);
+    	zUserVo.setN(n);
+    	
+    	//Total users
+    	int total = this.zUserLogService.listDownCount(zUserVo);
+    	
+    	input.put("pageSize", pageSize);
+    	input.put("total", total);
+    	input.put("pageMax", (int) Math.ceil((double) total / pageSize));
+    	
+    	List<ZUserVo> list = zUserLogService.selectDownLog(zUserVo);
+    	
+    	model.addAttribute("list", list);
+    	model.addAttribute("input", input);
+    	
+    	return "/zcms/admsys/setting/downLog/index";
+   }
+    
+    @RequestMapping("/admsys/setting/{subname}/delete.html")
+    public String delete(
+    		@PathVariable("subname") String subname,
+            @ModelAttribute("zUserVo") ZUserVo zUserVo, BindingResult err, HttpServletRequest req
+    ) throws Exception {
+    	
+    	DataTable dt = new DataTable(req);
+    	
+    	dt.put("tablePrefix", subname.equals("log") ? "zuserlog" : "zcustlog");
+    	
+    	zUserLogService.delete(dt);
+    	
+    	String params = "?sdate="+dt.get("sdate")+"&edate="+dt.get("edate")+"&cond2="+dt.get("cond2")+"&keyword="+ java.net.URLEncoder.encode(dt.get("keyword"), "UTF-8");
+     	
+    	return "redirect:/admsys/setting/"+subname+"/index.html"+params;
+    }
+    
+    @RequestMapping("/admsys/setting/{subname}/batchDel.html")
+    public String batchDel(
+    		@PathVariable("subname") String subname,
+    		@ModelAttribute("zUserVo") ZUserVo zUserVo, BindingResult err, HttpServletRequest req
+    		) throws Exception {
+    	
+    	DataTable dt = new DataTable(req);
+    	
+    	dt.put("tablePrefix", subname.equals("log") ? "zuserlog" : "zcustlog");
+    	
+    	zUserLogService.batchDel(dt);
+     	
+    	return "redirect:/admsys/setting/"+subname+"/index.html";
+    }
+    
+    @RequestMapping("/admsys/setting/{subname}/searchDel.html")
+    public String searchDel(
+    		@PathVariable("subname") String subname,
+    		@ModelAttribute("zUserVo") ZUserVo zUserVo, BindingResult err, HttpServletRequest req
+    		) throws Exception {
+    	
+    	DataTable input = new DataTable(req);
+    	
+    	List<ZUserVo> list = new ArrayList<ZUserVo>();
+    	
+    	if (subname.equals("log")) {
+       	
+        	//1:개인회원 , 2:기관회원
+            String work_grade = input.get("work_grade", "0");
+            zUserVo.setWork_grade(work_grade);
+            input.put("work_grade", work_grade);
+            
+            String keyword   = input.get("keyword");
+
+            if (keyword.equals("")) {
+                zUserVo.setCond2("");
+            } else {
+                zUserVo.setCond2(input.get("cond2"));
+            }
+    		
+    		list = this.zUserLogService.listExcelWork(zUserVo);   		
+    	}
+    	else if (subname.equals("custLog")) {
+    		
+    		String keyword   = input.get("keyword");
+        	
+        	if (keyword.equals("")) {
+        		zUserVo.setCond2("");
+        	} else {
+        		zUserVo.setCond2(input.get("cond2"));
+        	}
+
+        	list = this.zUserLogService.listExcelCust(zUserVo); 
+    	}
+    	
+    	if (!list.isEmpty()) {
+    		
+    		input.put("list", list);
+    		
+        	input.put("tablePrefix", subname.equals("log") ? "zuserlog" : "zcustlog");
+        	
+        	zUserLogService.searchDel(input);
+    	}
+    	
+    	String params = "?sdate="+input.get("sdate")+"&edate="+input.get("edate")+"&cond2="+input.get("cond2")+"&keyword="+ java.net.URLEncoder.encode(input.get("keyword"), "UTF-8");
+    	
+    	return "redirect:/admsys/setting/"+subname+"/index.html?"+params;
+    }
+    
+    /**
+     * 로그인 기록 엑셀다운로드 컨트롤러
+     *
+     * @param model
+     * @return "/admsys/setting/log/index_excel.html"
+     * @throws Exception
+     */
+    @RequestMapping(value = "/admsys/setting/log/index_excel.html", method = {RequestMethod.POST,RequestMethod.GET})
+	@ResponseBody
+    public Map<String,Object> logIndex_excel(@ModelAttribute("zUserVo") ZUserVo zUserVo, Model model, HttpServletRequest req) throws Exception {
+      
+    	Map<String,Object> map = new HashMap<String,Object>();
+		
+	  try{
+		  zUserVo.setM(0);
+		  zUserVo.setN(99999999);
+		  List<ZUserVo> list = zUserLogService.selectWorkLog(zUserVo);
+        
+	  	  map.put("list", list);
+		  map.put("resultCode", "success");
+	  }catch(Exception e){
+  		e.printStackTrace();
+  	  }
+
+      return map;
+    }
+    
+    /**
+     * 업무 수행 기록 엑셀다운로드 컨트롤러
+     *
+     * @param model
+     * @return "/admsys/setting/custLog/index_excel.html"
+     * @throws Exception
+     */
+    @RequestMapping(value = "/admsys/setting/custLog/index_excel.html", method = {RequestMethod.POST,RequestMethod.GET})
+	@ResponseBody
+    public Map<String,Object> custLogIndex_excel(@ModelAttribute("zUserVo") ZUserVo zUserVo, Model model, HttpServletRequest req) throws Exception {
+      
+    	Map<String,Object> map = new HashMap<String,Object>();
+		
+	  try{
+		  zUserVo.setM(0);
+		  zUserVo.setN(99999999);
+		  List<ZUserVo> list = zUserLogService.selectCustLog(zUserVo);
+        
+	  	  map.put("list", list);
+		  map.put("resultCode", "success");
+	  }catch(Exception e){
+  		e.printStackTrace();
+  	  }
+
+      return map;
+    }
+
+}

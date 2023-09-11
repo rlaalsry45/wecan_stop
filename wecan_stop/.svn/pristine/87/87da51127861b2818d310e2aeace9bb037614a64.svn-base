@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Archv">
+<typeAlias alias="archvVO" type="com.z5.zcms.frontsys.archv.domain.ArchvVO" />
+<typeAlias alias="archvFile" type="com.z5.zcms.frontsys.archv.domain.ArchvFile" />
+
+	<select id="getTotalAdmin" parameterClass="archvVO" resultClass="java.lang.Integer">
+		<![CDATA[
+			select
+				count(*)
+			from
+				archv
+			where 1 = 1
+		]]>
+		<isNotNull property="catgry_cd">
+			and
+				catgry_cd = #catgry_cd#
+		</isNotNull>
+		<isNotNull property="keyword">
+			and title like CONCAT('%',#keyword#,'%')
+		</isNotNull>
+	</select>
+
+	<select id="listAdmin" parameterClass="archvVO" resultClass="archvVO">
+		<![CDATA[
+		SELECT
+				  archv_no
+				, archv_cnt
+				, start_date
+				, lang
+				, title
+				, reg_date
+				, apov_ste
+				, sumup
+				, vdo_url
+				, shw_yn
+				, evnt_cd_no
+				, catgry_cd
+				/*, (SELECT SUBSTR(MAX(sys_connect_by_path(name, ' > ')),4) "Path"
+		        FROM archv_catgry a
+		        WHERE a.catgry_cd =catgry_cd
+		        START WITH name = '디지털아카이브'
+		        CONNECT BY PRIOR a.catgry_cd = a.prnt_catgry_cd) as catgry_name_list*/
+				, opt_no
+				, opt_name
+				/*, IFNULL((select IFNULL(reg_nm,'UNKNOWN') from archv_aprov where archv_no = rod.archv_no),'UNKNOWN') as reg_nm*/
+				, USERNAME as reg_nm
+				, (select count(*) from archv_file where archv_no = rod.archv_no) as fileCount
+				, (select realname from archv_file where file_no = (select min(file_no) from archv_file where archv_no = rod.archv_no)) as thbnail
+				, (select DATE_FORMAT(start_date, '%Y-%m-%d')  from archv_evnt_period where archv_no = rod.archv_no) as evnt_period_start_date
+				, (select DATE_FORMAT(end_date, '%Y-%m-%d') from archv_evnt_period where archv_no = rod.archv_no) as evnt_period_end_date
+				
+				/*, (select DATE_FORMAT(start_date,'MM.dd')||'('||DATE_FORMAT(TO_DATE(start_date, '%Y-%m-%d'),'DY','NLS_DATE_LANGUAGE=korean')||')'  from archv_evnt_period where archv_no = rod.archv_no) as evnt_period_start_date
+				, (select DATE_FORMAT(end_date,'MM.dd')||'('||DATE_FORMAT(TO_DATE(end_date, '%Y-%m-%d'),'DY','NLS_DATE_LANGUAGE=korean')||')'  from archv_evnt_period where archv_no = rod.archv_no) as evnt_period_end_date
+				/*, nvl2(menuno,zmenu_title_path(menuno),'') as path*/
+				/*, emp_no
+				, emp_nm
+				, hq_cd
+				, hq_nm
+				, dept_cd
+				, dept_nm
+				, dept_full_nm
+				, holoff_cls
+				, tel_offc*/
+				, rownum_
+				, IFNULL(orginfo_catgry_cd, 0) AS orginfo_catgry_cd
+				, file_exists_yn
+				,	orginfo_code_nm
+			from 
+				(
+					select
+						row_.*
+						, @rownum := @rownum + 1 AS rownum_
+					from
+						(
+							select
+								  a.*
+								, b.name as opt_name
+								/*, (SELECT SUBSTR(MAX(sys_connect_by_path(name, ' > ')),4) "Path"
+						        FROM archv_catgry
+						        WHERE catgry_cd = a.catgry_cd
+						        START WITH name = '디지털아카이브'
+						        CONNECT BY PRIOR catgry_cd = prnt_catgry_cd) as catgry_name_list
+								, c.**/
+								/*, (select menuno from zmenu where archv_no = a.archv_no) as menuno*/
+								, c.USERNAME
+								, CASE WHEN IFNULL(d.archv_no, 'N') <> 'N' THEN 'Y' ELSE 'N' END AS file_exists_yn
+								, f.code_nm AS orginfo_code_nm
+							from
+								  archv a
+								  join
+								  archv_opt b
+								  on
+								  a.opt_no = b.opt_no
+								  join  
+								  zuser c
+								  on
+								  a.rsn_no = c.USERNO
+								  left outer join
+								  (
+									select 
+										a.ARCHV_NO 
+									from
+										archv_file a
+									group by a.ARCHV_NO 
+								  ) d
+								  ON
+								  a.archv_no = d.archv_no
+								  LEFT OUTER JOIN
+								  comtccmmndetailcode f
+								  ON
+								  f.CODE_ID = 'INFTYP'
+								  AND f.CODE = a.orginfo_catgry_cd
+								/*, zauth_emp c*/
+								,   (SELECT @rownum := #m#) R 
+							where 1 = 1
+							/*and a.rsn_no = c.emp_no*/
+			]]>
+						<isNotEmpty property="archv_no">
+							and a.archv_no = #archv_no#
+						</isNotEmpty>
+						<isNotNull property="catgry_cd">
+							and a.catgry_cd = #catgry_cd#
+						</isNotNull>
+						<isNotNull property="keyword">
+							and title like '%'||#keyword#||'%'
+						</isNotNull>
+			<![CDATA[
+							order by a.reg_date desc, a.archv_no_
+							LIMIT #m#, #n#
+					 	) row_
+					where @rownum <= (#n# + #m#)
+				) rod
+			
+			]]> 
+	</select>
+	
+	<select id="getDetail4Admin" parameterClass="int" resultClass="archvVO">
+		<![CDATA[
+		select 
+			  a.archv_no
+			, a.archv_cnt
+			, a.lang
+			, a.title
+			, DATE_FORMAT(a.reg_date, '%Y-%m-%d') as reg_date
+			, a.apov_ste
+			, a.sumup
+			, a.vdo_url
+			, a.shw_yn
+			, a.evnt_cd_no
+			, a.catgry_cd
+			, e.name as catgry_name
+			, a.opt_no
+			, b.conts
+			/*,(SELECT GROUP_CONCAT(t.name SEPARATOR ' > ') "Path"
+			 	FROM(
+				SELECT 
+					  (SELECT `name` FROM archv_catgry WHERE catgry_cd = @r ) AS `name`
+			 	  , (SELECT @r:=prnt_catgry_cd FROM archv_catgry WHERE catgry_cd = @r) AS prnt_catgry_cd
+		        FROM (SELECT @r := a.catgry_cd) vars, archv_catgry h , archv_catgry c
+		        WHERE h.name = '디지털아카이브'
+		       )t
+			) as catgry_name_list */
+			, DATE_FORMAT(a.start_date, '%Y-%m-%d') as start_date
+			, DATE_FORMAT(a.start_date, '%H') as start_date_h
+			, DATE_FORMAT(a.start_date, '%i') as start_date_i
+			, DATE_FORMAT(c.start_date, '%Y-%m-%d') as evnt_period_start_date
+			, DATE_FORMAT(c.start_date, '%H') as evnt_period_start_date_h
+			, DATE_FORMAT(c.start_date, '%i') as evnt_period_start_date_i
+			, DATE_FORMAT(c.end_date, '%Y-%m-%d') as evnt_period_end_date
+			, DATE_FORMAT(c.end_date, '%H') as evnt_period_end_date_h
+			, DATE_FORMAT(c.end_date, '%i') as evnt_period_end_date_i
+			, a.contstype
+			, d.username as emp_nm
+			, IFNULL(orginfo_catgry_cd, 0) AS orginfo_catgry_cd
+			, f.code_nm AS orginfo_code_nm
+		from
+			  archv a
+			  left outer join			  
+			  archv_conts b
+			  ON
+			  a.archv_no = b.archv_no  
+			  left outer join
+			  archv_evnt_period c
+			  ON
+			  a.archv_no = c.archv_no
+			  join
+			  zuser  d
+			  ON
+			  a.rsn_no = d.userno
+			  left outer join
+			  archv_catgry e
+			  ON
+			  a.catgry_cd = e.catgry_cd
+			  LEFT OUTER JOIN
+			  comtccmmndetailcode f
+			  ON
+			  f.CODE_ID = 'INFTYP'
+			  AND f.CODE = a.orginfo_catgry_cd
+		where 1=1
+		and a.archv_no = #no#
+		]]>
+	</select>
+	
+	<insert id="insertArchv" parameterClass="archvVO">
+		<![CDATA[
+		insert into archv
+		(
+		    start_date
+			, lang
+			, title
+			, reg_date
+			, apov_ste
+			, sumup
+			, vdo_url
+			, evnt_cd_no
+			, catgry_cd
+			, opt_no
+			, shw_yn
+			, contstype
+			, rsn_no
+			, orginfo_catgry_cd
+		)
+		values
+		(
+			 STR_TO_DATE(concat(#start_date#,#start_date_h#,#start_date_i#), '%Y-%m-%d%H%i%s')
+			, #lang#
+			, #title#
+			, now()
+			, 1
+			, #sumup#
+			, #vdo_url#
+			, #evnt_cd_no#
+			, #catgry_cd#
+			, #opt_no#
+			, 1
+			, #contstype#
+			, #rsn_no#
+			, IFNULL(#orginfo_catgry_cd#, 0) 
+		)
+		]]>
+	</insert>
+	
+	<update id="updateArchv">
+		update
+			archv
+		set 
+			 start_date = STR_TO_DATE(concat(#start_date# , #start_date_h# , #start_date_i#), '%Y-%m-%d%H%i%s')
+			, lang = #lang#
+			, title = #title#
+			, apov_ste =1
+			, sumup = #sumup#
+			, vdo_url =#vdo_url#
+			, evnt_cd_no = #evnt_cd_no#
+			, catgry_cd = #catgry_cd#
+			, opt_no = #opt_no#
+			, shw_yn = 1
+			, contstype=#contstype#
+			, orginfo_catgry_cd= IFNULL(#orginfo_catgry_cd#, 0)
+		where
+			archv_no = #archv_no#
+	</update>
+	
+	<insert id="insertArchvConts" parameterClass="archvVO">
+		<![CDATA[
+		insert into archv_conts
+		(
+			archv_no
+			,conts
+			,reg_date
+		)
+		values
+		(
+			LAST_INSERT_ID()
+			,#conts#
+			,now()
+		)
+		]]>
+	</insert>
+	
+	<update id="updateArchvConts">
+		<![CDATA[
+		update
+			archv_conts
+		set
+			conts = #conts#
+		where
+			archv_no = #archv_no#
+		]]>
+	</update>
+	
+	<insert id="insertArchvFile" parameterClass="archvFile">
+		<![CDATA[
+		insert into archv_file
+		(
+			archv_no
+			,name
+			,filesz
+			,reg_date
+			,file_no
+			,realname
+		)
+		values
+		(
+		]]>
+			<isNotNull property="archv_no">
+			#archv_no#
+			</isNotNull>
+			<isNull property="archv_no">
+			LAST_INSERT_ID()
+			</isNull>
+		<![CDATA[
+			,#name#
+			,#filesz#
+			,now()
+			,NEXTVAL(archv_file_no_seq)
+			,#realname#
+		)
+		]]>
+	</insert>
+	
+	<insert id="insertArchvAprov" parameterClass="archvVO">
+		<![CDATA[
+			insert into archv_aprov
+			(
+				archv_no
+				,reg_psn
+				,reg_nm
+			)
+			values
+			(
+				LAST_INSERT_ID()
+				,#reg_psn#
+				,#reg_nm#
+			)
+		]]>
+	</insert>
+	
+	<update id="updateArchvAprov" parameterClass="archvVO">
+		<![CDATA[
+		update
+			archv_aprov
+		set
+			  reg_psn = #reg_psn#
+			, reg_nm = #reg_nm#
+		where
+			archv_no = #archv_no#
+		]]>
+	</update>
+	
+	
+	<insert id="insertArchvEvntPeriod" parameterClass="archvVO">
+		insert into archv_evnt_period
+		(
+			  archv_no
+			, start_date
+			, end_date
+			, reg_date
+		)
+		values
+		(
+			  LAST_INSERT_ID()
+			, STR_TO_DATE(concat(#evnt_period_start_date# , #evnt_period_start_date_h# , #evnt_period_start_date_i#), '%Y-%m-%d%H%i%s')
+			, STR_TO_DATE(concat(#evnt_period_end_date# , #evnt_period_end_date_h# , #evnt_period_end_date_i#), '%Y-%m-%d%H%i%s')
+			, now()
+		)
+		
+	</insert>
+	
+	<update id="updateArchvEvntPeriod"  parameterClass="archvVO">
+		update
+			archv_evnt_period
+		set
+			  start_date = STR_TO_DATE(concat(#evnt_period_start_date# , #evnt_period_start_date_h# , #evnt_period_start_date_i#), '%Y-%m-%d%H%i%s')
+			, end_date = STR_TO_DATE(concat(#evnt_period_end_date# , #evnt_period_end_date_h# , #evnt_period_end_date_i#), '%Y-%m-%d%H%i%s')
+		where
+			archv_no = #archv_no#
+	</update>
+	
+	<delete id="delArchvFile" parameterClass="int">
+		delete from archv_file
+		where
+			file_no = #file_no#
+	</delete>
+	
+	<delete id="delArchv" parameterClass="int">
+		delete from archv
+		where 
+			archv_no = #archv_no# 
+	</delete>
+	
+	<delete id="delArchvConts" parameterClass="int">
+		delete from archv_conts
+		where 
+			archv_no = #archv_no#
+	</delete>
+	
+	<delete id="delArchvFiles" parameterClass="int">
+		delete from archv_file
+		where 
+			archv_no = #archv_no#
+	</delete>
+	
+	<delete id="delArchvAprov" parameterClass="int">
+		delete from archv_aprov
+		where 
+			archv_no = #archv_no#
+	</delete>
+	
+	<delete id="delArchvEvntPeriod" parameterClass="int">
+		delete from archv_evnt_period
+		where
+			archv_no = #archv_no#
+	</delete>
+	
+	<insert id="addArchvoNo2Menu" parameterClass="archvVO">
+		update zmenu
+		set
+			archv_no = #archv_no#
+		where
+			menuno = #menuno#
+		and
+			siteno = #siteno#
+	</insert>
+	
+	<select id="getRltd" parameterClass="int" resultClass="archvVO">
+		select
+			  a.menuno as menuno
+			, a.archv_no as archv_no
+			/*,(SELECT SUBSTR(MAX(sys_connect_by_path(menutitle, ' > ')),4) path
+				FROM zmenu
+				WHERE menuno = a.menuno
+				START WITH menuparentno = 0
+				CONNECT BY PRIOR menuno = menuparentno
+					) as path*/
+			/*zmenu_title_path(a.menuno) as path*/
+			, a.siteno as siteno
+			, b.sitetitle as sitetitle
+		from
+			  zmenu a
+			, zsite b
+		where 1=1
+		and 
+			a.siteno = b.siteno
+		and
+			archv_no = #archv_no#
+		order by menuno
+	</select>
+	
+	<update id="delRltd" parameterClass="int">
+		update zmenu
+		set 
+			archv_no = null
+		where
+			menuno = #menuno#
+	</update>
+
+</sqlMap>

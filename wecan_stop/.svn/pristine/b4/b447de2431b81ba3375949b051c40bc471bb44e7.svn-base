@@ -1,0 +1,1030 @@
+package com.z5.zcms.admsys.user.domain;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class ZUserVo extends ZUser implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private int pageSize;
+    private int pageIndex;
+    private String cond1;
+    private String cond2;
+    private String cond3;
+    private String cond4;
+    private String cond5;
+    private String cond6; //회원검색에서 쓰는조건
+    private String cond7; //회원검색에서 쓰는조건
+    private String cond8; //회원검색에서 쓰는조건
+    private String cond9; //회원검색에서 쓰는조건
+    private String cond10; //회원검색에서 쓰는조건
+    private String keyword;
+    private String sdate;
+    private String edate;
+    private int n;
+    private int m;
+    private String sitedomain;
+    private String sitetitle;
+    private String tx_content;
+    private int cnt;
+    private int maxno;
+    private String authority;
+    private String holoff;
+    //아래는 zauth_emp의 정보를 함께 가져오는 내용이다.
+    private String hq_cd;//기관코드
+    private String hq_nm;//기관명
+    private String dept_cd;//부서코드
+    private String dept_nm;//부서코드명
+    private String dept_full_nm;//부서전체명
+    private String holoff_cls;//재직여부
+    private String tel_offc;//전화번호
+    private String user2ndpasswd; //2차비밀번호
+    private int login2ndcount; //로그인2차비밀번호틀린횟수
+    private String chargeorgid;
+    private String agreeyn;
+    
+    private String gpin_code;
+    private String nice_code;
+
+    private String annualPause;//회원중지여부
+    private String limitYearMonth;
+    private String duesno;
+    private String duesjoin; //마이그래이션한 데이타의 경우 1을 주고 1일 경우 입회비는 처리됐다고 간주한다.(별도의 체크를 하지 않는다)
+    private String semimemberconfirm;//준회원의 회비가 인증되었는지 확인한다.
+    private String etc;
+    private String regyear;
+    private String payCheck; //결제 체크
+    private String andOr; //and or
+    private String search; //단체회원 구분(1:단체화원 검색 2:단체회원회비검색)
+    private String paytype2; //납부여부2
+
+
+    private String workplace; //직장명
+    private String postal;    //우편물보류
+    private String account_code; //계좌코드
+    private String account_no; //계좌번호
+    private String paytype; //납부방법
+    private String executive; //임원
+    private String executivenm; //임원
+    private String committee; //위원회
+    private String committeenm; //위원회
+    private String groupuser; //단체회원 YN
+    private String usercompanyname; //직장명
+    private String usercompanystatus; //직책
+    private String cancelreason; //탈퇴사유
+    private String pausereason; //휴식사유
+
+    // KPA 단체회원, 기증회원 (by jinmitek)
+    private String orgUserDelegate;
+    private String orgOfficer;
+    private String orgUserOfficer;
+    private String orgUserDept;
+    private String orgUserEmail;
+    private String orgUserPhone;
+    private String orgUserType; //1:단체, 2:기증
+    private String approve; //승인 체크 플래그
+
+    //외국인 구분
+    private String foreigner; // 1:외국인 null or 0 : 한국인
+
+    private String workGrade; // 1:정회원 2:종신회원 3:준회원
+    private String branch; // 지회구분
+
+    //통계부분
+    private String vlseq;
+    private String count;
+    private String visitdate;
+
+    //검색부분
+    private String st_sec1;
+    private String st_sec2;
+    private String st_sec3;
+
+    //log info
+    private String logdate;
+    private String logip;
+    private String logname;
+    private int logboardno;
+    private int logbbsno;
+    private String logact;
+    
+    private int siteno;
+    private int menuno;
+    
+    private List<ZUserVo> yearList;
+    private List<ZUserVo> monthList;
+    private List<ZUserVo> dayList;
+
+	private String dayOfMonth;
+	private int seq;
+	private String tablePrefix;
+	private List<Integer> arrDeleteNo;
+	
+	private String downid;
+	private String downname;
+	private String downdate;
+	private String downip;
+	private String downmenu;
+	private String downdetail;
+	private String downreason;
+	private String orgNm = "";
+	
+	public String getDownid() {
+		return downid;
+	}
+
+	public void setDownid(String downid) {
+		this.downid = downid;
+	}
+
+	public String getDownname() {
+		return downname;
+	}
+
+	public void setDownname(String downname) {
+		this.downname = downname;
+	}
+
+	public String getDowndate() {
+		return downdate;
+	}
+
+	public void setDowndate(String downdate) {
+		this.downdate = downdate;
+	}
+
+	public String getDownip() {
+		return downip;
+	}
+
+	public void setDownip(String downip) {
+		this.downip = downip;
+	}
+
+	public String getDownmenu() {
+		return downmenu;
+	}
+
+	public void setDownmenu(String downmenu) {
+		this.downmenu = downmenu;
+	}
+
+	public String getDowndetail() {
+		return downdetail;
+	}
+
+	public void setDowndetail(String downdetail) {
+		this.downdetail = downdetail;
+	}
+
+	public String getDownreason() {
+		return downreason;
+	}
+
+	public void setDownreason(String downreason) {
+		this.downreason = downreason;
+	}
+
+	public String getTablePrefix() {
+		return tablePrefix;
+	}
+
+	public void setTablePrefix(String tablePrefix) {
+		this.tablePrefix = tablePrefix;
+	}
+
+	public List<Integer> getArrDeleteNo() {
+		return arrDeleteNo;
+	}
+
+	public void setArrDeleteNo(List<Integer> arrDeleteNo) {
+		this.arrDeleteNo = arrDeleteNo;
+	}
+
+	public int getSeq() {
+		return seq;
+	}
+
+	public void setSeq(int seq) {
+		this.seq = seq;
+	}
+
+	public String getDayOfMonth() {
+		return dayOfMonth;
+	}
+
+	public void setDayOfMonth(String dayOfMonth) {
+		this.dayOfMonth = dayOfMonth;
+	}
+
+	public String getLogname() {
+		return logname;
+	}
+
+	public void setLogname(String logname) {
+		this.logname = logname;
+	}
+
+	public int getLogboardno() {
+		return logboardno;
+	}
+
+	public void setLogboardno(int logboardno) {
+		this.logboardno = logboardno;
+	}
+
+	public int getLogbbsno() {
+		return logbbsno;
+	}
+
+	public void setLogbbsno(int logbbsno) {
+		this.logbbsno = logbbsno;
+	}
+
+	public String getLogact() {
+		return logact;
+	}
+
+	public void setLogact(String logact) {
+		this.logact = logact;
+	}
+
+	public List<ZUserVo> getYearList() {
+		return yearList;
+	}
+
+	public void setYearList(List<ZUserVo> yearList) {
+		this.yearList = yearList;
+	}
+
+	public List<ZUserVo> getMonthList() {
+		return monthList;
+	}
+
+	public void setMonthList(List<ZUserVo> monthList) {
+		this.monthList = monthList;
+	}
+
+	public List<ZUserVo> getDayList() {
+		return dayList;
+	}
+
+	public void setDayList(List<ZUserVo> dayList) {
+		this.dayList = dayList;
+	}
+
+	public int getSiteno() {
+		return siteno;
+	}
+
+	public void setSiteno(int siteno) {
+		this.siteno = siteno;
+	}
+
+	public String getCond7() {
+        return cond7;
+    }
+
+    public void setCond7(String cond7) {
+        this.cond7 = cond7;
+    }
+
+    public String getCond8() {
+        return cond8;
+    }
+
+    public void setCond8(String cond8) {
+        this.cond8 = cond8;
+    }
+
+    public String getCond9() {
+        return cond9;
+    }
+
+    public void setCond9(String cond9) {
+        this.cond9 = cond9;
+    }
+
+    public String getCond10() {
+        return cond10;
+    }
+
+    public void setCond10(String cond10) {
+        this.cond10 = cond10;
+    }
+
+    public String getRegyear() {
+        return regyear;
+    }
+
+    public void setRegyear(String regyear) {
+        this.regyear = regyear;
+    }
+
+    public String getEtc() {
+        return etc;
+    }
+
+    public void setEtc(String etc) {
+        this.etc = etc;
+    }
+
+    public String getWorkplace() {
+        return workplace;
+    }
+
+    public void setWorkplace(String workplace) {
+        this.workplace = workplace;
+    }
+
+    public String getPostal() {
+        return postal;
+    }
+
+    public void setPostal(String postal) {
+        this.postal = postal;
+    }
+
+    public String getAccount_code() {
+        return account_code;
+    }
+
+    public void setAccount_code(String account_code) {
+        this.account_code = account_code;
+    }
+
+    public String getAccount_no() {
+        return account_no;
+    }
+
+    public void setAccount_no(String account_no) {
+        this.account_no = account_no;
+    }
+
+    public String getPaytype() {
+        return paytype;
+    }
+
+    public void setPaytype(String paytype) {
+        this.paytype = paytype;
+    }
+
+    public String getExecutive() {
+        return executive;
+    }
+
+    public void setExecutive(String executive) {
+        this.executive = executive;
+    }
+
+    public String getCommittee() {
+        return committee;
+    }
+
+    public void setCommittee(String committee) {
+        this.committee = committee;
+    }
+
+    public String getForeigner() {
+        return foreigner;
+    }
+
+    public void setForeigner(String foreigner) {
+        this.foreigner = foreigner;
+    }
+
+    public String getSemimemberconfirm() {
+        return semimemberconfirm;
+    }
+
+    public void setSemimemberconfirm(String semimemberconfirm) {
+        this.semimemberconfirm = semimemberconfirm;
+    }
+
+    public String getDuesjoin() {
+        return duesjoin;
+    }
+
+    public void setDuesjoin(String duesjoin) {
+        this.duesjoin = duesjoin;
+    }
+
+    public String getDuesno() {
+        return duesno;
+    }
+
+    public void setDuesno(String duesno) {
+        this.duesno = duesno;
+    }
+
+    public String getLimitYearMonth() {
+        return limitYearMonth;
+    }
+
+    public void setLimitYearMonth(String limitYearMonth) {
+        this.limitYearMonth = limitYearMonth;
+    }
+
+    public String getAnnualPause() {
+        return annualPause;
+    }
+
+    public void setAnnualPause(String annualPause) {
+        this.annualPause = annualPause;
+    }
+
+    public String getHq_cd() {
+        return hq_cd;
+    }
+
+    public void setHq_cd(String hq_cd) {
+        this.hq_cd = hq_cd;
+    }
+
+    public String getHq_nm() {
+        return hq_nm;
+    }
+
+    public void setHq_nm(String hq_nm) {
+        this.hq_nm = hq_nm;
+    }
+
+    public String getDept_cd() {
+        return dept_cd;
+    }
+
+    public void setDept_cd(String dept_cd) {
+        this.dept_cd = dept_cd;
+    }
+
+    public String getDept_nm() {
+        return dept_nm;
+    }
+
+    public void setDept_nm(String dept_nm) {
+        this.dept_nm = dept_nm;
+    }
+
+    public String getDept_full_nm() {
+        return dept_full_nm;
+    }
+
+    public void setDept_full_nm(String dept_full_nm) {
+        this.dept_full_nm = dept_full_nm;
+    }
+
+    public String getHoloff_cls() {
+        return holoff_cls;
+    }
+
+    public void setHoloff_cls(String holoff_cls) {
+        this.holoff_cls = holoff_cls;
+    }
+
+    public String getTel_offc() {
+        return tel_offc;
+    }
+
+    public void setTel_offc(String tel_offc) {
+        this.tel_offc = tel_offc;
+    }
+
+    public String getHoloff() {
+        return holoff;
+    }
+
+    public void setHoloff(String holoff) {
+        this.holoff = holoff;
+    }
+
+    public String getCond4() {
+        return cond4;
+    }
+
+    public void setCond4(String cond4) {
+        this.cond4 = cond4;
+    }
+
+    public String getCond5() {
+        return cond5;
+    }
+
+    public void setCond5(String cond5) {
+        this.cond5 = cond5;
+    }
+
+    public String getAuthority() {
+        return authority;
+    }
+
+    public void setAuthority(String authority) {
+        this.authority = authority;
+    }
+
+    public String getCond3() {
+        return cond3;
+    }
+
+    public void setCond3(String cond3) {
+        this.cond3 = cond3;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public int getPageIndex() {
+        return pageIndex;
+    }
+
+    public void setPageIndex(int pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    public String getCond1() {
+        return cond1;
+    }
+
+    public void setCond1(String cond1) {
+        this.cond1 = cond1;
+    }
+
+    public String getCond2() {
+        return cond2;
+    }
+
+    public void setCond2(String cond2) {
+        this.cond2 = cond2;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public String getSdate() {
+        return sdate;
+    }
+
+    public void setSdate(String sdate) {
+        this.sdate = sdate;
+    }
+
+    public String getEdate() {
+        return edate;
+    }
+
+    public void setEdate(String edate) {
+        this.edate = edate;
+    }
+
+    public int getN() {
+        return n;
+    }
+
+    public void setN(int n) {
+        this.n = n;
+    }
+
+    public int getM() {
+        return m;
+    }
+
+    public void setM(int m) {
+        this.m = m;
+    }
+
+    public String getSitedomain() {
+        return sitedomain;
+    }
+
+    public void setSitedomain(String sitedomain) {
+        this.sitedomain = sitedomain;
+    }
+
+    public String getSitetitle() {
+        return sitetitle;
+    }
+
+    public void setSitetitle(String sitetitle) {
+        this.sitetitle = sitetitle;
+    }
+
+    public String getTx_content() {
+        return tx_content;
+    }
+
+    public void setTx_content(String tx_content) {
+        this.tx_content = tx_content;
+    }
+
+    public int getCnt() {
+        return cnt;
+    }
+
+    public void setCnt(int cnt) {
+        this.cnt = cnt;
+    }
+
+    public int getMaxno() {
+        return maxno;
+    }
+
+    public void setMaxno(int maxno) {
+        this.maxno = maxno;
+    }
+
+    public String getGpin_code() {
+        return gpin_code;
+    }
+
+    public void setGpin_code(String gpin_code) {
+        this.gpin_code = gpin_code;
+    }
+
+    public String getNice_code() {
+        return nice_code;
+    }
+
+    public void setNice_code(String nice_code) {
+        this.nice_code = nice_code;
+    }
+
+    public String getOrgUserDelegate() {
+        return orgUserDelegate;
+    }
+
+    public void setOrgUserDelegate(String orgUserDelegate) {
+        this.orgUserDelegate = orgUserDelegate;
+    }
+
+    public String getOrgUserOfficer() {
+        return orgUserOfficer;
+    }
+
+    public void setOrgUserOfficer(String orgUserOfficer) {
+        this.orgUserOfficer = orgUserOfficer;
+    }
+
+    public String getOrgUserDept() {
+        return orgUserDept;
+    }
+
+    public void setOrgUserDept(String orgUserDept) {
+        this.orgUserDept = orgUserDept;
+    }
+
+    public String getOrgUserEmail() {
+        return orgUserEmail;
+    }
+
+    public void setOrgUserEmail(String orgUserEmail) {
+        this.orgUserEmail = orgUserEmail;
+    }
+
+    public String getOrgUserPhone() {
+        return orgUserPhone;
+    }
+
+    public void setOrgUserPhone(String orgUserPhone) {
+        this.orgUserPhone = orgUserPhone;
+    }
+
+    public String getGroupuser() {
+        return groupuser;
+    }
+
+    public void setGroupuser(String groupuser) {
+        this.groupuser = groupuser;
+    }
+
+    public String getOrgUserType() {
+        return orgUserType;
+    }
+
+    public void setOrgUserType(String orgUserType) {
+        this.orgUserType = orgUserType;
+    }
+
+    public String getOrgOfficer() {
+        return orgOfficer;
+    }
+
+    public void setOrgOfficer(String orgOfficer) {
+        this.orgOfficer = orgOfficer;
+    }
+
+    public String getExecutivenm() {
+        return executivenm;
+    }
+
+    public void setExecutivenm(String executivenm) {
+        this.executivenm = executivenm;
+    }
+
+    public String getCommitteenm() {
+        return committeenm;
+    }
+
+    public void setCommitteenm(String committeenm) {
+        this.committeenm = committeenm;
+    }
+
+    public String getWorkGrade() {
+        return workGrade;
+    }
+
+    public void setWorkGrade(String workGrade) {
+        this.workGrade = workGrade;
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
+
+    public String getCount() {
+        return count;
+    }
+
+    public void setCount(String count) {
+        this.count = count;
+    }
+
+    public String getVlseq() {
+        return vlseq;
+    }
+
+    public void setVlseq(String vlseq) {
+        this.vlseq = vlseq;
+    }
+
+    public String getVisitdate() {
+        return visitdate;
+    }
+
+    public void setVisitdate(String visitdate) {
+        this.visitdate = visitdate;
+    }
+
+    public String getSt_sec1() {
+        return st_sec1;
+    }
+
+    public void setSt_sec1(String st_sec1) {
+        this.st_sec1 = st_sec1;
+    }
+
+    public String getSt_sec2() {
+        return st_sec2;
+    }
+
+    public void setSt_sec2(String st_sec2) {
+        this.st_sec2 = st_sec2;
+    }
+
+    public String getCond6() {
+        return cond6;
+    }
+
+    public void setCond6(String cond6) {
+        this.cond6 = cond6;
+    }
+
+    public String getPayCheck() {
+        return payCheck;
+    }
+
+    public void setPayCheck(String payCheck) {
+        this.payCheck = payCheck;
+    }
+
+    public String getAndOr() {
+        return andOr;
+    }
+
+    public void setAndOr(String andOr) {
+        this.andOr = andOr;
+    }
+
+    public String getSearch() {
+        return search;
+    }
+
+    public void setSearch(String search) {
+        this.search = search;
+    }
+
+    public String getPaytype2() {
+        return paytype2;
+    }
+
+    public void setPaytype2(String paytype2) {
+        this.paytype2 = paytype2;
+    }
+
+    public String getSt_sec3() {
+        return st_sec3;
+    }
+
+    public void setSt_sec3(String st_sec3) {
+        this.st_sec3 = st_sec3;
+    }
+
+    public String getUsercompanyname() {
+        return usercompanyname;
+    }
+
+    public void setUsercompanyname(String usercompanyname) {
+        this.usercompanyname = usercompanyname;
+    }
+
+    public String getUsercompanystatus() {
+        return usercompanystatus;
+    }
+
+    public void setUsercompanystatus(String usercompanystatus) {
+        this.usercompanystatus = usercompanystatus;
+    }
+
+    public String getCancelreason() {
+        return cancelreason;
+    }
+
+    public void setCancelreason(String cancelreason) {
+        this.cancelreason = cancelreason;
+    }
+
+    public String getPausereason() {
+        return pausereason;
+    }
+
+    public void setPausereason(String pausereason) {
+        this.pausereason = pausereason;
+    }
+
+    public String getApprove() {
+        return approve;
+    }
+
+    public void setApprove(String approve) {
+        this.approve = approve;
+    }
+
+    public String getLogdate() {
+        return logdate;
+    }
+
+    public void setLogdate(String logdate) {
+        this.logdate = logdate;
+    }
+
+    public String getLogip() {
+        return logip;
+    }
+
+    public void setLogip(String logip) {
+        this.logip = logip;
+    }
+
+    public String getUser2ndpasswd() {
+		return user2ndpasswd;
+	}
+
+	public void setUser2ndpasswd(String user2ndpasswd) {
+		this.user2ndpasswd = user2ndpasswd;
+	}
+
+	public int getLogin2ndcount() {
+		return login2ndcount;
+	}
+
+	public void setLogin2ndcount(int login2ndcount) {
+		this.login2ndcount = login2ndcount;
+	}
+
+	public String getChargeorgid() {
+		return chargeorgid;
+	}
+
+	public void setChargeorgid(String chargeorgid) {
+		this.chargeorgid = chargeorgid;
+	}
+
+	public String getAgreeyn() {
+		return agreeyn;
+	}
+
+	public void setAgreeyn(String agreeyn) {
+		this.agreeyn = agreeyn;
+	}
+
+	@Override
+    public String toString() {
+        return "ZUserVo{" +
+                   "pageSize=" + pageSize +
+                   ", pageIndex=" + pageIndex +
+                   ", cond1='" + cond1 + '\'' +
+                   ", cond2='" + cond2 + '\'' +
+                   ", cond3='" + cond3 + '\'' +
+                   ", cond4='" + cond4 + '\'' +
+                   ", cond5='" + cond5 + '\'' +
+                   ", cond6='" + cond6 + '\'' +
+                   ", cond7='" + cond7 + '\'' +
+                   ", cond8='" + cond8 + '\'' +
+                   ", cond9='" + cond9 + '\'' +
+                   ", cond10='" + cond10 + '\'' +
+                   ", keyword='" + keyword + '\'' +
+                   ", sdate='" + sdate + '\'' +
+                   ", edate='" + edate + '\'' +
+                   ", n=" + n +
+                   ", m=" + m +
+                   ", sitedomain='" + sitedomain + '\'' +
+                   ", sitetitle='" + sitetitle + '\'' +
+                   ", tx_content='" + tx_content + '\'' +
+                   ", cnt=" + cnt +
+                   ", maxno=" + maxno +
+                   ", authority='" + authority + '\'' +
+                   ", holoff='" + holoff + '\'' +
+                   ", hq_cd='" + hq_cd + '\'' +
+                   ", hq_nm='" + hq_nm + '\'' +
+                   ", dept_cd='" + dept_cd + '\'' +
+                   ", dept_nm='" + dept_nm + '\'' +
+                   ", dept_full_nm='" + dept_full_nm + '\'' +
+                   ", holoff_cls='" + holoff_cls + '\'' +
+                   ", tel_offc='" + tel_offc + '\'' +
+                   ", gpin_code='" + gpin_code + '\'' +
+                   ", nice_code='" + nice_code + '\'' +
+                   ", annualPause='" + annualPause + '\'' +
+                   ", limitYearMonth='" + limitYearMonth + '\'' +
+                   ", duesno='" + duesno + '\'' +
+                   ", duesjoin='" + duesjoin + '\'' +
+                   ", semimemberconfirm='" + semimemberconfirm + '\'' +
+                   ", etc='" + etc + '\'' +
+                   ", regyear='" + regyear + '\'' +
+                   ", payCheck='" + payCheck + '\'' +
+                   ", andOr='" + andOr + '\'' +
+                   ", search='" + search + '\'' +
+                   ", paytype2='" + paytype2 + '\'' +
+                   ", workplace='" + workplace + '\'' +
+                   ", postal='" + postal + '\'' +
+                   ", account_code='" + account_code + '\'' +
+                   ", account_no='" + account_no + '\'' +
+                   ", paytype='" + paytype + '\'' +
+                   ", executive='" + executive + '\'' +
+                   ", executivenm='" + executivenm + '\'' +
+                   ", committee='" + committee + '\'' +
+                   ", committeenm='" + committeenm + '\'' +
+                   ", groupuser='" + groupuser + '\'' +
+                   ", usercompanyname='" + usercompanyname + '\'' +
+                   ", usercompanystatus='" + usercompanystatus + '\'' +
+                   ", cancelreason='" + cancelreason + '\'' +
+                   ", pausereason='" + pausereason + '\'' +
+                   ", orgUserDelegate='" + orgUserDelegate + '\'' +
+                   ", orgOfficer='" + orgOfficer + '\'' +
+                   ", orgUserOfficer='" + orgUserOfficer + '\'' +
+                   ", orgUserDept='" + orgUserDept + '\'' +
+                   ", orgUserEmail='" + orgUserEmail + '\'' +
+                   ", orgUserPhone='" + orgUserPhone + '\'' +
+                   ", orgUserType='" + orgUserType + '\'' +
+                   ", approve='" + approve + '\'' +
+                   ", foreigner='" + foreigner + '\'' +
+                   ", workGrade='" + workGrade + '\'' +
+                   ", branch='" + branch + '\'' +
+                   ", vlseq='" + vlseq + '\'' +
+                   ", count='" + count + '\'' +
+                   ", visitdate='" + visitdate + '\'' +
+                   ", st_sec1='" + st_sec1 + '\'' +
+                   ", st_sec2='" + st_sec2 + '\'' +
+                   ", st_sec3='" + st_sec3 + '\'' +
+                   ", logdate='" + logdate + '\'' +
+                   ", logip='" + logip + '\'' +
+                   '}';
+    }
+
+	public int getMenuno() {
+		return menuno;
+	}
+
+	public void setMenuno(int menuno) {
+		this.menuno = menuno;
+	}
+
+	public String getOrgNm() {
+		return orgNm;
+	}
+
+	public void setOrgNm(String orgNm) {
+		this.orgNm = orgNm;
+	}
+	
+}
