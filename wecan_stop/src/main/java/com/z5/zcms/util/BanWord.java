@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import com.oreilly.servlet.MultipartRequest;
 
+//banword 수정 밴밴워드 수정테스트
 public class BanWord {
 
 	private static Pattern ban_pattern = null;
